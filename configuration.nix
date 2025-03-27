@@ -10,18 +10,23 @@ let
 in
 {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware-configuration.nix 
   ];
+
 
   # Сервис для Warp VPN
   systemd.services.warp-svc = {
-    description = "Warp VPN Service";
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      ExecStart = "/home/redm00us/.nix-profile/bin/warp-svc";  # Правильный путь к warp-svc
-      Restart = "always";
-    };
+  enable = true;
+  description = "Cloudflare WARP Service";
+  wantedBy = [ "multi-user.target" ];
+  after = [ "network.target" "dbus.service" ];
+  serviceConfig = {
+    ExecStart = "${pkgs.cloudflare-warp}/bin/warp-svc";
+    Restart = "on-failure";
+    RestartSec = "5s";
+    Environment = "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus";  # Для пользовательского сервиса
   };
+};
 
   # Включение Hyprland
   programs.hyprland = {
@@ -77,7 +82,7 @@ programs.steam.package = pkgs.steam.override {
 
   # Установка Docker
   environment.systemPackages = with pkgs; [
-    docker
+    cloudflare-warp
     git
     hyprland
     wayland
@@ -151,6 +156,26 @@ programs.steam.package = pkgs.steam.override {
     amdvlk 
     gparted
     kdenlive
+    yandex-music
+    gnome-calculator
+    feh
+    gnome-disk-utility
+    gnome-system-monitor
+    mpv
+    obs-studio
+    qbittorrent
+    remmina
+    catppuccin-gtk
+    catppuccin-cursors
+    vscode-extensions.catppuccin.catppuccin-vsc-icons
+    vscode-extensions.catppuccin.catppuccin-vsc
+    catppuccin-papirus-folders
+    catppuccin-qt5ct
+    catppuccin-kde
+    catppuccin
+    gnome-tweaks
+    gvfs
+    nautilus
  ];
 
   # Включаем Docker
@@ -221,7 +246,7 @@ programs.steam.package = pkgs.steam.override {
   time.timeZone = "Europe/Kyiv";
 
   # Локализация
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "ru_RU.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "uk_UA.UTF-8";
     LC_IDENTIFICATION = "uk_UA.UTF-8";
