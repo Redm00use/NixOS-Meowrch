@@ -1,17 +1,7 @@
 { config, pkgs, ... }:
 
-let
-  # --- Импорт нестабильного канала ---
-  unstable = import (builtins.fetchTarball {
-    # Используем архив нестабильной ветки NixOS
-    url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-  }) {
-    # Передаем конфигурацию для нестабильного канала, разрешая несвободные пакеты
-    config = { allowUnfree = true; };
-  };
-in
 {
-  # --- Импорты ---
+   # --- Импорты ---
   imports = [
     # Включаем конфигурацию оборудования, сгенерированную NixOS
     ./hardware-configuration.nix
@@ -20,6 +10,26 @@ in
  # --- Версия конфигурации NixOS ---
   # Позволяет NixOS управлять изменениями и обновлениями.
   system.stateVersion = "24.11"; # Управления версией вашего первого развертывания NixOS
+ 
+  # --- Автоматическое обновление нестабильного канала ---
+  systemd.services.nix-channel-update-unstable = {
+    description = "Update the 'unstable' Nix channel daily";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.nix}/bin/nix-channel --update unstable";
+      User = "root";
+    };
+  };
+
+  systemd.timers.nix-channel-update-unstable = {
+    description = "Run nix-channel --update unstable daily";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "daily";
+      Persistent = true;
+      Unit = "nix-channel-update-unstable.service";
+    };
+  };
 
   # --- Общие настройки системы ---
   nixpkgs.config.allowUnfree = true; # Разрешение установки несвободных пакетов
@@ -27,7 +37,7 @@ in
   # --- Загрузчик ---
   boot.loader.systemd-boot.enable = true; # Используем systemd-boot
   boot.loader.efi.canTouchEfiVariables = true; # Разрешаем изменять EFI переменные
-  boot.kernelPackages = unstable.linuxPackages_6_14; # Используем ядро из нестабильного канала
+  boot.kernelPackages = (import <unstable> {}).linuxPackages_6_14; # Используем ядро из нестабильного канала
 
   # --- Локализация и время ---
   time.timeZone = "Europe/Kyiv"; # Установка часового пояса
@@ -280,14 +290,20 @@ in
     ripgrep              # Утилита поиска текста
     vscode               # Редактор кода
     python311            # Python 3.11 
-    python311Packages.pip # pip для Python 3.11
-    python311Packages.numpy # NumPy для Python 3.11
-    python311Packages.pandas # Pandas для Python 3.11
-    python311Packages.psutil # Psutil для Python 3.11
+    python311Packages.pip     # pip для Python 3.11
+    python311Packages.numpy   # NumPy для Python 3.11
+    python311Packages.pandas  # Pandas для Python 3.11
+    python311Packages.psutil  # Psutil для Python 3.11
+    python311Packages.meson   # Meson для Python 3.11
+    python311Packages.pillow  # Pillow для Python 3.11
+    python311Packages.pyyaml  # PyYAML для Python 3.11
+    python311Packages.setuptools # setuptools для Python 3.11
+    python311Packages.uv      # uv для Python 3.11
+    python311Packages.pkgconfig # pkg-config для Python 3.11
     pyenv                # Управление версиями Python
 
     # -- Общение --
-    unstable.materialgram # Telegram клиент (из unstable)
+    (import <unstable> {}).materialgram # Telegram клиент (из unstable)
     viber                # Мессенджер Viber
     discord              # Мессенджер Discord
 
