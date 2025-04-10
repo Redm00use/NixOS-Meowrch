@@ -1,47 +1,30 @@
-{ config, pkgs, ... }:
+# /etc/nixos/configuration.nix
+# ---> ИЗМЕНЕНО: Добавлены 'lib', 'inputs' и 'pkgs-unstable' в аргументы для Flake
+{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
 
 {
-   # --- Импорты ---
+  # --- Импорты ---
   imports = [
     # Включаем конфигурацию оборудования, сгенерированную NixOS
     ./hardware-configuration.nix
   ];
 
- # --- Версия конфигурации NixOS ---
+  # --- Версия конфигурации NixOS ---
   # Позволяет NixOS управлять изменениями и обновлениями.
   system.stateVersion = "24.11"; # Управления версией вашего первого развертывания NixOS
- 
-  # --- Автоматическое обновление нестабильного канала ---
-  systemd.services.nix-channel-update-unstable = {
-    description = "Update the 'unstable' Nix channel daily";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.nix}/bin/nix-channel --update unstable";
-      User = "root";
-    };
-  };
-
-  systemd.timers.nix-channel-update-unstable = {
-    description = "Run nix-channel --update unstable daily";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "daily";
-      Persistent = true;
-      Unit = "nix-channel-update-unstable.service";
-    };
-  };
 
   # --- Общие настройки системы ---
-  nixpkgs.config.allowUnfree = true; # Разрешение установки несвободных пакетов
-
+  nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  
   # --- Загрузчик ---
   boot.loader.systemd-boot.enable = true; # Используем systemd-boot
   boot.loader.efi.canTouchEfiVariables = true; # Разрешаем изменять EFI переменные
-  boot.kernelPackages = (import <unstable> {}).linuxPackages_6_14; # Используем ядро из нестабильного канала
+  boot.kernelPackages = pkgs-unstable.linuxPackages_latest; # Используем самое свежее ядро из unstable
 
   # --- Локализация и время ---
   time.timeZone = "Europe/Kyiv"; # Установка часового пояса
-  i18n.defaultLocale = "ru_RU.UTF-8"; # Основная локаль системы
+  i18n.defaultLocale = "ru_UA.UTF-8"; # Основная локаль системы
   i18n.extraLocaleSettings = { # Дополнительные настройки локали
     LC_ADDRESS = "uk_UA.UTF-8";
     LC_IDENTIFICATION = "uk_UA.UTF-8";
@@ -51,7 +34,7 @@
     LC_NUMERIC = "uk_UA.UTF-8";
     LC_PAPER = "uk_UA.UTF-8";
     LC_TELEPHONE = "uk_UA.UTF-8";
-    LC_TIME = "uk_UA.UTF-8";
+    LC_TIME = "ru_UA.UTF-8";
   };
 
   # --- Пользователь ---
@@ -59,7 +42,8 @@
     isNormalUser = true;
     description = "Redm00us";
     # Добавляем пользователя в необходимые группы
-    extraGroups = [ "networkmanager" "wheel" "lp" "bluetooth" "libvirtd" "users" ]; # 'users' добавлена для прав на /media/*
+    extraGroups = [ "networkmanager" "wheel" "lp" "bluetooth" "libvirtd" "users" "audio" "video" ];
+    # 'users' добавлена для прав на /media/*
     packages = with pkgs; [
       # Сюда можно добавить пакеты, специфичные для пользователя, если нужно
     ];
@@ -70,10 +54,9 @@
     enable = true; # Включаем Hyprland
     xwayland.enable = true; # Включаем XWayland для совместимости с X11 приложениями
   };
-
   # Настройка драйверов для видеокарты AMD
   hardware.graphics.enable = true;
-  services.xserver.videoDrivers = [ "amdgpu" ]; # Используем драйвер amdgpu (для AMD GPU)
+  # services.xserver.videoDrivers = [ "amdgpu" ]; # Закомментировано, т.к. может не требоваться для Wayland/Hyprland с Mesa
 
   # Настройка SDDM как Display Manager
   services.displayManager = {
@@ -105,7 +88,6 @@
       xdg-desktop-portal-gtk
     ];
   };
-
   # Переменные окружения для сессии Wayland
   environment.sessionVariables = {
     XDG_CURRENT_DESKTOP = "Hyprland";
@@ -149,29 +131,9 @@
     enable = true; # Включаем Bluetooth
     powerOnBoot = true; # Включать Bluetooth при загрузке
     settings = { # Дополнительные настройки Bluez
-      General = {
-        Experimental = true; # Включаем экспериментальные функции
-        ControllerMode = "bredr"; # Режим контроллера
-        MaxConnected = 5; # Максимальное количество подключенных устройств
-        Enable = "Source,Sink,Media,Socket"; # Включаемые профили
-      };
     };
   };
 
-  # Кастомные настройки WirePlumber для Bluetooth (кодеки, автоподключение)
-  environment.etc."wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
-    bluez_monitor.rules = {
-      {
-        matches = {{ "bluez.device", "*" }},
-        apply_properties = {
-          ["bluez5.auto-connect"] = {"hfp_hs", "hsp_hs", "a2dp_sink"},
-          ["bluez5.codecs"] = {"sbc", "aac", "aptx", "ldac"},
-          ["bluez5.msbc-support"] = true,
-          ["bluez5.hw-volume"] = "auto"
-        }
-      }
-    }
-  '';
 
   # --- Сеть ---
   networking.hostName = "nixos"; # Имя хоста
@@ -188,7 +150,6 @@
     [ProxyList]
     socks5 127.0.0.1 40000
   '';
-
   # Конфигурация tsocks для работы с Cloudflare Warp
   environment.etc."tsocks.conf".text = ''
     server = 127.0.0.1
@@ -208,7 +169,6 @@
     fsType = "ext4";
     options = [ "rw" "noatime" ];
   };
-
   # Установка прав на точки монтирования через tmpfiles.d
   # Пользователь redm00us и группа users будут иметь права 0770
   environment.etc."tmpfiles.d/home-disks.conf".text = ''
@@ -230,12 +190,12 @@
   programs.gamemode.enable = true; # Включаем Feral GameMode
   programs.steam = {
     enable = true; # Включаем Steam
-    # Добавляем необходимые зависимости для Steam и Proton/Wayland
+    # Добавляем необходимые зависимости для Steam и Proton/Wayland (используем стабильные pkgs)
     package = pkgs.steam.override {
-      extraPkgs = pkgs: with pkgs; [ libdrm wayland mangohud gamemode ];
+      extraPkgs = p: with p; [ libdrm wayland mangohud gamemode ];
     };
-    remotePlay.openFirewall = true; # Открыть порты для Remote Play 
-    dedicatedServer.openFirewall = true; # Открыть порты для выделенных серверов 
+    remotePlay.openFirewall = true; # Открыть порты для Remote Play
+    dedicatedServer.openFirewall = true; # Открыть порты для выделенных серверов
   };
 
   # --- Основные сервисы ---
@@ -251,15 +211,17 @@
   programs.fish.enable = true; # Используем Fish как оболочку по умолчанию (нужно настроить для пользователя)
 
   # --- Системные пакеты ---
+  # ---> ВАЖНО: Все пакеты здесь, КРОМЕ materialgram, будут браться из pkgs (стабильной ветки 24.11)
   environment.systemPackages = with pkgs; [
-    # -- Терминал и Оболочка --
+       # -- Терминал и Оболочка --
     kitty                # Терминал
     fish                 # Оболочка
     starship             # Промпт для оболочки
     fastfetch            # Информация о системе
 
-    # -- Файловые менеджеры --
+    # -- Файловые менеджеры -- (лучше перенести в home.nix)
     nemo                 # Файловый менеджер
+    nautilus             # Файловый менеджер (GNOME)
 
     # -- Утилиты Wayland/Hyprland --
     wayland              # Протокол Wayland
@@ -269,7 +231,7 @@
     grim                 # Скриншоты в Wayland
     slurp                # Выделение области экрана в Wayland
     swww                 # Управление обоями для Wayland (альтернатива feh/nitrogen)
-    rofi                 # Запускатель приложений / меню (Wayland-совместимые форки существуют)
+    rofi-wayland         # Запускатель приложений / меню (Wayland-совместимые форки существуют)
     waybar               # Панель статуса для Wayland
     swaylock-effects     # Экран блокировки с эффектами
     dunst                # Сервер уведомлений
@@ -289,7 +251,7 @@
     nodejs               # Среда выполнения JavaScript
     ripgrep              # Утилита поиска текста
     vscode               # Редактор кода
-    python311            # Python 3.11 
+    python311            # Python 3.11
     python311Packages.pip     # pip для Python 3.11
     python311Packages.numpy   # NumPy для Python 3.11
     python311Packages.pandas  # Pandas для Python 3.11
@@ -303,9 +265,8 @@
     pyenv                # Управление версиями Python
 
     # -- Общение --
-    (import <unstable> {}).materialgram # Telegram клиент (из unstable)
-    viber                # Мессенджер Viber
-    discord              # Мессенджер Discord
+    viber                # Мессенджер Viber 
+    discord              # Мессенджер Discord 
 
     # -- Мультимедиа --
     spotify              # Музыкальный стриминг
@@ -345,22 +306,22 @@
     gnome-system-monitor # Системный монитор
     gnome-calculator     # Калькулятор
     ark                  # Архиватор
-    qbittorrent          # Торрент-клиент
+    qbittorrent          # Торрент-клиент 
     remmina              # Клиент удаленного доступа
-    upower               # Управление питанием 
+    upower               # Управление питанием
     blueman              # Менеджер Bluetooth (GTK)
     bluez                # Стек Bluetooth
     bluez-tools          # Утилиты Bluetooth
-    glibc                # Стандартная библиотека C 
+    glibc                # Стандартная библиотека C
     xdg-utils            # Утилиты для интеграции с рабочим столом (открытие файлов и т.д.)
 
-    # -- Темы и иконки --
-    # Темы GTK
+    # -- Темы и иконки -- (Лучше управлять через home.nix)
     catppuccin-gtk       # Тема Catppuccin для GTK
     gnome-themes-extra   # Дополнительные темы GNOME
+    gsettings-desktop-schemas # Схемы для настроек GTK/GNOME
     # Темы Qt
     catppuccin-qt5ct     # Тема Catppuccin для Qt5/qt5ct
-    # Темы KDE 
+    # Темы KDE
     catppuccin-kde       # Тема Catppuccin для KDE Plasma
     # Иконки
     papirus-icon-theme   # Тема иконок Papirus
@@ -371,16 +332,16 @@
     bibata-cursors       # Тема курсоров Bibata
     catppuccin-cursors   # Тема курсоров Catppuccin
     # Настройки GNOME/GTK
-    gsettings-desktop-schemas # Схемы настроек для GNOME/GTK
-    gnome-tweaks         # Утилита тонкой настройки GNOME (Опционально)
+    gnome-tweaks         # Утилита тонкой настройки GNOME
     dconf-editor         # Редактор DConf (для низкоуровневых настроек GTK/GNOME)
     # Прочее
     glib                 # Базовая библиотека для GTK/GNOME
     gvfs                 # Виртуальная файловая система GNOME
-    # Расширения VSCode
-    vscode-extensions.catppuccin.catppuccin-vsc-icons # Иконки Catppuccin для VSCode
-    vscode-extensions.catppuccin.catppuccin-vsc # Тема Catppuccin для VSCode
-    # Общий пакет темы 
-    catppuccin
+    vscode-extensions.catppuccin.catppuccin-vsc-icons
+    vscode-extensions.catppuccin.catppuccin-vsc
+    # Общий пакет темы
+    catppuccin           # Если это действительно пакет с ресурсами
+
+    pkgs-unstable.materialgram # Используем пакет из нестабильной ветки
   ];
 }
