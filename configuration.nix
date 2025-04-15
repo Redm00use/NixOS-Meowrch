@@ -1,5 +1,4 @@
 # /etc/nixos/configuration.nix
-# ---> ИЗМЕНЕНО: Добавлены 'lib', 'inputs' и 'pkgs-unstable' в аргументы для Flake
 { config, pkgs, pkgs-unstable, lib, inputs, ... }:
 
 {
@@ -7,6 +6,7 @@
   imports = [
     # Включаем конфигурацию оборудования, сгенерированную NixOS
     ./hardware-configuration.nix
+    ./modules/group.nix
   ];
 
   # --- Версия конфигурации NixOS ---
@@ -16,11 +16,14 @@
   # --- Общие настройки системы ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
+
   # --- Загрузчик ---
   boot.loader.systemd-boot.enable = true; # Используем systemd-boot
   boot.loader.efi.canTouchEfiVariables = true; # Разрешаем изменять EFI переменные
   boot.kernelPackages = pkgs-unstable.linuxPackages_latest; # Используем самое свежее ядро из unstable
+
+  # --- Сервис для Warp VPN ---
+  services.cloudflare-warp.enable = true; # Включаем Cloudflare WARP
 
   # --- Локализация и время ---
   time.timeZone = "Europe/Kyiv"; # Установка часового пояса
@@ -42,7 +45,7 @@
     isNormalUser = true;
     description = "Redm00us";
     # Добавляем пользователя в необходимые группы
-    extraGroups = [ "networkmanager" "wheel" "lp" "bluetooth" "libvirtd" "users" "audio" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "lp" "bluetooth" "libvirtd" "users" "audio" "video" "cloudflare-warp" ];
     # 'users' добавлена для прав на /media/*
     packages = with pkgs; [
       # Сюда можно добавить пакеты, специфичные для пользователя, если нужно
@@ -138,24 +141,7 @@
   # --- Сеть ---
   networking.hostName = "nixos"; # Имя хоста
   networking.networkmanager.enable = true; # Используем NetworkManager для управления сетью
-  services.cloudflare-warp.enable = true; # Включаем Cloudflare Warp
-
-  # Конфигурация proxychains для работы с Cloudflare Warp
-  environment.etc."proxychains.conf".text = ''
-    strict_chain
-    proxy_dns
-    remote_dns_subnet 224
-    tcp_read_time_out 15000
-    tcp_connect_time_out 8000
-    [ProxyList]
-    socks5 127.0.0.1 40000
-  '';
-  # Конфигурация tsocks для работы с Cloudflare Warp
-  environment.etc."tsocks.conf".text = ''
-    server = 127.0.0.1
-    server_port = 40000
-    server_type = 5
-  '';
+  hardware.enableRedistributableFirmware = true;
 
   # --- Файловые системы и монтирование ---
   # Монтирование дисков в /media
@@ -221,7 +207,7 @@
 
     # -- Файловые менеджеры -- (лучше перенести в home.nix)
     nemo                 # Файловый менеджер
-    nautilus             # Файловый менеджер (GNOME)
+    zenity               # GTK диалоговые окна (для Nemo)
 
     # -- Утилиты Wayland/Hyprland --
     wayland              # Протокол Wayland
@@ -243,6 +229,11 @@
     firefox              # Веб-браузер
     cloudflare-warp      # Клиент Cloudflare WARP
     wget                 # Утилита для скачивания файлов
+    curl                 # Утилита для работы с URL
+    modemmanager         # Управление мобильными устройствами (модемами)
+    networkmanagerapplet # Апплет для управления сетями (GTK)
+    usb-modeswitch       # Переключение режимов USB устройств (например, модемов)
+    dig                  # Утилита для DNS-запросов
 
     # -- Разработка --
     git                  # Система контроля версий
@@ -254,7 +245,7 @@
     python311            # Python 3.11
     python311Packages.pip     # pip для Python 3.11
     python311Packages.numpy   # NumPy для Python 3.11
-    python311Packages.pandas  # Pandas для Python 3.11
+    python311Packages.pandas  # Pandas для Python 3.11{
     python311Packages.psutil  # Psutil для Python 3.11
     python311Packages.meson   # Meson для Python 3.11
     python311Packages.pillow  # Pillow для Python 3.11
@@ -280,6 +271,7 @@
     steam                # Игровая платформа Steam
     wine                 # Слой совместимости для Windows приложений
     winetricks           # Утилита для настройки Wine
+
     # Зависимости для Wine/Proton/Vulkan
     mesa                 # 3D графика (OpenGL/Vulkan)
     mesa.drivers         # Драйверы Mesa

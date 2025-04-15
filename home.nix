@@ -1,6 +1,4 @@
 # /etc/nixos/home.nix
-# Упрощенная версия без настроек GTK/Qt
-# ---> ИСПРАВЛЕННЫЙ ЗАГОЛОВОК: Добавлен 'inputs'
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -9,19 +7,25 @@
   home.homeDirectory = "/home/redm00us";
   home.stateVersion = "24.11";
 
-  # --- Пакеты Пользователя ---
-  home.packages = with pkgs; [
-    # --- Добавлен Yandex Music из flake input ---
-    inputs.yandex-music.packages.${pkgs.system}.default
+  # --- Применяем overlay spicetify-nix внутри Home Manager ---
+  nixpkgs.overlays = [
+    inputs.spicetify-nix.overlays.default
+    inputs.catppuccin-nix.overlays.default
   ];
 
-  # --- Настройки Fish Shell (Оставляем) ---
+  # --- Пакеты Пользователя ---
+  home.packages = with pkgs; [
+    inputs.yandex-music.packages.${pkgs.system}.default
+    inputs.zen-browser.packages.${pkgs.system}.default
+  ];
+
+  # --- Настройки Fish Shell ---
   programs.fish = {
     enable = true;
     shellAliases = {
-      b = "sudo nixos-rebuild switch --flake .#nixos";
+      b = "sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#nixos --impure";
       c = "code --user-data-dir=\"$HOME/.vscode-root\" /etc/nixos/configuration.nix";
-      u = "echo 'Для обновления используйте: nix flake update && sudo nixos-rebuild switch --flake .#nixos'";
+      u = "cd /etc/nixos/ & nix flake update && sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#nixos --impure";
       f = "fastfetch";
       dell = "sudo nix-collect-garbage -d";
     };
@@ -62,10 +66,17 @@
   programs.git = {
     enable = true;
     userName = "Redm00us";
-    userEmail = "krokismau@icloud.com"; 
+    userEmail = "krokismau@icloud.com";
+  };
+
+  # --- Настройка Spicetify ---
+  programs.spicetify = {
+    enable = true;
+    theme = inputs.spicetify-nix.legacyPackages.${pkgs.system}.themes.catppuccin;
+    colorScheme = "mocha";
+    enabledExtensions = [];
   };
 
   # --- Управление Dotfiles ---
   # home.file.".config/hypr/hyprland.conf".source = ./hyprland.conf;
-
 }
