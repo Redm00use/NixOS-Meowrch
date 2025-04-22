@@ -3,3 +3,4 @@
 - Добавил Yandex Music ласт версию ( Так же автоматом билдиться ) 
 - Добавил catppuccin тему для Spotify ( прописано во flake и home-manager ) тема mocha
 - Добавил Zed Dev версии 0.184.0 ( last test ) 
+- Выкинул пакеты в модуль, в папке (modules)
