@@ -1,0 +1,61 @@
+#####################################
+##==> Variables
+#####################################
+function shenv; set -gx $argv; end
+#source ~/.env
+
+#####################################
+##==> Aliases
+#####################################s
+alias b="sudo nixos-rebuild switch" #Билд нового снепшота
+alias c="code /etc/nixos/configuration.nix" #конфигурация самого NixOS
+alias u="sudo nixos-rebuild switch --upgrade" #обновление системы
+alias f="fastfetch" #база базовая
+alias dell="sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system & sudo nix-collect-garbage -d " #чистка NixOS от старых снепшотов + чистка Root от старых снепшотов
+#####################################
+##==> Custom Functions
+#####################################
+function wget
+    command wget --hsts-file="$XDG_DATA_HOME/wget-hsts" $argv
+end
+
+#####################################
+##==> Interactive Session Settings
+#####################################
+if status is-interactive
+
+end
+
+#####################################
+##==> Shell Customization
+#####################################
+starship init fish | source
+set fish_greeting
+
+#####################################
+##==> Development Tools
+#####################################
+##==> Pyenv
+pyenv init - | source
+
+#####################################
+##==> Fun Stuff
+#####################################
+fastfetch
+
+set -U fish_user_paths "$HOME/.local/bin"
+
+##==> Wayland Environment Variables
+set -gx XDG_SESSION_TYPE wayland
+set -gx XDG_CURRENT_DESKTOP Hyprland
+set -gx QT_QPA_PLATFORM wayland
+set -gx GDK_BACKEND wayland
+set -gx CLUTTER_BACKEND wayland
+set -gx SDL_VIDEODRIVER wayland
+set -gx MOZ_ENABLE_WAYLAND 1
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+export NIX_PATH=$NIX_PATH:$HOME/.nix-defexpr/channels/home-manager
+export NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-23.05.tar.gz:$NIX_PATH
