@@ -1,4 +1,9 @@
-# /etc/nixos/configuration.nix
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║                                                                          ║
+# ║                     Конфигурационный файл NixOS                          ║
+# ║                         Сделал: Redm00us                                 ║
+# ║                                                                          ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
 { config, pkgs, pkgs-unstable, lib, inputs, zed-editor-pkg, ... }:
 
 {
@@ -11,7 +16,7 @@
   # --- Версия конфигурации NixOS ---
   system.stateVersion = "24.11";
 
-  # --- Общие настройки системы ---
+  # --- Общие настройки системы и flakes ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -89,16 +94,16 @@
   # --- Шрифты ---
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-emoji
-      noto-fonts-extra
-      fira-code
-      fira-code-symbols
-      hack-font
-      iosevka
-      font-awesome
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; }) # Патченный шрифт JetBrainsMono с Nerd Fonts
+      noto-fonts                 # Основные шрифты Noto
+      noto-fonts-cjk-sans        # Noto для CJK
+      noto-fonts-emoji           # Emoji-шрифты Noto
+      noto-fonts-extra           # Дополнительные Noto
+      fira-code                  # Fira Code
+      fira-code-symbols          # Символы для Fira Code
+      hack-font                  # Hack
+      iosevka                    # Iosevka
+      font-awesome               # Font Awesome
     ];
     fontconfig = {
       defaultFonts = {
@@ -159,7 +164,12 @@
   programs.steam = {
     enable = true;
     package = pkgs.steam.override {
-      extraPkgs = p: with p; [ libdrm wayland mangohud gamemode ];
+      extraPkgs = p: with p; [
+        libdrm    # DRM-библиотека для графики
+        wayland   # Wayland-библиотеки
+        mangohud  # Overlay для FPS и мониторинга
+        gamemode  # Оптимизация производительности игр
+      ];
     };
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
@@ -180,136 +190,114 @@
   # --- Системные пакеты ---
   environment.systemPackages = with pkgs; [
     # -- Терминал и Оболочка --
-    kitty
-    fish
-    starship
-    fastfetch
+    kitty                       # Терминал
+    fish                        # Оболочка Fish
+    starship                    # Промпт Starship
+    fastfetch                   # Информация о системе
 
     # -- Файловые менеджеры --
-    nemo
-    zenity
+    nemo                        # Файловый менеджер Nemo
+    zenity                      # Диалоговые окна GTK
 
     # -- Утилиты Wayland/Hyprland --
-    wayland
-    xwayland
-    wl-clipboard
-    cliphist
-    grim
-    slurp
-    swww
-    rofi-wayland
-    waybar
-    swaylock-effects
-    dunst
-    pamixer
-    playerctl
-    kdePackages.polkit-kde-agent-1
+    wayland                     # Библиотеки Wayland
+    xwayland                    # XWayland для совместимости X11
+    wl-clipboard                # Клипборд для Wayland
+    cliphist                    # История буфера обмена
+    grim                        # Скриншоты
+    slurp                       # Выделение области экрана
+    swww                        # Обои для Wayland
+    rofi-wayland                # Лаунчер Rofi для Wayland
+    waybar                      # Панель Waybar
+    swaylock-effects            # Локскрин с эффектами
+    dunst                       # Уведомления
+    pamixer                     # Управление громкостью
+    playerctl                   # Управление медиаплеерами
+    kdePackages.polkit-kde-agent-1   # Агент polkit для KDE
 
     # -- Веб и Сеть --
-    firefox
-    cloudflare-warp
-    wget
-    curl
-    modemmanager
-    networkmanagerapplet
-    usb-modeswitch
-    dig
+    firefox                     # Браузер Firefox
+    cloudflare-warp             # VPN Warp
+    wget                        # Загрузка файлов
+    curl                        # HTTP-клиент
+    modemmanager                # Модемы
+    networkmanagerapplet        # Апплет NetworkManager
+    usb-modeswitch              # Переключение режимов USB-модемов
+    dig                         # DNS-утилита
 
     # -- Разработка --
-    git
-    gcc
-    clang
-    nodejs
-    ripgrep
-    vscode
-    python311
-    python311Packages.pip
-    python311Packages.numpy
-    python311Packages.pandas
-    python311Packages.psutil
-    python311Packages.meson
-    python311Packages.pillow
-    python311Packages.pyyaml
-    python311Packages.setuptools
-    python311Packages.uv
-    python311Packages.pkgconfig
-    pyenv
+    git                         # Git
+    gcc                         # Компилятор GCC
+    clang                       # Компилятор Clang
+    nodejs                      # Node.js
+    ripgrep                     # Поиск по файлам
+    vscode                      # Visual Studio Code
+    python311                    # Python 3.11
+    python311Packages.pip        # pip для Python 3.11
+    python311Packages.numpy      # NumPy
+    python311Packages.pandas     # Pandas
+    python311Packages.psutil     # psutil
+    python311Packages.meson      # Meson
+    python311Packages.pillow     # Pillow
+    python311Packages.pyyaml     # PyYAML
+    python311Packages.setuptools # setuptools
+    python311Packages.uv         # uv
+    python311Packages.pkgconfig  # pkgconfig
+    pyenv                       # Менеджер версий Python
 
     # -- Общение --
-    viber
-    discord
+    viber                       # Viber
+    discord                     # Discord
 
     # -- Мультимедиа --
-    spotify
-    mpv
-    obs-studio
-    feh
+    spotify                     # Spotify
+    mpv                         # Видеоплеер MPV
+    obs-studio                  # OBS Studio
+    feh                         # Просмотр изображений
 
     # -- Игры и графика --
-    gamemode
-    mangohud
-    steam
-    wine
-    winetricks
-    mesa
-    mesa.drivers
-    libGL
-    libva
-    libvdpau
-    vulkan-loader
-    vulkan-tools
-    vulkan-validation-layers
-    amdvlk
-    dxvk
-    mesa-demos
-    virtualgl
-    virtualglLib
+    gamemode                    # Оптимизация игр
+    mangohud                    # Overlay для игр
+    steam                       # Steam
+    wine                        # Wine
+    winetricks                  # Winetricks
+    mesa                        # Mesa (OpenGL)
+    mesa.drivers                # Драйверы Mesa
+    libGL                       # OpenGL
+    libva                       # Аппаратное ускорение видео VA-API
+    libvdpau                    # Аппаратное ускорение видео VDPAU
+    vulkan-loader               # Vulkan loader
+    vulkan-tools                # Инструменты Vulkan
+    vulkan-validation-layers    # Валидация Vulkan
+    amdvlk                      # Vulkan-драйвер AMD
+    dxvk                        # DXVK (DirectX → Vulkan)
+    mesa-demos                  # Демо-программы Mesa
+    virtualgl                   # VirtualGL
+    virtualglLib                # Библиотеки VirtualGL
 
     # -- Виртуализация --
-    qemu_full
-    gnome-boxes
-    libvirt
+    qemu_full                   # QEMU (полная сборка)
+    gnome-boxes                 # GNOME Boxes
+    libvirt                     # Libvirt
 
     # -- Системные утилиты --
-    gnome-disk-utility
-    gnome-system-monitor
-    gnome-calculator
-    ark
-    qbittorrent
-    remmina
-    upower
-    blueman
-    bluez
-    bluez-tools
-    glibc
-    xdg-utils
+    gnome-disk-utility          # Диски GNOME
+    gnome-system-monitor        # Монитор системы
+    gnome-calculator            # Калькулятор
+    ark                         # Архиватор
+    qbittorrent                 # Торрент-клиент
+    remmina                     # Удалённый рабочий стол
+    upower                      # Управление питанием
+    blueman                     # Менеджер Bluetooth
+    bluez                       # Стек Bluetooth
+    bluez-tools                 # Инструменты Bluez
+    glibc                       # GNU C Library
+    xdg-utils                   # XDG-утилиты
 
     # -- Темы и иконки --
-    catppuccin-gtk
-    gnome-themes-extra
-    gsettings-desktop-schemas
-    catppuccin-qt5ct
-    catppuccin-kde
-    papirus-icon-theme
-    tela-circle-icon-theme
-    adwaita-icon-theme
-    font-awesome
-    bibata-cursors
-    catppuccin-cursors
-    gnome-tweaks
-    dconf-editor
-    glib
-    gvfs
-    vscode-extensions.catppuccin.catppuccin-vsc-icons
-    vscode-extensions.catppuccin.catppuccin-vsc
-    catppuccin
-
-    pkgs-unstable.materialgram
-    gnupg
-
-    # -- Zed Editor --
-    zed-editor-pkg # Используем пакет из specialArgs
-    nil            # Адон для zed
-    nixd           # Адон для zed
+    catppuccin-gtk              # GTK-тема Catppuccin
+    gnome-themes-extra          # Дополнительные темы GNOME
+    gsettings-desktop-schemas   # Схемы настроек
+    catppuccin-qt5ct            # Catppuccin для qt
   ];
 }

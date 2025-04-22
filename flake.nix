@@ -1,4 +1,9 @@
-# /etc/nixos/flake.nix
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║                                                                          ║
+# ║                     Конфигурационный файл Flake                          ║
+# ║                         Сделал: Redm00us                                 ║
+# ║                                                                          ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
 {
   description = "Конфигурация NixOS redm00us (NixOS 24.11 + ядро/materialgram unstable)";
 
@@ -39,7 +44,7 @@
     # --- Zed Editor ---
     zed = {
       url = "github:zed-industries/zed/main";
-      inputs.nixpkgs.follows = "nixpkgs-unstable"; # Use unstable for better compatibility
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
