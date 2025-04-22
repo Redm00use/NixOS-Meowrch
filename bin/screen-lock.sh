@@ -1,4 +1,4 @@
-\#!/usr/bin/env fish
+#!/bin/bash
 
 # ┏━━━┳━━┳━┓┏━┳━━━┳┓╋╋┏━━┳━┓┏━┓
 # ┗┓┏┓┣┫┣┫┃┗┛┃┃┏━━┫┃╋╋┗┫┣┻┓┗┛┏┛
@@ -9,14 +9,15 @@
 # The program was created by DIMFLIX
 # Github: https://github.com/DIMFLIX-OFFICIAL
 
-set SESSION_TYPE $XDG_SESSION_TYPE
+SESSION_TYPE=$XDG_SESSION_TYPE
 
-function lock_x11
-    set fg c0caf5
-    set wrong db4b4b
-    set date 7aa2f7
-    set verify 7aa2f7
-    set lock_image "$HOME/.config/meowrch/current_wallpaper"
+
+lock_x11() {
+    local fg=c0caf5
+    local wrong=db4b4b
+    local date=7aa2f7
+    local verify=7aa2f7
+    local lock_image="$HOME/.config/meowrch/current_wallpaper"
 
     i3lock -n --force-clock -i "$lock_image" -e \
         --indicator --radius=20 --ring-width=40 \
@@ -52,21 +53,23 @@ function lock_x11
         --refresh-rate=0 \
         --pass-media-keys \
         --pass-volume-keys
-end
+}
 
-# Логика блокировки
-switch "$SESSION_TYPE"
-    case "wayland"
-        if test "$argv[1]" = "--suspend"
+
+case "$SESSION_TYPE" in
+    "wayland")
+        if [[ "$1" == "--suspend" ]]; then
             systemctl suspend
         else
             swaylock
-        end
-    case "x11"
-        if test "$argv[1]" = "--suspend"
+        fi
+        ;;
+    "x11")
+        if [[ "$1" == "--suspend" ]]; then
             systemctl suspend
-        end
+        fi
         lock_x11
-    case '*'
+        ;;
+    *)
         echo "The session type is not defined or is not Wayland/X11."
-end
+esac
