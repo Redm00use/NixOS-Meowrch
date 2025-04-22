@@ -36,9 +36,14 @@
       url = "github:catppuccin/nix";
     };
 
+    # --- Zed Editor ---
+    zed = {
+      url = "github:zed-industries/zed/main";
+      inputs.nixpkgs.follows = "nixpkgs-unstable"; # Use unstable for better compatibility
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, yandex-music, spicetify-nix, catppuccin-nix, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, yandex-music, spicetify-nix, catppuccin-nix, zed, ... }@inputs:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -46,7 +51,10 @@
   in {
     nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs pkgs pkgs-unstable yandex-music spicetify-nix catppuccin-nix ; };
+      specialArgs = {
+        inherit inputs pkgs pkgs-unstable yandex-music spicetify-nix catppuccin-nix zed;
+        zed-editor-pkg = zed.packages.${system}.default or pkgs-unstable.zed-editor;
+      };
       modules = [
         ./configuration.nix
         home-manager.nixosModules.home-manager
