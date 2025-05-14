@@ -45,11 +45,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # ────────────── Редакторы ──────────────
-    zed = {                                       # Zed Editor (современный редактор кода)
-      url = "github:zed-industries/zed/main";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+
   };
 
   # ╔════════════════════════════════════════════════════════════════════════╗
@@ -62,7 +58,6 @@
     , yandex-music
     , spicetify-nix
     , catppuccin-nix
-    , zed
     , ...
   }@inputs:
   let
@@ -85,8 +80,7 @@
       inherit system;
       specialArgs = {
         # Передача переменных и пакетов в модули
-        inherit inputs pkgs pkgs-unstable yandex-music spicetify-nix catppuccin-nix zed;
-        zed-editor-pkg = zed.packages.${system}.default or pkgs-unstable.zed-editor; # Пакет редактора Zed
+        inherit inputs pkgs pkgs-unstable yandex-music spicetify-nix catppuccin-nix;
       };
       modules = [
         ./configuration.nix                                 # Основная системная конфигурация
