@@ -12,8 +12,8 @@
   # ╚════════════════════════════════════════════════════════════════════════╝
   imports = [
     ./hardware-configuration.nix   # Аппаратная конфигурация
-    ./modules/group.nix            # Группы пользователей
     ./modules/packages.nix         # Пользовательские пакеты
+    ./modules/flatpak.nix         # Поддержка Flatpak и Flathub
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════╗
@@ -116,11 +116,6 @@
       xdg-desktop-portal-hyprland   # Портал для Hyprland
       xdg-desktop-portal-gtk        # Портал для GTK-приложений
     ];
-  };
-  environment.sessionVariables = {
-    XDG_CURRENT_DESKTOP = "Hyprland";                    # Текущий рабочий стол
-    XDG_SESSION_TYPE = "wayland";                        # Тип сессии
-    XDG_SESSION_DESKTOP = "Hyprland";                    # Рабочий стол сессии
   };
 
   # ╔════════════════════════════════════════════════════════════════════════╗
@@ -231,12 +226,17 @@
   programs.command-not-found.enable = true;              # Подсказки по командам
   programs.nix-ld.enable = true;                         # Запуск бинарников с внешними зависимостями
   programs.fish.enable = true;                           # Fish shell
-  
+  programs.flatpak = {
+    enable = true;                                       # Включить Flatpak
+    enableFlathub = true;                                # Включить репозиторий Flathub
+    autoUpdate = true;                                   # Автоматическое обновление Flatpak приложений
+  };
+
   # ╔════════════════════════════════════════════════════════════════════════╗
   # ║                     GNOME KEYRING И БЕЗОПАСНОСТЬ                      ║
   # ╚════════════════════════════════════════════════════════════════════════╝
   services.gnome.gnome-keyring.enable = true;            # Включаем сервис хранения ключей GNOME
-  
+
   # Настройка PAM для автоматической разблокировки keyring
   security.pam.services = {
     login.enableGnomeKeyring = true;                     # Разблокировка keyring при логине
@@ -244,7 +244,7 @@
     swaylock.enableGnomeKeyring = true;                  # Интеграция с Swaylock
     passwd.enableGnomeKeyring = true;                    # Обновление связки ключей при смене пароля
   };
-  
+
   # Устанавливаем переменные окружения для правильной работы с ключами
   environment.sessionVariables = {
     XDG_CURRENT_DESKTOP = "Hyprland";                    # Текущий рабочий стол
