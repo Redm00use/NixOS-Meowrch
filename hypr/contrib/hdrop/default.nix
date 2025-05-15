@@ -22,22 +22,22 @@ stdenvNoCC.mkDerivation {
     scdoc
   ];
 
-  makeFlags = [ "PREFIX=$(out)" ];
+  makeFlags = ["PREFIX=$(out)"];
 
   postInstall = ''
     wrapProgram $out/bin/hdrop --prefix PATH ':' \
       "${
-        lib.makeBinPath (
-          [
-            coreutils
-            util-linux
-            jq
-            libnotify
-            gawk
-          ]
-          ++ lib.optional withHyprland hyprland
-        )
-      }"
+      lib.makeBinPath (
+        [
+          coreutils
+          util-linux
+          jq
+          libnotify
+          gawk
+        ]
+        ++ lib.optional withHyprland hyprland
+      )
+    }"
   '';
 
   meta = with lib; {
@@ -46,7 +46,7 @@ stdenvNoCC.mkDerivation {
     changelog = "https://github.com/Schweber/hdrop/releases/tag/v${version}";
     license = licenses.agpl3Only;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ Schweber ];
+    maintainers = with maintainers; [Schweber];
     mainProgram = "hdrop";
   };
 }
