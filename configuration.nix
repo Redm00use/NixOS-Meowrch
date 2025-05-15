@@ -10,7 +10,6 @@
   pkgs-unstable,
   lib,
   inputs,
-  zed-editor-pkg,
   ...
 }: {
   # ╔════════════════════════════════════════════════════════════════════════╗
@@ -240,4 +239,22 @@
   programs.command-not-found.enable = true; # Подсказки по командам
   programs.nix-ld.enable = true; # Запуск бинарников с внешними зависимостями
   programs.fish.enable = true; # Fish shell
+
+  # ╔════════════════════════════════════════════════════════════════════════╗
+  # ║                     GNOME KEYRING И БЕЗОПАСНОСТЬ                      ║
+  # ╚════════════════════════════════════════════════════════════════════════╝
+  services.gnome.gnome-keyring.enable = true; # Включаем сервис хранения ключей GNOME
+
+  # Настройка PAM для автоматической разблокировки keyring
+  security.pam.services = {
+    login.enableGnomeKeyring = true; # Разблокировка keyring при логине
+    sddm.enableGnomeKeyring = true; # Разблокировка keyring через SDDM
+    swaylock.enableGnomeKeyring = true; # Интеграция с Swaylock
+    passwd.enableGnomeKeyring = true; # Обновление связки ключей при смене пароля
+  };
+
+  # Устанавливаем переменные окружения для правильной работы с ключами
+  environment.sessionVariables = {
+    SSH_AUTH_SOCK = "/run/user/\${UID}/keyring/ssh"; # Путь к сокету SSH
+  };
 }
