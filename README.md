@@ -1,14 +1,14 @@
 <div align="center">
 	<img src=".meta/logo.png" width="300px">
 	<h1> Meowrch NixOS ≽ܫ≼</h1>
-	<a href="https://github.com/Redm00us/meowrch-nixos/issues">
-		<img src="https://img.shields.io/github/issues/Redm00us/meowrch-nixos?color=ffb29b&labelColor=1C2325&style=for-the-badge">
+	<a href="https://github.com/Redm00use/NixOS-Meowrch/issues">
+		<img src="https://img.shields.io/github/issues/Redm00use/NixOS-Meowrch?color=ffb29b&labelColor=1C2325&style=for-the-badge">
 	</a>
-	<a href="https://github.com/Redm00us/meowrch-nixos/stargazers">
-		<img src="https://img.shields.io/github/stars/Redm00us/meowrch-nixos?color=fab387&labelColor=1C2325&style=for-the-badge">
+	<a href="https://github.com/Redm00use/NixOS-Meowrch/stargazers">
+		<img src="https://img.shields.io/github/stars/Redm00use/NixOS-Meowrch?color=fab387&labelColor=1C2325&style=for-the-badge">
 	</a>
 	<a href="./LICENSE">
-		<img src="https://img.shields.io/github/license/Redm00us/meowrch-nixos?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
+		<img src="https://img.shields.io/github/license/Redm00use/NixOS-Meowrch?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
 	</a>
 	<br>
 	<br>
@@ -156,8 +156,8 @@
 ### Если у вас уже установлен NixOS:
 ### 1. Клонируем репозиторий
 ```bash
-git clone https://github.com/Redm00us/meowrch-nixos.git
-cd meowrch-nixos
+git clone https://github.com/Redm00use/NixOS-Meowrch.git
+cd NixOS-Meowrch
 ```
 ### 2. Запускаем умный установщик
 ```bash
@@ -232,9 +232,9 @@ sudo reboot
 ```
 
 <h2>💻 Помощь и поддержка</h2>
-Если у вас возникли вопросы или нужна помощь с проектом, пожалуйста, посетите раздел <a href="https://github.com/Redm00us/meowrch-nixos/issues">Issues</a>.<br><br>
+Если у вас возникли вопросы или нужна помощь с проектом, пожалуйста, посетите раздел <a href="https://github.com/Redm00use/NixOS-Meowrch/issues">Issues</a>.<br><br>
 Также вы можете изучить оригинальный <a href="https://github.com/meowrch/meowrch">проект Meowrch</a> для дополнительного вдохновения и тем.<br><br>
-Для быстрой поддержки и обсуждений присоединяйтесь к нашему <a href="https://t.me/meowrch">Telegram каналу</a> или обращайтесь напрямую в Telegram к <a href="https://t.me/Redm00us">@Redm00us</a>.<br><br>
+Для быстрой поддержки и обсуждений присоединяйтесь к нашему <a href="https://t.me/meowrch">Telegram каналу</a> или обращайтесь напрямую в Telegram к <a href="https://t.me/Redm00use">@Redm00use</a>.<br><br>
 По вопросам, связанным с NixOS, обращайтесь к <a href="https://nixos.org/manual/nixos/stable/">Руководству NixOS</a> и <a href="https://nix-community.github.io/home-manager/">документации Home Manager</a>.<br><br>
 Ваши отзывы помогают нам улучшить проект и сделать его еще более удобным для пользователей.
 
@@ -439,8 +439,8 @@ home-manager switch --flake .#redm00us
 
 ### Настройка разработки
 ```bash
-git clone https://github.com/Redm00us/meowrch-nixos.git
-cd meowrch-nixos
+git clone https://github.com/Redm00use/NixOS-Meowrch.git
+cd NixOS-Meowrch
 nix develop
 ```
 
