@@ -1,6 +1,7 @@
 <div align="center">
 	<img src=".meta/logo.png" width="300px">
 	<h1> Meowrch NixOS ≽ܫ≼</h1>
+<<<<<<< HEAD
 	<a href="https://github.com/Redm00use/NixOS-Meowrch/issues">
 		<img src="https://img.shields.io/github/issues/Redm00use/NixOS-Meowrch?color=ffb29b&labelColor=1C2325&style=for-the-badge">
 	</a>
@@ -9,6 +10,16 @@
 	</a>
 	<a href="./LICENSE">
 		<img src="https://img.shields.io/github/license/Redm00use/NixOS-Meowrch?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
+=======
+	<a href="https://github.com/Redm00us/meowrch-nixos/issues">
+		<img src="https://img.shields.io/github/issues/Redm00use/meowrch-nixos?color=ffb29b&labelColor=1C2325&style=for-the-badge">
+	</a>
+	<a href="https://github.com/Redm00us/meowrch-nixos/stargazers">
+		<img src="https://img.shields.io/github/stars/Redm00use/meowrch-nixos?color=fab387&labelColor=1C2325&style=for-the-badge">
+	</a>
+	<a href="./LICENSE">
+		<img src="https://img.shields.io/github/license/Redm00use/meowrch-nixos?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
+>>>>>>> 44ff34d840889391f08f03ce3231e3ea321583c8
 	</a>
 	<br>
 	<br>
@@ -230,7 +241,11 @@ sudo reboot
 ```
 
 <h2>💻 Help & Support</h2>
+<<<<<<< HEAD
 If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00use/NixOS-Meowrch/issues">Issues</a> section.<br><br>
+=======
+If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00use/meowrch-nixos/issues">Issues</a> section.<br><br>
+>>>>>>> 44ff34d840889391f08f03ce3231e3ea321583c8
 You can also check the original <a href="https://github.com/meowrch/meowrch">Meowrch project</a> for additional inspiration and themes.<br><br>
 For quick support and discussions, join our <a href="https://t.me/meowrch">Telegram channel</a> or contact directly on Telegram <a href="https://t.me/Redm00us">@Redm00us</a>.<br><br>
 For NixOS-specific questions, refer to the <a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a> and <a href="https://nix-community.github.io/home-manager/">Home Manager documentation</a>.<br><br>
