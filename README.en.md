@@ -1,14 +1,14 @@
 <div align="center">
 	<img src=".meta/logo.png" width="300px">
 	<h1> Meowrch NixOS ≽ܫ≼</h1>
-	<a href="https://github.com/Redm00us/meowrch-nixos/issues">
-		<img src="https://img.shields.io/github/issues/Redm00us/meowrch-nixos?color=ffb29b&labelColor=1C2325&style=for-the-badge">
+	<a href="https://github.com/Redm00use/NixOS-Meowrch/issues">
+		<img src="https://img.shields.io/github/issues/Redm00use/NixOS-Meowrch?color=ffb29b&labelColor=1C2325&style=for-the-badge">
 	</a>
-	<a href="https://github.com/Redm00us/meowrch-nixos/stargazers">
-		<img src="https://img.shields.io/github/stars/Redm00us/meowrch-nixos?color=fab387&labelColor=1C2325&style=for-the-badge">
+	<a href="https://github.com/Redm00use/NixOS-Meowrch/stargazers">
+		<img src="https://img.shields.io/github/stars/Redm00use/NixOS-Meowrch?color=fab387&labelColor=1C2325&style=for-the-badge">
 	</a>
 	<a href="./LICENSE">
-		<img src="https://img.shields.io/github/license/Redm00us/meowrch-nixos?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
+		<img src="https://img.shields.io/github/license/Redm00use/NixOS-Meowrch?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
 	</a>
 	<br>
 	<br>
@@ -154,8 +154,8 @@
 ### If you already have NixOS installed:
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Redm00us/meowrch-nixos.git
-cd meowrch-nixos
+git clone https://github.com/Redm00use/NixOS-Meowrch.git
+cd NixOS-Meowrch
 ```
 ### 2. Run the smart installer
 ```bash
@@ -230,7 +230,7 @@ sudo reboot
 ```
 
 <h2>💻 Help & Support</h2>
-If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00us/meowrch-nixos/issues">Issues</a> section.<br><br>
+If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00use/NixOS-Meowrch/issues">Issues</a> section.<br><br>
 You can also check the original <a href="https://github.com/meowrch/meowrch">Meowrch project</a> for additional inspiration and themes.<br><br>
 For quick support and discussions, join our <a href="https://t.me/meowrch">Telegram channel</a> or contact directly on Telegram <a href="https://t.me/Redm00us">@Redm00us</a>.<br><br>
 For NixOS-specific questions, refer to the <a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a> and <a href="https://nix-community.github.io/home-manager/">Home Manager documentation</a>.<br><br>
@@ -437,8 +437,8 @@ We welcome contributions! Here's how you can help:
 
 ### Development Setup
 ```bash
-git clone https://github.com/Redm00us/meowrch-nixos.git
-cd meowrch-nixos
+git clone https://github.com/Redm00use/NixOS-Meowrch.git
+cd NixOS-Meowrch
 nix develop
 ```
 
@@ -462,11 +462,11 @@ If you would like to support the original Meowrch project, you can donate to the
 | **Tron**     | `TBTZ5RRMfGQQ8Vpf8i5N8DZhNxSum2rzAs`               |
 
 ## 📊 Star History
-<a href="https://star-history.com/#Redm00us/meowrch-nixos&Date">
+<a href="https://star-history.com/#Redm00use/NixOS-Meowrch&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Redm00us/meowrch-nixos&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Redm00us/meowrch-nixos&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Redm00us/meowrch-nixos&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Redm00use/NixOS-Meowrch&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Redm00use/NixOS-Meowrch&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Redm00use/NixOS-Meowrch&type=Date" />
  </picture>
 </a>
 
