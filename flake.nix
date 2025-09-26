@@ -8,6 +8,54 @@
 {
   description = "Конфигурация NixOS redm00us (NixOS 25.05 + ядро/пакеты unstable)";
 
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Пример параметризации пользователя через flake (для смены имени без скриптов)
+  #
+  # Можно вынести переменные пользователя в let и использовать их в:
+  #  - users.users.${username}
+  #  - Git конфиге (programs.git.config.user)
+  #  - home-manager (через specialArgs)
+  #
+  # Пример (концептуально):
+  #
+  # let
+  #   system = "x86_64-linux";
+  #   username = "meowrch";
+  #   fullName = "Meowrch User";
+  #   userEmail = "user@example.com";
+  # in {
+  #   outputs = { self, nixpkgs, home-manager, ... }:
+  #   {
+  #     nixosConfigurations.${username} = nixpkgs.lib.nixosSystem {
+  #       inherit system;
+  #       specialArgs = {
+  #         inherit username fullName userEmail;
+  #       };
+  #       modules = [
+  #         ./configuration.nix
+  #         ({ pkgs, ... }: {
+  #           users.users.${username} = {
+  #             isNormalUser = true;
+  #             description = fullName;
+  #             extraGroups = [ "wheel" "networkmanager" ];
+  #           };
+  #           programs.git = {
+  #             enable = true;
+  #             config.user = {
+  #               name = fullName;
+  #               email = userEmail;
+  #             };
+  #           };
+  #         })
+  #       ];
+  #     };
+  #   };
+  # }
+  #
+  # В твоём текущем flake можно адаптировать: добавить let-биндинг вверху
+  # и заменить жёстко прошитое имя пользователя там, где нужно.
+  # ─────────────────────────────────────────────────────────────────────────────
+
   # ╔════════════════════════════════════════════════════════════════════════╗
   # ║                              INPUTS                                  ║
   # ╚════════════════════════════════════════════════════════════════════════╝

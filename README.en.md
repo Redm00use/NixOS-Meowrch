@@ -152,7 +152,7 @@
 - **System will ask** for your name, email, and other details  
 - **Everything configures automatically** - Git, aliases, file paths
 - **Easy to share** configuration with other people
-- **One command** to change user: `./change-user.sh`
+- **User change is now flake-based**: set username / fullName / userEmail in `flake.nix` (the `change-user.sh` script was removed)
 
 <!-- INSTALLATION -->
 ### 🎯 New! Universal Installer
@@ -221,11 +221,10 @@ chmod +x install.sh
 If you already installed the system but want to change username:
 
 ```bash
-# Interactive mode (with questions)
-./change-user.sh
-
-# Quick command mode
-./change-user.sh -u newname -n "Your Name" -e "email@example.com"
+# New flake-based user change (script removed)
+# 1. Edit flake.nix (variables like: username / fullName / userEmail)
+# 2. Apply:
+sudo nixos-rebuild switch --flake .#NEW_USERNAME
 ```
 
 ### 🤓 For Advanced Users
