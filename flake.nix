@@ -210,5 +210,26 @@
     #   inherit meowrch-scripts meowrch-themes;
     #   default = meowrch-scripts;
     # };
+
+    # ---- Formatter (nix fmt) ----
+    formatter.${system} = pkgs.alejandra;
+
+    # ---- Development shell ----
+    devShells.${system}.default = pkgs.mkShell {
+      packages = with pkgs; [
+        git
+        nixd
+        nil
+        alejandra
+      ];
+      shellHook = ''
+        echo "🐱 Meowrch NixOS dev shell loaded."
+        echo "Useful commands:"
+        echo "  nix fmt            # format Nix sources"
+        echo "  nixos-rebuild switch --flake .#meowrch"
+        echo "  home-manager switch --flake .#meowrch"
+      '';
+    };
+
   };
 }

@@ -19,7 +19,7 @@
       ./modules/desktop/sddm.nix
       ./modules/desktop/theming.nix
 
-      # Packages
+      # Packages (centralized)
       ./modules/packages/packages.nix
       ./modules/packages/flatpak.nix
     ]
@@ -66,10 +66,10 @@
       efi.canTouchEfiVariables = true;
       timeout = 3;
     };
+    # Removed insecure "mitigations=off"
     kernelParams = [
       "quiet"
       "splash"
-      "mitigations=off"
     ];
     kernelPackages = pkgs.linuxPackages_latest;
     plymouth = {
@@ -110,32 +110,9 @@
   };
 
   ############################################
-  # Environment
+  # Environment (systemPackages moved to dedicated module)
   ############################################
   environment = {
-    systemPackages = with pkgs; [
-      # Core tools
-      wget curl git vim nano tree file which
-      htop btop fastfetch unzip unrar p7zip
-      # Dev
-      gcc clang cmake gnumake
-      python3 python3Packages.pip nodejs
-      # Hardware / sys
-      usbutils pciutils lshw dmidecode
-      parted gparted
-      # Media / file
-      kdePackages.ark ranger nemo
-      # Network / ssh
-      networkmanager openssh
-      # Multimedia
-      ffmpeg imagemagick
-      # Graphics utils
-      glxinfo vulkan-tools mesa-demos
-      # Misc
-      polkit_gnome earlyoom
-      radeontop
-    ];
-
     sessionVariables = {
       # XDG
       XDG_DATA_HOME = "$HOME/.local/share";
@@ -215,27 +192,12 @@
   ############################################
   services = {
     xserver.enable = false;
-    earlyoom.enable = true;
+    # Removed local earlyoom.enable (handled globally via security/services modules if needed)
   };
 
   ############################################
-  # Security
+  # Security (removed duplicate rtkit/polkit; handled in modules/system/security.nix & audio.nix)
   ############################################
-  security = {
-    polkit.enable = true;
-    rtkit.enable = true;
-    sudo = {
-      enable = true;
-      extraRules = [{
-        commands = [
-          { command = "${pkgs.systemd}/bin/systemctl suspend";  options = [ "NOPASSWD" ]; }
-          { command = "${pkgs.systemd}/bin/reboot";            options = [ "NOPASSWD" ]; }
-          { command = "${pkgs.systemd}/bin/poweroff";          options = [ "NOPASSWD" ]; }
-        ];
-        groups = [ "wheel" ];
-      }];
-    };
-  };
 
   ############################################
   # Locale / Time

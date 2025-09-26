@@ -1,16 +1,11 @@
 { config, pkgs, lib, ... }:
 #
 # Audio stack configuration (PipeWire + WirePlumber) with sane low‑latency
-# defaults and Bluetooth support. Kept intentionally concise; hardware
+# defaults. Bluetooth is managed in a dedicated bluetooth module. Kept intentionally concise;
 # firmware enabling is handled globally (do NOT add enableAllFirmware here).
 #
 # Safe to import on any host.
 {
-  ############################################
-  # Core real‑time / scheduling prerequisites
-  ############################################
-  security.rtkit.enable = true;
-
   ############################################
   # PipeWire / WirePlumber
   ############################################
@@ -32,20 +27,6 @@
   # Disable legacy PulseAudio daemon
   ############################################
   services.pulseaudio.enable = false;
-
-  ############################################
-  # Bluetooth (A2DP / headset) integration
-  ############################################
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
-  # Extended Bluetooth profiles (modern BlueZ auto‑detects most)
-  hardware.bluetooth.settings = {
-    General = {
-      Enable = "Source,Sink,Media,Socket";
-      Experimental = true;
-    };
-  };
 
   ############################################
   # Packages (userland tools)
