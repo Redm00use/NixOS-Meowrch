@@ -1,0 +1,82 @@
+# Nix build results
+result
+result-*
+
+# Backup files
+*.backup
+backup-*/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# System files
+Thumbs.db
+.directory
+
+# Nix garbage collection
+.nix-gc-roots
+
+# Hardware configuration (may contain sensitive info)
+# Uncomment if you don't want to share your hardware config
+hardware-configuration.nix
+
+# Logs
+*.log
+
+# Cache directories
+.cache/
+.local/
+
+# User-specific files that shouldn't be in version control
+dotfiles/wallpapers/personal/
+dotfiles/themes/personal/
+
+# SSH keys and certificates
+*.key
+*.pem
+*.crt
+*.p12
+
+# Personal scripts that might contain sensitive data
+scripts/personal/
+
+# Age/SOPS encrypted secrets
+secrets/
+*.age
+
+# Direnv
+.envrc
+.direnv/
+
+# Cachix
+cachix.dhall
+
+# Development environment
+shell.nix
+.devenv/
+devenv.nix
+devenv.local.nix
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
+
+# Python cache (if using Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node modules (if using Node.js tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
