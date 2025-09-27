@@ -153,10 +153,10 @@
 
 ### 🎮 What this means for you?
 - **Simply run** `./install.sh` and follow the prompts
-- **System will ask** for your name, email, and other details  
-- **Everything configures automatically** - Git, aliases, file paths
+- **System will ask** for your name and minimal required details  
+- **Everything configures automatically** — aliases and file paths
 - **Easy to share** configuration with other people
-- **User change is now flake-based**: set username / fullName / userEmail in `flake.nix` (the `change-user.sh` script was removed)
+- **User change is now flake-based**: set username / fullName in `flake.nix` (the `change-user.sh` script was removed)
 
 <!-- INSTALLATION -->
 ### 🎯 New! Universal Installer
@@ -204,7 +204,6 @@ chmod +x install.sh
 
 2. **⚙️ Configure User Only**
    - Change username if needed
-   - Update email and other details
 
 3. **🔧 Generate Hardware Config**
    - Detect your disks and devices
@@ -226,7 +225,7 @@ If you already installed the system but want to change username:
 
 ```bash
 # New flake-based user change (script removed)
-# 1. Edit flake.nix (variables like: username / fullName / userEmail)
+# 1. Edit flake.nix (variables like: username / fullName)
 # 2. Apply:
 sudo nixos-rebuild switch --flake .#NEW_USERNAME
 ```

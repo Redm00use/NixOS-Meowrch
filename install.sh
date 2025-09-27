@@ -79,7 +79,8 @@ set -euo pipefail
 ###############################################################################
 DEFAULT_PRIMARY_USER="meowrch"
 DEFAULT_FULL_NAME="Meowrch User"
-DEFAULT_EMAIL="user@example.com"
+# Email handling removed (no default email needed)
+DEFAULT_EMAIL=""
 DEFAULT_GIT_NAME=""                # Fallback: FULL NAME
 DEFAULT_STATE_VERSION="25.05"
 DEFAULT_FLAKE_HOST="meowrch"
@@ -287,7 +288,7 @@ parse_user_spec() {
 ###############################################################################
 normalize_inputs() {
   if ((${#USERS[@]} == 0)); then
-    # Fallback default single user if none provided
+    # Fallback default single user if none provided (will be overridden if interactive prompt ran)
     USERS+=("$DEFAULT_PRIMARY_USER")
     FULL_NAMES+=("$DEFAULT_FULL_NAME")
     EMAILS+=("$DEFAULT_EMAIL")
@@ -304,6 +305,46 @@ normalize_inputs() {
       GIT_NAMES[0]="$LEGACY_GIT_NAME"
     fi
   fi
+}
+
+# Interactive prompt for primary user if none was provided via args.
+interactive_primary_user_prompt() {
+  # Only if no users specified yet
+  if ((${#USERS[@]} != 0)); then
+    return
+  fi
+  # Require an interactive TTY
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    return
+  fi
+  echo
+  echo "No --user / --user-spec provided. Enter primary user information."
+  local u fn em
+  while true; do
+    read -rp "Primary username (e.g. alice): " u
+    if [[ -z "$u" ]]; then
+      echo "Username cannot be empty."
+      continue
+    fi
+    if [[ ! "$u" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
+      echo "Invalid username. Use: lowercase letters, digits, underscore, dash; start with letter/underscore."
+      continue
+    fi
+    break
+  done
+  read -rp "Full name [${DEFAULT_FULL_NAME}]: " fn
+  fn=${fn:-$DEFAULT_FULL_NAME}
+  # Email prompt removed (user will configure Git/email manually later)
+  em=""
+  # Email intentionally left blank
+
+  USERS=("$u")
+  FULL_NAMES=("$fn")
+  # EMAILS array deprecated; keep slot with empty string for structural compatibility
+  EMAILS=("")
+  GIT_NAMES=("$fn")
+
+  echo "Using primary user: $u ($fn, $em)"
 }
 
 ###############################################################################
@@ -444,6 +485,7 @@ patch_primary_user_config() {
   local config_file="$SCRIPT_DIR/configuration.nix"
   local home_file="$SCRIPT_DIR/home/home.nix"
   local net_file="$SCRIPT_DIR/modules/system/networking.nix"
+  local flake_file="$SCRIPT_DIR/flake.nix"
 
   info "Patching primary user: $primary_user"
 
@@ -461,7 +503,7 @@ patch_primary_user_config() {
       "home.stateVersion = \"${STATE_VERSION}\""
     # Git identity
     safe_sed "$home_file" 'userName = "[^"]+"' "userName = \"${primary_git}\""
-    safe_sed "$home_file" 'userEmail = "[^"]+"' "userEmail = \"${primary_email}\""
+    # Email patch removed: userEmail left as-is for manual configuration
     # Path alias normalization
     safe_sed "$home_file" '/home/meowrch/NixOS-25\.05' "/home/${primary_user}/meowrch-nixos"
     safe_sed "$home_file" '/home/meowrch/config-backups' "/home/${primary_user}/config-backups"
@@ -470,6 +512,16 @@ patch_primary_user_config() {
 
   if [[ -n "$HOST_NAME" && -f "$net_file" ]]; then
     safe_sed "$net_file" 'hostName = "[^"]+"' "hostName = \"${HOST_NAME}\""
+  fi
+
+  # Patch flake attribute + references if desired
+  if [[ -f "$flake_file" ]]; then
+    # Rename nixosConfigurations."meowrch" to primary user if different
+    if [[ "$primary_user" != "meowrch" ]]; then
+      safe_sed "$flake_file" 'nixosConfigurations\."meowrch"' "nixosConfigurations.\"${primary_user}\""
+      # Update explicit flake references #meowrch -> #<primary_user> (only if not intentionally overridden)
+      safe_sed "$flake_file" '#meowrch' "#${primary_user}"
+    fi
   fi
 }
 
@@ -731,13 +783,14 @@ print_summary() {
       echo "    {"
       echo "      \"username\": \"$(json_escape "${USERS[$i]}")\","
       echo "      \"full_name\": \"$(json_escape "${FULL_NAMES[$i]}")\","
-      echo "      \"email\": \"$(json_escape "${EMAILS[$i]}")\","
+      # "email" field removed
       echo "      \"git_name\": \"$(json_escape "${GIT_NAMES[$i]}")\""
       echo "    }"
     done
     echo "  ],"
     echo "  \"flake_host\": \"$(json_escape "$FLAKE_HOST")\","
     echo "  \"hostname\": \"$(json_escape "${HOST_NAME:-}" )\","
+    # Email removed from JSON summary
     echo "  \"state_version\": \"$(json_escape "$STATE_VERSION")\","
     echo "  \"dry_run\": $($FLAG_DRY_RUN && echo true || echo false),"
     echo "  \"elapsed_seconds\": $elapsed,"
@@ -802,6 +855,7 @@ print_summary() {
 ###############################################################################
 main() {
   parse_args "$@"
+  interactive_primary_user_prompt
   normalize_inputs
   setup_logging
   assert_not_root

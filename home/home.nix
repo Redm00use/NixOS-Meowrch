@@ -425,33 +425,7 @@
     NIXPKGS_ALLOW_UNFREE = "1";
   };
 
-  # ╔════════════════════════════════════════════════════════════════════════════╗
-  # ║                                   Git                                    ║
-  # ╚════════════════════════════════════════════════════════════════════════════╝
-  programs.git = {
-    enable = true;
-    userName = "Meowrch User";
-    userEmail = "user@example.com";
-
-    extraConfig = {
-      init.defaultBranch = "main";
-      pull.rebase = false;
-      push.default = "simple";
-      core.autocrlf = "input";
-
-      # Git aliases
-      alias = {
-        st = "status";
-        co = "checkout";
-        br = "branch";
-        ci = "commit";
-        unstage = "reset HEAD --";
-        last = "log -1 HEAD";
-        visual = "!gitk";
-        lg = "log --oneline --graph --decorate --all";
-      };
-    };
-  };
+  # (Git configuration block intentionally removed; git package can still be installed via system packages)
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                                Spicetify                                 ║

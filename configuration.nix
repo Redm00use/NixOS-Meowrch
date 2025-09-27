@@ -102,7 +102,7 @@
         "uucp"
         "bluetooth"
         "render"
-        "docker"
+        # "docker"  # removed: docker disabled
         "libvirtd"
       ];
       shell = pkgs.fish;
@@ -228,8 +228,8 @@
   # Virtualization / Memory
   ############################################
   virtualisation = {
-    docker.enable = true;
-    waydroid.enable = true;
+    # docker.enable = true;    # disabled
+    # waydroid.enable = true;  # disabled
   };
 
   zramSwap = {
