@@ -26,11 +26,21 @@
 </div>
 
 ***
-> [!WARNING]  
-> ⚠️ This configuration is currently tested and optimized ONLY for AMD GPUs (RADV/AMDVLK).  
-> NVIDIA support (proprietary driver & possible nouveau path) is being worked on.  
-> Expect issues on NVIDIA (Hyprland crashes, poor performance, PipeWire glitches).  
-> Track repository updates for an upcoming NVIDIA profile.
+<div align="center">
+  <div style="max-width:880px;margin:0 auto;">
+    <div style="background:#2a0d10;border:2px solid #ff4d4f;border-radius:14px;padding:16px 22px;text-align:left;font-family:Segoe UI,system-ui,sans-serif;">
+      <div style="font-weight:700;font-size:16px;letter-spacing:.5px;color:#ff6b6b;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:20px;">🚨</span> IMPORTANT: AMD GPU ONLY (CURRENT STAGE)
+      </div>
+      <div style="margin-top:10px;line-height:1.45;font-size:14.5px;color:#ffd9d9;">
+        This project is currently <strong>optimized & tested for AMD GPUs (RADV / AMDVLK)</strong> only.<br>
+        <span style="color:#ff9090;">NVIDIA support (proprietary + possible nouveau path) is under active development.</span><br><br>
+        Potential NVIDIA issues: Hyprland instability, degraded performance, PipeWire / rendering glitches.<br>
+        <em>Follow the repository for the upcoming dedicated NVIDIA profile.</em>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- INFORMATION -->
 <table align="right">
