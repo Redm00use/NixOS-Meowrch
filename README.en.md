@@ -166,6 +166,17 @@
 - 🎛️ **Choose what to install** - everything at once or step by step
 - 🛡️ **Safe** - creates backups
 
+**Installer summary (concise):**  
+1. Prompts for username if not provided.  
+2. Patches `configuration.nix` and `home/home.nix`.  
+3. Optionally generates `hardware-configuration.nix`.  
+4. Creates backup + git commit.  
+5. Runs `nixos-rebuild` and Home Manager (unless skipped).  
+
+Quick start: `chmod +x install.sh && ./install.sh`  
+Useful flags: `--dry-run`, `--no-build`, `--no-home-manager`, `--regenerate-hardware`  
+Former separate INSTALLER_README files were removed; this summary replaces them.
+
 ### If you already have NixOS installed:
 ### 1. Clone the repository
 ```bash
