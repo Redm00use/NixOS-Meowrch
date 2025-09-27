@@ -1,7 +1,6 @@
 <div align="center">
 	<img src=".meta/logo.png" width="300px">
 	<h1> Meowrch NixOS ≽ܫ≼</h1>
-<<<<<<< HEAD
 	<a href="https://github.com/Redm00use/NixOS-Meowrch/issues">
 		<img src="https://img.shields.io/github/issues/Redm00use/NixOS-Meowrch?color=ffb29b&labelColor=1C2325&style=for-the-badge">
 	</a>
@@ -10,16 +9,6 @@
 	</a>
 	<a href="./LICENSE">
 		<img src="https://img.shields.io/github/license/Redm00use/NixOS-Meowrch?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
-=======
-	<a href="https://github.com/Redm00us/meowrch-nixos/issues">
-		<img src="https://img.shields.io/github/issues/Redm00use/meowrch-nixos?color=ffb29b&labelColor=1C2325&style=for-the-badge">
-	</a>
-	<a href="https://github.com/Redm00us/meowrch-nixos/stargazers">
-		<img src="https://img.shields.io/github/stars/Redm00use/meowrch-nixos?color=fab387&labelColor=1C2325&style=for-the-badge">
-	</a>
-	<a href="./LICENSE">
-		<img src="https://img.shields.io/github/license/Redm00use/meowrch-nixos?color=FCA2AA&labelColor=1C2325&style=for-the-badge">
->>>>>>> 44ff34d840889391f08f03ce3231e3ea321583c8
 	</a>
 	<br>
 	<br>
@@ -37,6 +26,11 @@
 </div>
 
 ***
+> [!WARNING]  
+> ⚠️ This configuration is currently tested and optimized ONLY for AMD GPUs (RADV/AMDVLK).  
+> NVIDIA support (proprietary driver & possible nouveau path) is being worked on.  
+> Expect issues on NVIDIA (Hyprland crashes, poor performance, PipeWire glitches).  
+> Track repository updates for an upcoming NVIDIA profile.
 
 <!-- INFORMATION -->
 <table align="right">
