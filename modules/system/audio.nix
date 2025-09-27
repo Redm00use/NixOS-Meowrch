@@ -29,6 +29,20 @@
   services.pulseaudio.enable = false;
 
   ############################################
+  # Bluetooth (A2DP / headset) integration
+  ############################################
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
+  # Extended Bluetooth profiles (modern BlueZ auto‑detects most)
+  hardware.bluetooth.settings = {
+    General = {
+      Enable = "Source,Sink,Media,Socket";
+      Experimental = true;
+    };
+  };
+
+  ############################################
   # Packages (userland tools)
   ############################################
   environment.systemPackages = with pkgs; [

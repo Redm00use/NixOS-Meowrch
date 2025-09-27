@@ -155,63 +155,59 @@
     };
   };
 
-  # (Removed per-module Bluetooth session variables — managed centrally if needed)
-  # environment.sessionVariables cleanup
-  # (line removed 1)
-  # (line removed 2)
-  # (line removed 3)
-  # (line removed 4)
+  # Environment variables for Bluetooth
+  environment.sessionVariables = {
+    # Bluetooth audio quality
+    BLUETOOTH_A2DP_CODEC = "aptx";
+    BLUETOOTH_A2DP_BITPOOL = "53";
+  };
 
-  # (Removed overridden bluetooth config files — relying on upstream sane defaults)
-  # Previously forced audio.conf, input.conf, network.conf
-  # If custom behavior is required later, reintroduce minimally.
-  # (padding to preserve line count)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
-  # (pad)
+  # Bluetooth configuration files
+  environment.etc = {
+    "bluetooth/audio.conf" = lib.mkForce {
+      text = ''
+        [General]
+        Enable=Source,Sink,Media,Socket
+        Disable=Headset
 
-  # (Removed per-module bluetooth kernelParams; manage globally if truly required)
-  # boot.kernelParams bluetooth.disable_ertm / disable_esco not applied here anymore
-  # (line removed 1)
-  # (line removed 2)
-  # (line removed 3)
+        [A2DP]
+        SBCFreq=44100,48000
+        SBCXQ=true
+
+        [AVRCP]
+        Class=0x000100
+        Title=%s
+        Artist=%s
+        Album=%s
+        Genre=%s
+        NumberOfTracks=%s
+        TrackNumber=%s
+        TrackDuration=%s
+      '';
+    };
+
+    "bluetooth/input.conf" = lib.mkForce {
+      text = ''
+        [General]
+        UserspaceHID=true
+        ClassicBondedOnly=false
+        LEAutoConnect=true
+      '';
+    };
+
+    "bluetooth/network.conf" = lib.mkForce {
+      text = ''
+        [General]
+        DisableSecurity=false
+      '';
+    };
+  };
+
+  # Bluetooth mesh support
+  boot.kernelParams = [
+    "bluetooth.disable_ertm=1"
+    "bluetooth.disable_esco=1"
+  ];
 
   # Auto-start Bluetooth on boot
   systemd.user.services.bluetooth-autostart = {

@@ -19,10 +19,45 @@
 
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
-      inter
+      nerd-fonts.fira-code
+      nerd-fonts.hack
+      nerd-fonts.iosevka
+      nerd-fonts.ubuntu-mono
+      nerd-fonts.dejavu-sans-mono
+      nerd-fonts.sauce-code-pro
+      nerd-fonts.meslo-lg
+
+      # System fonts
       noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
       noto-fonts-emoji
+      noto-fonts-extra
+
+      # Programming fonts
+      jetbrains-mono
+      fira-code
+      fira-code-symbols
+      source-code-pro
+      ubuntu_font_family
       dejavu_fonts
+
+      # Interface fonts
+      inter
+      ubuntu_font_family
+      noto-fonts
+      open-sans
+      roboto
+      roboto-mono
+
+      # Microsoft fonts (if needed)
+      corefonts
+      vistafonts
+
+      # Liberation fonts (Microsoft alternatives)
+      liberation_ttf
+
+      # Additional fonts
       font-awesome
       papirus-icon-theme
     ];
