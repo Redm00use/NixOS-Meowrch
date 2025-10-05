@@ -4,7 +4,7 @@
   programs.waybar = {
     enable = true;
     package = pkgs.waybar;
-    
+
     settings = {
       mainBar = {
         layer = "top";
@@ -314,18 +314,17 @@
       };
     };
 
-    style = ''
-      /* Waybar Meowrch Theme */
-      @import url('file:///home/meowrch/.config/waybar/style.css');
-    '';
+    style = builtins.readFile (pkgs.writeText "waybar-style.css" ''
+      /* Waybar Meowrch Theme - Catppuccin Mocha */
+    '');
   };
 
   # Create waybar style file
   home.file.".config/waybar/style.css".text = ''
     /*
-    ┏┓ ┏┓ ┏┓ ┏┓ ┏┓ • ┏┓ ┏┓ ┏┓ ┏┓ 
+    ┏┓ ┏┓ ┏┓ ┏┓ ┏┓ • ┏┓ ┏┓ ┏┓ ┏┓
     ┣┫ ┣┫ ┣┫ ┣┫ ┣┫ • ┣┫ ┣┫ ┣┫ ┣┫  - Meowrch
-    ┗┛ ┗┛ ┗┛ ┗┛ ┗┛ • ┗┛ ┗┛ ┗┛ ┗┛ 
+    ┗┛ ┗┛ ┗┛ ┗┛ ┗┛ • ┗┛ ┗┛ ┗┛ ┗┛
     */
 
     @define-color highlight-color rgba(181, 206, 168, 1);

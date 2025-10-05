@@ -526,39 +526,39 @@ patch_primary_user_config() {
 }
 
 ###############################################################################
-# Git
+# Git (DISABLED - Git functionality removed from installer)
 ###############################################################################
-ensure_git_repo() {
-  if [[ -d "$SCRIPT_DIR/.git" ]]; then
-    info "Git repository detected."
-    return
-  fi
-  if $FLAG_DRY_RUN; then
-    info "(dry-run) Would init git repo"
-    return
-  fi
-  ( cd "$SCRIPT_DIR" && git init && git add . && git commit -m "Initial commit (installer)" )
-  success "Initialized git repository."
-}
+# ensure_git_repo() {
+#   if [[ -d "$SCRIPT_DIR/.git" ]]; then
+#     info "Git repository detected."
+#     return
+#   fi
+#   if $FLAG_DRY_RUN; then
+#     info "(dry-run) Would init git repo"
+#     return
+#   fi
+#   ( cd "$SCRIPT_DIR" && git init && git add . && git commit -m "Initial commit (installer)" )
+#   success "Initialized git repository."
+# }
 
-commit_changes() {
-  if $FLAG_DRY_RUN; then
-    info "(dry-run) Would commit changes"
-    return
-  fi
-  if [[ -d "$SCRIPT_DIR/.git" ]]; then
-    (
-      cd "$SCRIPT_DIR"
-      if ! git diff --quiet || ! git diff --cached --quiet; then
-        git add .
-        git commit -m "Installer patch for primary user ${USERS[$PRIMARY_INDEX]}"
-        success "Committed configuration changes."
-      else
-        info "No configuration changes to commit."
-      fi
-    )
-  fi
-}
+# commit_changes() {
+#   if $FLAG_DRY_RUN; then
+#     info "(dry-run) Would commit changes"
+#     return
+#   fi
+#   if [[ -d "$SCRIPT_DIR/.git" ]]; then
+#     (
+#       cd "$SCRIPT_DIR"
+#       if ! git diff --quiet || ! git diff --cached --quiet; then
+#         git add .
+#         git commit -m "Installer patch for primary user ${USERS[$PRIMARY_INDEX]}"
+#         success "Committed configuration changes."
+#       else
+#         info "No configuration changes to commit."
+#       fi
+#     )
+#   fi
+# }
 
 ###############################################################################
 # User Provisioning
@@ -870,8 +870,8 @@ main() {
   perform_backup
   generate_hardware_config
   patch_primary_user_config
-  ensure_git_repo
-  commit_changes
+  # ensure_git_repo  # DISABLED: Git functionality removed
+  # commit_changes   # DISABLED: Git functionality removed
   provision_all_users
   deploy_repo_to_primary_home
   run_validation

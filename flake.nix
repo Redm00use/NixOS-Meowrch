@@ -72,7 +72,7 @@
     meowrch-themes  = pkgs.callPackage ./packages/meowrch-themes.nix { };
 
     overlay-portal-gbm-fix = import ./overlays/portal-gbm-fix.nix;
-    overlay-portal-unstable = import ./overlays/portal-unstable.nix;
+    # overlay-portal-unstable = import ./overlays/portal-unstable.nix; # REMOVED: causes issues
   in
   {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
@@ -85,7 +85,7 @@
           nixpkgs.overlays = [
             overlay-unstable
             overlay-portal-gbm-fix
-            overlay-portal-unstable
+            # overlay-portal-unstable  # REMOVED: causes issues
           ];
         })
 

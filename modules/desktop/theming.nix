@@ -167,7 +167,7 @@
     XCURSOR_SIZE = "24";
 
     # Qt темы (use mkForce to override system defaults)
-    QT_QPA_PLATFORMTHEME = lib.mkForce "qt6ct";
+    QT_QPA_PLATFORMTHEME = lib.mkForce "qt5ct";
     QT_STYLE_OVERRIDE = lib.mkForce "Adwaita-Dark";
 
     # Catppuccin

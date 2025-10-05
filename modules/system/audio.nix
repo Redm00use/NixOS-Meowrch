@@ -30,17 +30,9 @@
 
   ############################################
   # Bluetooth (A2DP / headset) integration
+  # NOTE: Full Bluetooth configuration is in bluetooth.nix
+  # We only need to ensure Bluetooth audio works with PipeWire
   ############################################
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
-  # Extended Bluetooth profiles (modern BlueZ auto‑detects most)
-  hardware.bluetooth.settings = {
-    General = {
-      Enable = "Source,Sink,Media,Socket";
-      Experimental = true;
-    };
-  };
 
   ############################################
   # Packages (userland tools)

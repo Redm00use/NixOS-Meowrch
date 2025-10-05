@@ -100,7 +100,6 @@
         winetricks                 # Скрипты для настройки Wine
         # --- Графические библиотеки и драйверы ---
         mesa                       # OpenGL реализация (Mesa)
-        mesa.drivers               # Драйверы Mesa (GPU)
         libGL                      # OpenGL библиотеки
         libva                      # Аппаратное ускорение видео VA-API
         libvdpau                   # Аппаратное ускорение видео VDPAU
