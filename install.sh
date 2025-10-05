@@ -107,6 +107,7 @@ FLAG_IMPURE=false
 FLAG_GENERATE_INSTALLER_README=false
 FLAG_QUIET=false
 FLAG_LOG_STDERR_SEPARATE=false
+FLAG_FLAKE_HOST_SET=false
 
 # Core config
 STATE_VERSION="$DEFAULT_STATE_VERSION"
@@ -233,7 +234,7 @@ parse_args() {
       --generate-installer-readme) FLAG_GENERATE_INSTALLER_README=true; shift ;;
       --log-stderr-separate) FLAG_LOG_STDERR_SEPARATE=true; shift ;;
       --state-version) STATE_VERSION="$2"; shift 2 ;;
-      --flake-host) FLAKE_HOST="$2"; shift 2 ;;
+      --flake-host) FLAKE_HOST="$2"; FLAG_FLAKE_HOST_SET=true; shift 2 ;;
       --hostname) HOST_NAME="$2"; shift 2 ;;
       --log-file) LOG_FILE="$2"; shift 2 ;;
       --log-dir) LOG_DIR="$2"; shift 2 ;;
@@ -645,6 +646,78 @@ run_validation() {
 }
 
 ###############################################################################
+# Flake host auto-detection (nixosConfigurations attrs)
+###############################################################################
+detect_nixos_config_attrs() {
+  # Outputs a newline-separated list of nixosConfigurations attribute names
+  local out
+  if out=$(nix eval --json "$SCRIPT_DIR#nixosConfigurations" --apply builtins.attrNames 2>/dev/null); then
+    echo "$out" | tr -d '[]" ' | tr ',' '\n' | sed '/^$/d'
+    return 0
+  fi
+  # Fallback: try to parse nix flake show (best-effort, may be noisy)
+  if command -v nix >/dev/null 2>&1; then
+    nix flake show "$SCRIPT_DIR" 2>/dev/null | awk '
+      /^├──|^└──/ {
+        gsub(/[├└]──/,"");
+        sub(/^ +/,"",$0);
+        if ($0 ~ /^nixosConfigurations\./) {
+          split($0, a, /\./);
+          if (length(a) >= 2) print a[2];
+        }
+      }' | sed '/^$/d'
+  fi
+}
+
+choose_flake_host_if_unset() {
+  # If user explicitly provided --flake-host, do nothing
+  $FLAG_FLAKE_HOST_SET && return
+
+  local primary="${USERS[$PRIMARY_INDEX]}"
+  local candidates=()
+  while IFS= read -r a; do
+    [[ -n "$a" ]] && candidates+=("$a")
+  done < <(detect_nixos_config_attrs)
+
+  if ((${#candidates[@]} == 0)); then
+    info "Could not detect flake hosts; keeping FLAKE_HOST=$FLAKE_HOST"
+    return
+  fi
+
+  local chosen=""
+  # Prefer primary user attr if present
+  for a in "${candidates[@]}"; do
+    if [[ "$a" == "$primary" ]]; then
+      chosen="$a"
+      break
+    fi
+  done
+
+  # Otherwise keep current FLAKE_HOST if it exists among candidates
+  if [[ -z "$chosen" ]]; then
+    for a in "${candidates[@]}"; do
+      if [[ "$a" == "$FLAKE_HOST" ]]; then
+        chosen="$a"
+        break
+      fi
+    done
+  fi
+
+  # If still not chosen and only one candidate exists, use it
+  if [[ -z "$chosen" && ${#candidates[@]} -eq 1 ]]; then
+    chosen="${candidates[0]}"
+  fi
+
+  if [[ -n "$chosen" && "$chosen" != "$FLAKE_HOST" ]]; then
+    info "Auto-selecting flake host attr: $chosen (was: $FLAKE_HOST)"
+    FLAKE_HOST="$chosen"
+    add_summary "auto_flake_host=$FLAKE_HOST"
+  else
+    info "Using flake host attr: $FLAKE_HOST"
+  fi
+}
+
+###############################################################################
 # Build / Switch
 ###############################################################################
 build_system() {
@@ -883,6 +956,7 @@ main() {
   perform_backup
   generate_hardware_config
   patch_primary_user_config
+  choose_flake_host_if_unset
   # ensure_git_repo  # DISABLED: Git functionality removed
   # commit_changes   # DISABLED: Git functionality removed
   provision_all_users
