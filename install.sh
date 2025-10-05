@@ -577,7 +577,7 @@ ensure_user_exists() {
   # Use fish if present, fallback otherwise
   local shell="/run/current-system/sw/bin/fish"
   [[ -x "$shell" ]] || shell="/bin/bash"
-  sudo useradd -m -c "$full" -G wheel,networkmanager,audio,video,storage,optical,bluetooth -s "$shell" "$user" || {
+  sudo useradd -m -U -c "$full" -G wheel,networkmanager,audio,video,storage,optical,bluetooth -s "$shell" "$user" || {
     warn "Useradd failed for $user"
   }
   add_summary "created_user=$user"
@@ -601,7 +601,20 @@ deploy_repo_to_primary_home() {
   fi
   sudo mkdir -p "$dest"
   sudo rsync -a --delete --exclude ".git" "$SCRIPT_DIR/" "$dest/"
-  sudo chown -R "${primary}:${primary}" "$dest"
+
+  # Choose a safe group for chown: prefer a same-named group, else user's primary group, else user-only
+  local grp=""
+  if getent group "$primary" >/dev/null 2>&1; then
+    grp="$primary"
+  else
+    grp="$(id -gn "$primary" 2>/dev/null || true)"
+  fi
+  if [[ -n "$grp" ]]; then
+    sudo chown -R "${primary}:${grp}" "$dest"
+  else
+    sudo chown -R "$primary" "$dest"
+  fi
+
   success "Configuration deployed to $dest"
   add_summary "primary_repo=$dest"
 }
