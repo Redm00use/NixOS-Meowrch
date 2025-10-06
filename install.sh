@@ -733,14 +733,32 @@ run_validation() {
 ###############################################################################
 detect_nixos_config_attrs() {
   # Outputs a newline-separated list of nixosConfigurations attribute names
+  # Always use local file parsing first (most reliable, no dependencies)
+  if [[ -f "$SCRIPT_DIR/flake.nix" ]]; then
+    local result
+    result=$(grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' "$SCRIPT_DIR/flake.nix" 2>/dev/null \
+      | sed 's/nixosConfigurations\.//' \
+      | sort -u)
+    if [[ -n "$result" ]]; then
+      echo "$result"
+      return 0
+    fi
+  fi
+  
+  # Fallback: nix eval (requires working nix daemon)
   local out
   if out=$(nix eval --json "$SCRIPT_DIR#nixosConfigurations" --apply builtins.attrNames 2>/dev/null); then
-    echo "$out" | tr -d '[]" ' | tr ',' '\n' | sed '/^$/d'
-    return 0
+    local parsed
+    parsed=$(echo "$out" | tr -d '[]" ' | tr ',' '\n' | sed '/^$/d')
+    if [[ -n "$parsed" ]]; then
+      echo "$parsed"
+      return 0
+    fi
   fi
-  # Fallback: try to parse nix flake show (best-effort, may be noisy)
-  local flake_show_result=""
+  
+  # Last fallback: nix flake show
   if command -v nix >/dev/null 2>&1; then
+    local flake_show_result
     flake_show_result=$(nix flake show "$SCRIPT_DIR" 2>/dev/null | awk '
       /^├──|^└──/ {
         gsub(/[├└]──/,"");
@@ -755,13 +773,9 @@ detect_nixos_config_attrs() {
       return 0
     fi
   fi
-  # Last-resort: parse flake.nix locally without evaluating the flake
-  if [[ -f "$SCRIPT_DIR/flake.nix" ]]; then
-    grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' "$SCRIPT_DIR/flake.nix" \
-      | sed 's/nixosConfigurations\.//' \
-      | sort -u
-    return 0
-  fi
+  
+  # Nothing found
+  return 1
 }
 
 choose_flake_host_if_unset() {
