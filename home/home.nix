@@ -11,8 +11,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = "meowrch";
-  home.homeDirectory = "/home/meowrch";
+  home.username = lib.mkForce "meowrch";
+  home.homeDirectory = lib.mkForce "/home/meowrch";
   home.stateVersion = "25.05";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
