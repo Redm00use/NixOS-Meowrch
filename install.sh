@@ -111,6 +111,7 @@ FLAG_QUIET=false
 FLAG_LOG_STDERR_SEPARATE=false
 FLAG_FLAKE_HOST_SET=false
 FLAG_PANIC_FULL=false
+FLAG_SKIP_FLAKE_VALIDATE=false
 
 # Core config
 STATE_VERSION="$DEFAULT_STATE_VERSION"
@@ -202,6 +203,7 @@ Behavior Flags:
   --log-stderr-separate         Log stderr to separate file (adds *.err.log)
   --panic-lines <N>             How many log lines to show on error (default: 120)
   --panic-full                  On error, print the entire log (can be long)
+  --skip-flake-validate         Skip preflight flake host validation
   --help                        This help
 
 Examples:
@@ -246,6 +248,7 @@ parse_args() {
       --log-dir) LOG_DIR="$2"; shift 2 ;;
   --panic-lines) PANIC_TAIL_LINES="$2"; shift 2 ;;
   --panic-full) FLAG_PANIC_FULL=true; shift ;;
+  --skip-flake-validate) FLAG_SKIP_FLAKE_VALIDATE=true; shift ;;
       # Legacy single-user flags (for primary only)
       --user) legacy_single_user_flag "$2"; shift 2 ;;
       --full-name) LEGACY_FULL_NAME="$2"; shift 2 ;;
@@ -811,6 +814,7 @@ choose_flake_host_if_unset() {
 }
 
 validate_flake_host_exists() {
+  $FLAG_SKIP_FLAKE_VALIDATE && { info "Skipping flake host validation (--skip-flake-validate)"; return 0; }
   # Confirm that nixosConfigurations.${FLAKE_HOST} exists in this flake
   local exists=0
   if nix eval --raw "$SCRIPT_DIR#nixosConfigurations.${FLAKE_HOST}.config.system.stateVersion" >/dev/null 2>&1; then
@@ -827,9 +831,17 @@ validate_flake_host_exists() {
     [[ -n "$a" ]] && candidates+=("$a")
   done < <(detect_nixos_config_attrs)
 
+  # If current host is present among candidates (e.g., parsed from file), accept it
+  local c
+  for c in "${candidates[@]}"; do
+    if [[ "$c" == "$FLAKE_HOST" ]]; then
+      info "Proceeding with flake host found by file/cli parse: $FLAKE_HOST"
+      return 0
+    fi
+  done
+
   # Prefer default 'meowrch' if present (common case)
   local preferred="meowrch"
-  local c
   for c in "${candidates[@]}"; do
     if [[ "$c" == "$preferred" ]]; then
       FLAKE_HOST="$preferred"
