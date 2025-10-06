@@ -822,23 +822,30 @@ validate_flake_host_exists() {
     return 0
   fi
 
-  warn "Flake host attr '$FLAKE_HOST' not found. Detecting available hosts..."
+  info "Validating flake host: $FLAKE_HOST"
   local candidates=()
   while IFS= read -r a; do
     [[ -n "$a" ]] && candidates+=("$a")
   done < <(detect_nixos_config_attrs)
-  info "Detected flake hosts: ${candidates[*]:-<none>}"
+  
+  if ((${#candidates[@]} == 0)); then
+    warn "Unable to detect flake hosts; proceeding with current host '$FLAKE_HOST'. Build will validate."
+    return 0
+  fi
+  
+  info "Detected flake hosts: ${candidates[*]}"
 
-  # If current host is present among candidates (e.g., parsed from file), accept it
+  # If current host is present among candidates, accept it
   local c
   for c in "${candidates[@]}"; do
     if [[ "$c" == "$FLAKE_HOST" ]]; then
-      info "Proceeding with flake host found by file/cli parse: $FLAKE_HOST"
+      info "Using flake host attr: $FLAKE_HOST"
       return 0
     fi
   done
 
-  # Prefer default 'meowrch' if present (common case)
+  # Current host not found; try preferred fallback
+  warn "Flake host attr '$FLAKE_HOST' not in detected list."
   local preferred="meowrch"
   for c in "${candidates[@]}"; do
     if [[ "$c" == "$preferred" ]]; then
@@ -849,6 +856,7 @@ validate_flake_host_exists() {
     fi
   done
 
+  # Only one candidate? Use it
   if ((${#candidates[@]} == 1)); then
     FLAKE_HOST="${candidates[0]}"
     info "Auto-fallback to detected flake host: $FLAKE_HOST"
@@ -856,11 +864,7 @@ validate_flake_host_exists() {
     return 0
   fi
 
-  if ((${#candidates[@]} == 0)); then
-    warn "No nixosConfigurations attributes detected; proceeding with current host '$FLAKE_HOST'. Build will validate this choice."
-    return 0
-  fi
-
+  # Multiple candidates, none match
   err "Unknown flake host attr '$FLAKE_HOST'"
   echo "Available hosts: ${candidates[*]}"
   echo "Hint: re-run with --flake-host one of: ${candidates[*]}"
