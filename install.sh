@@ -830,6 +830,7 @@ validate_flake_host_exists() {
   while IFS= read -r a; do
     [[ -n "$a" ]] && candidates+=("$a")
   done < <(detect_nixos_config_attrs)
+  info "Detected flake hosts: ${candidates[*]:-<none>}"
 
   # If current host is present among candidates (e.g., parsed from file), accept it
   local c
@@ -858,14 +859,14 @@ validate_flake_host_exists() {
     return 0
   fi
 
-  err "Unknown flake host attr '$FLAKE_HOST'"
-  if ((${#candidates[@]} > 0)); then
-    echo "Available hosts: ${candidates[*]}"
-    echo "Hint: re-run with --flake-host one of: ${candidates[*]}"
-  else
-    echo "No nixosConfigurations attributes detected in flake."
-    echo "Hint: ensure flake.nix defines nixosConfigurations.<name> and try again."
+  if ((${#candidates[@]} == 0)); then
+    warn "No nixosConfigurations attributes detected; proceeding with current host '$FLAKE_HOST'. Build will validate this choice."
+    return 0
   fi
+
+  err "Unknown flake host attr '$FLAKE_HOST'"
+  echo "Available hosts: ${candidates[*]}"
+  echo "Hint: re-run with --flake-host one of: ${candidates[*]}"
   die "Please re-run with --flake-host <one-of-above>." 1
 }
 
