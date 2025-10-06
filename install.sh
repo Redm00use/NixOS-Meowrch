@@ -1137,6 +1137,17 @@ main() {
   check_nixos
 
   headline "Meowrch NixOS Advanced Installer"
+  
+  # Set FLAKE_HOST to lowercase primary user if not explicitly provided
+  if ! $FLAG_FLAKE_HOST_SET; then
+    local primary_lower
+    primary_lower=$(echo "${USERS[$PRIMARY_INDEX]}" | tr '[:upper:]' '[:lower:]')
+    if [[ "$primary_lower" != "meowrch" ]]; then
+      FLAKE_HOST="$primary_lower"
+      info "Using flake host from primary user: $FLAKE_HOST"
+    fi
+  fi
+  
   info "Primary user: ${USERS[$PRIMARY_INDEX]} (total users: ${#USERS[@]})"
   info "Flake host: $FLAKE_HOST | StateVersion: $STATE_VERSION"
   $FLAG_DRY_RUN && warn "DRY RUN MODE: no changes will be written."
@@ -1144,7 +1155,6 @@ main() {
   perform_backup
   generate_hardware_config
   patch_primary_user_config
-  choose_flake_host_if_unset
   validate_flake_host_exists
   # ensure_git_repo  # DISABLED: Git functionality removed
   # commit_changes   # DISABLED: Git functionality removed
