@@ -797,6 +797,39 @@ choose_flake_host_if_unset() {
   fi
 }
 
+validate_flake_host_exists() {
+  # Confirm that nixosConfigurations.${FLAKE_HOST} exists in this flake
+  local exists=0
+  if nix eval --raw "$SCRIPT_DIR#nixosConfigurations.${FLAKE_HOST}.config.system.stateVersion" >/dev/null 2>&1; then
+    exists=1
+  fi
+  if (( exists == 1 )); then
+    info "Using flake host attr: $FLAKE_HOST"
+    return 0
+  fi
+
+  warn "Flake host attr '$FLAKE_HOST' not found. Detecting available hosts..."
+  local candidates=()
+  while IFS= read -r a; do
+    [[ -n "$a" ]] && candidates+=("$a")
+  done < <(detect_nixos_config_attrs)
+
+  if ((${#candidates[@]} == 1)); then
+    FLAKE_HOST="${candidates[0]}"
+    info "Auto-fallback to detected flake host: $FLAKE_HOST"
+    add_summary "auto_flake_host=$FLAKE_HOST"
+    return 0
+  fi
+
+  err "Unknown flake host attr '$FLAKE_HOST'"
+  if ((${#candidates[@]} > 0)); then
+    echo "Available hosts: ${candidates[*]}"
+  else
+    echo "No nixosConfigurations attributes detected."
+  fi
+  die "Please re-run with --flake-host <one-of-above>." 1
+}
+
 ###############################################################################
 # Build / Switch
 ###############################################################################
@@ -1037,6 +1070,7 @@ main() {
   generate_hardware_config
   patch_primary_user_config
   choose_flake_host_if_unset
+  validate_flake_host_exists
   # ensure_git_repo  # DISABLED: Git functionality removed
   # commit_changes   # DISABLED: Git functionality removed
   provision_all_users
