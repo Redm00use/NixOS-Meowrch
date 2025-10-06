@@ -575,8 +575,11 @@ patch_primary_user_config() {
   if [[ -f "$flake_file" ]]; then
     # Rename nixosConfigurations."meowrch" to primary user if different
     if [[ "$primary_user" != "meowrch" ]]; then
+      safe_sed "$flake_file" 'nixosConfigurations\.meowrch' "nixosConfigurations.${primary_user}"
       safe_sed "$flake_file" 'nixosConfigurations\."meowrch"' "nixosConfigurations.\"${primary_user}\""
-      # Update explicit flake references #meowrch -> #<primary_user> (only if not intentionally overridden)
+      # Update home-manager.users.meowrch
+      safe_sed "$flake_file" 'home-manager\.users\.meowrch' "home-manager.users.${primary_user}"
+      # Update explicit flake references #meowrch -> #<primary_user>
       safe_sed "$flake_file" '#meowrch' "#${primary_user}"
     fi
   fi
