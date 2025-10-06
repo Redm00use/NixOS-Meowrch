@@ -404,12 +404,21 @@ panic_report() {
   if [[ -n "${LOG_FILE:-}" && -f "$LOG_FILE" ]]; then
     if $FLAG_PANIC_FULL; then
       echo "--- BEGIN FULL LOG ---"
-      sed -n '1,${p}' "$LOG_FILE"
+      cat "$LOG_FILE"
       echo "--- END FULL LOG ---"
     else
       echo "--- LAST ${PANIC_TAIL_LINES} LINES OF LOG ---"
       tail -n "$PANIC_TAIL_LINES" "$LOG_FILE" || true
       echo "--- END TAIL ---"
+    fi
+    if $FLAG_LOG_STDERR_SEPARATE; then
+      local err_file="${LOG_FILE%.log}.err.log"
+      if [[ -f "$err_file" ]]; then
+        echo
+        echo "--- LAST ${PANIC_TAIL_LINES} LINES OF STDERR LOG ---"
+        tail -n "$PANIC_TAIL_LINES" "$err_file" || true
+        echo "--- END STDERR TAIL ---"
+      fi
     fi
   else
     echo "No log file available yet. Showing recent console context above is your best reference."
@@ -622,9 +631,36 @@ ensure_user_exists() {
   # Use fish if present, fallback otherwise
   local shell="/run/current-system/sw/bin/fish"
   [[ -x "$shell" ]] || shell="/bin/bash"
-  sudo useradd -m -U -c "$full" -G wheel,networkmanager,audio,video,storage,optical,bluetooth -s "$shell" "$user" || {
-    warn "Useradd failed for $user"
-  }
+
+  # Build list of existing supplementary groups (some distros lack storage/optical/bluetooth)
+  local desired_groups=(wheel networkmanager audio video storage optical bluetooth)
+  local existing_groups=()
+  local g
+  for g in "${desired_groups[@]}"; do
+    if getent group "$g" >/dev/null 2>&1; then
+      existing_groups+=("$g")
+    else
+      warn "Supplementary group '$g' not found; skipping."
+    fi
+  done
+
+  # Create user with safe minimal args first
+  if ((${#existing_groups[@]} > 0)); then
+    local groups_csv
+    IFS=',' read -r groups_csv <<<"${existing_groups[*]// /,}"
+    if ! sudo useradd -m -U -c "$full" -G "$groups_csv" -s "$shell" "$user"; then
+      err "Useradd failed with groups: $groups_csv"
+      # Fallback: try without supplementary groups
+      if ! sudo useradd -m -U -c "$full" -s "$shell" "$user"; then
+        die "User creation failed for '$user' (even without groups). Check system policy." 1
+      fi
+    fi
+  else
+    # No existing supplementary groups detected, create without -G
+    if ! sudo useradd -m -U -c "$full" -s "$shell" "$user"; then
+      die "User creation failed for '$user' (no supplementary groups)." 1
+    fi
+  fi
   add_summary "created_user=$user"
 }
 
