@@ -489,48 +489,87 @@ perform_backup() {
 ###############################################################################
 # Hardware Config
 ###############################################################################
+hardware_config_has_root() {
+  local file="$1"
+  [[ -f "$file" ]] || return 1
+  grep -Eq 'fileSystems\."\/"' "$file"
+}
+
 generate_hardware_config() {
   local file="$SCRIPT_DIR/hardware-configuration.nix"
+  local etc_file="/etc/nixos/hardware-configuration.nix"
+
   if $FLAG_NO_HARDWARE; then
     info "Skipping hardware config (--no-hardware)"
     return
   fi
-  
-  # Try to copy from /etc/nixos/ first
-  if [[ -f "/etc/nixos/hardware-configuration.nix" ]] && [[ ! -f "$file" || $FLAG_REGENERATE_HARDWARE ]]; then
-    if $FLAG_DRY_RUN; then
+
+  if $FLAG_DRY_RUN; then
+    if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE && hardware_config_has_root "$file"; then
+      info "(dry-run) Existing hardware config already contains root filesystem"
+    elif [[ -f "$etc_file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
       info "(dry-run) Would copy hardware-configuration.nix from /etc/nixos/"
     else
-      info "Copying hardware-configuration.nix from /etc/nixos/..."
-      sudo cp /etc/nixos/hardware-configuration.nix "$file"
-      sudo chmod 644 "$file"
+      info "(dry-run) Would run nixos-generate-config for hardware-configuration.nix"
+    fi
+    return
+  fi
+
+  if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
+    if hardware_config_has_root "$file"; then
+      info "Hardware config already present with root filesystem"
+      return
+    else
+      warn "Existing hardware config missing root filesystem; refreshing..."
+    fi
+  fi
+
+  if [[ -f "$etc_file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
+    info "Copying hardware-configuration.nix from /etc/nixos/..."
+    sudo cp "$etc_file" "$file"
+    sudo chmod 644 "$file"
+    if hardware_config_has_root "$file"; then
       success "Hardware configuration copied from /etc/nixos/"
       add_summary "hardware_config=copied_from_etc"
       return
+    else
+      warn "Copied hardware configuration is missing root filesystem; regenerating..."
     fi
   fi
-  
-  if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
-    info "Hardware config exists (use --regenerate-hardware to replace)"
-    return
-  fi
-  if $FLAG_DRY_RUN; then
-    info "(dry-run) Would generate hardware-configuration.nix"
-    return
-  fi
+
   if ! command -v nixos-generate-config >/dev/null 2>&1; then
     warn "nixos-generate-config not found; skipping hardware generation"
     return
   fi
+
   info "Generating hardware-configuration.nix..."
   if sudo nixos-generate-config --show-hardware-config > "${file}.tmp"; then
-    mv "${file}.tmp" "$file"
-    success "Hardware configuration written."
-    add_summary "hardware_config=generated"
+    if hardware_config_has_root "${file}.tmp"; then
+      mv "${file}.tmp" "$file"
+      success "Hardware configuration generated."
+      add_summary "hardware_config=generated"
+      return
+    fi
+
+    warn "Generated hardware configuration missing root filesystem; attempting full nixos-generate-config..."
+    rm -f "${file}.tmp" || true
   else
     err "Failed to generate hardware configuration."
     rm -f "${file}.tmp" || true
   fi
+
+  if sudo nixos-generate-config; then
+    if [[ -f "$etc_file" ]] && hardware_config_has_root "$etc_file"; then
+      info "Copying hardware-configuration.nix produced by nixos-generate-config..."
+      sudo cp "$etc_file" "$file"
+      sudo chmod 644 "$file"
+      success "Hardware configuration generated via nixos-generate-config."
+      add_summary "hardware_config=generated_full"
+      return
+    fi
+  fi
+
+  die "Unable to produce hardware-configuration.nix with a root filesystem. Please inspect /etc/nixos and rerun." 6
 }
 
 ###############################################################################
