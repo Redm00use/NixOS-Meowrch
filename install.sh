@@ -689,6 +689,12 @@ deploy_repo_to_primary_home() {
   sudo mkdir -p "$dest"
   sudo rsync -a --delete --exclude ".git" "$SCRIPT_DIR/" "$dest/"
 
+  # Ensure hardware-configuration.nix is present in destination
+  if [[ -f "$SCRIPT_DIR/hardware-configuration.nix" && ! -f "$dest/hardware-configuration.nix" ]]; then
+    sudo cp "$SCRIPT_DIR/hardware-configuration.nix" "$dest/hardware-configuration.nix"
+    info "Copied hardware-configuration.nix to $dest"
+  fi
+
   # Choose a safe group for chown: prefer a same-named group, else user's primary group, else user-only
   local grp=""
   if getent group "$primary" >/dev/null 2>&1; then
