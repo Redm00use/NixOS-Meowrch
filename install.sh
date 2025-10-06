@@ -538,33 +538,36 @@ patch_primary_user_config() {
   local primary_full="${FULL_NAMES[$PRIMARY_INDEX]}"
   local primary_email="${EMAILS[$PRIMARY_INDEX]}"
   local primary_git="${GIT_NAMES[$PRIMARY_INDEX]}"
+  # Normalize username to lowercase for flake attributes (best practice)
+  local primary_user_lower
+  primary_user_lower=$(echo "$primary_user" | tr '[:upper:]' '[:lower:]')
 
   local config_file="$SCRIPT_DIR/configuration.nix"
   local home_file="$SCRIPT_DIR/home/home.nix"
   local net_file="$SCRIPT_DIR/modules/system/networking.nix"
   local flake_file="$SCRIPT_DIR/flake.nix"
 
-  info "Patching primary user: $primary_user"
+  info "Patching primary user: $primary_user_lower"
 
   if [[ -f "$config_file" ]]; then
-    safe_sed "$config_file" 'users\.meowrch' "users.${primary_user}"
+    safe_sed "$config_file" 'users\.meowrch' "users.${primary_user_lower}"
     safe_sed "$config_file" 'system\.stateVersion = "[0-9]+\.[0-9]+"' \
       "system.stateVersion = \"${STATE_VERSION}\""
   fi
 
   if [[ -f "$home_file" ]]; then
-    safe_sed "$home_file" 'home\.username = "[^"]+"' "home.username = \"${primary_user}\""
-    safe_sed "$home_file" 'home\.homeDirectory = "/home/[^"]+"' \
-      "home.homeDirectory = \"/home/${primary_user}\""
+    safe_sed "$home_file" 'home\.username = lib\.mkForce "[^"]+"' "home.username = lib.mkForce \"${primary_user_lower}\""
+    safe_sed "$home_file" 'home\.homeDirectory = lib\.mkForce "/home/[^"]+"' \
+      "home.homeDirectory = lib.mkForce \"/home/${primary_user_lower}\""
     safe_sed "$home_file" 'home\.stateVersion = "[0-9]+\.[0-9]+"' \
       "home.stateVersion = \"${STATE_VERSION}\""
     # Git identity
     safe_sed "$home_file" 'userName = "[^"]+"' "userName = \"${primary_git}\""
     # Email patch removed: userEmail left as-is for manual configuration
     # Path alias normalization
-    safe_sed "$home_file" '/home/meowrch/NixOS-25\.05' "/home/${primary_user}/meowrch-nixos"
-    safe_sed "$home_file" '/home/meowrch/config-backups' "/home/${primary_user}/config-backups"
-    safe_sed "$home_file" '\.#meowrch' ".#${FLAKE_HOST}"
+    safe_sed "$home_file" '/home/meowrch/NixOS-25\.05' "/home/${primary_user_lower}/meowrch-nixos"
+    safe_sed "$home_file" '/home/meowrch/config-backups' "/home/${primary_user_lower}/config-backups"
+    safe_sed "$home_file" '\.#meowrch' ".#${primary_user_lower}"
   fi
 
   if [[ -n "$HOST_NAME" && -f "$net_file" ]]; then
@@ -574,13 +577,13 @@ patch_primary_user_config() {
   # Patch flake attribute + references if desired
   if [[ -f "$flake_file" ]]; then
     # Rename nixosConfigurations."meowrch" to primary user if different
-    if [[ "$primary_user" != "meowrch" ]]; then
-      safe_sed "$flake_file" 'nixosConfigurations\.meowrch' "nixosConfigurations.${primary_user}"
-      safe_sed "$flake_file" 'nixosConfigurations\."meowrch"' "nixosConfigurations.\"${primary_user}\""
+    if [[ "$primary_user_lower" != "meowrch" ]]; then
+      safe_sed "$flake_file" 'nixosConfigurations\.meowrch' "nixosConfigurations.${primary_user_lower}"
+      safe_sed "$flake_file" 'nixosConfigurations\."meowrch"' "nixosConfigurations.\"${primary_user_lower}\""
       # Update home-manager.users.meowrch
-      safe_sed "$flake_file" 'home-manager\.users\.meowrch' "home-manager.users.${primary_user}"
+      safe_sed "$flake_file" 'home-manager\.users\.meowrch' "home-manager.users.${primary_user_lower}"
       # Update explicit flake references #meowrch -> #<primary_user>
-      safe_sed "$flake_file" '#meowrch' "#${primary_user}"
+      safe_sed "$flake_file" '#meowrch' "#${primary_user_lower}"
     fi
   fi
 }
@@ -792,6 +795,10 @@ choose_flake_host_if_unset() {
   $FLAG_FLAKE_HOST_SET && return
 
   local primary="${USERS[$PRIMARY_INDEX]}"
+  # Normalize to lowercase for flake host (Linux usernames should be lowercase)
+  local primary_lower
+  primary_lower=$(echo "$primary" | tr '[:upper:]' '[:lower:]')
+  
   local candidates=()
   while IFS= read -r a; do
     [[ -n "$a" ]] && candidates+=("$a")
@@ -803,9 +810,11 @@ choose_flake_host_if_unset() {
   fi
 
   local chosen=""
-  # Prefer primary user attr if present
+  # Prefer primary user attr if present (case-insensitive match)
   for a in "${candidates[@]}"; do
-    if [[ "$a" == "$primary" ]]; then
+    local a_lower
+    a_lower=$(echo "$a" | tr '[:upper:]' '[:lower:]')
+    if [[ "$a_lower" == "$primary_lower" ]]; then
       chosen="$a"
       break
     fi
