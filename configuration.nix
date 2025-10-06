@@ -5,6 +5,13 @@
   # Imports (hardware file imported if exists)
   ############################################
   imports =
+    let
+      hardwareConfigPath =
+        lib.findFirst (path: builtins.pathExists path) null [
+          /etc/nixos/hardware-configuration.nix
+          ./hardware-configuration.nix
+        ];
+    in
     ([
       # System / hardware related modules
       ./modules/system/audio.nix
@@ -23,7 +30,7 @@
       ./modules/packages/packages.nix
       ./modules/packages/flatpak.nix
     ]
-    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix
+    ++ lib.optional (hardwareConfigPath != null) hardwareConfigPath
     );
 
   ############################################

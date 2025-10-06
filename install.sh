@@ -495,6 +495,21 @@ generate_hardware_config() {
     info "Skipping hardware config (--no-hardware)"
     return
   fi
+  
+  # Try to copy from /etc/nixos/ first
+  if [[ -f "/etc/nixos/hardware-configuration.nix" ]] && [[ ! -f "$file" || $FLAG_REGENERATE_HARDWARE ]]; then
+    if $FLAG_DRY_RUN; then
+      info "(dry-run) Would copy hardware-configuration.nix from /etc/nixos/"
+    else
+      info "Copying hardware-configuration.nix from /etc/nixos/..."
+      sudo cp /etc/nixos/hardware-configuration.nix "$file"
+      sudo chmod 644 "$file"
+      success "Hardware configuration copied from /etc/nixos/"
+      add_summary "hardware_config=copied_from_etc"
+      return
+    fi
+  fi
+  
   if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
     info "Hardware config exists (use --regenerate-hardware to replace)"
     return
