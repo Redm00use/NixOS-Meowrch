@@ -746,6 +746,19 @@ detect_nixos_config_attrs() {
           if (length(a) >= 2) print a[2];
         }
       }' | sed '/^$/d'
+    if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+      return 0
+    fi
+  fi
+  # Last-resort: parse flake.nix locally without evaluating the flake
+  if [[ -f "$SCRIPT_DIR/flake.nix" ]]; then
+    awk '
+      /nixosConfigurations\.[^[:space:]=]/ {
+        match($0, /nixosConfigurations\."?([^"]+)"?\s*=|nixosConfigurations\.([A-Za-z0-9_-]+)/, m);
+        if (m[1] != "") print m[1]; else if (m[2] != "") print m[2];
+      }
+    ' "$SCRIPT_DIR/flake.nix" | sed 's/[[:space:]]//g' | sed '/^$/d' | sort -u
+    return 0
   fi
 }
 
@@ -814,6 +827,18 @@ validate_flake_host_exists() {
     [[ -n "$a" ]] && candidates+=("$a")
   done < <(detect_nixos_config_attrs)
 
+  # Prefer default 'meowrch' if present (common case)
+  local preferred="meowrch"
+  local c
+  for c in "${candidates[@]}"; do
+    if [[ "$c" == "$preferred" ]]; then
+      FLAKE_HOST="$preferred"
+      info "Auto-fallback to default flake host: $FLAKE_HOST"
+      add_summary "auto_flake_host=$FLAKE_HOST"
+      return 0
+    fi
+  done
+
   if ((${#candidates[@]} == 1)); then
     FLAKE_HOST="${candidates[0]}"
     info "Auto-fallback to detected flake host: $FLAKE_HOST"
@@ -824,8 +849,10 @@ validate_flake_host_exists() {
   err "Unknown flake host attr '$FLAKE_HOST'"
   if ((${#candidates[@]} > 0)); then
     echo "Available hosts: ${candidates[*]}"
+    echo "Hint: re-run with --flake-host one of: ${candidates[*]}"
   else
-    echo "No nixosConfigurations attributes detected."
+    echo "No nixosConfigurations attributes detected in flake."
+    echo "Hint: ensure flake.nix defines nixosConfigurations.<name> and try again."
   fi
   die "Please re-run with --flake-host <one-of-above>." 1
 }
