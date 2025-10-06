@@ -73,6 +73,8 @@
 #   Use / modify / redistribute freely (public domain style).
 #
 set -euo pipefail
+# Ensure ERR trap is inherited by functions/subshells
+set -E
 
 ###############################################################################
 # Globals (defaults & mutable state)
@@ -108,6 +110,7 @@ FLAG_GENERATE_INSTALLER_README=false
 FLAG_QUIET=false
 FLAG_LOG_STDERR_SEPARATE=false
 FLAG_FLAKE_HOST_SET=false
+FLAG_PANIC_FULL=false
 
 # Core config
 STATE_VERSION="$DEFAULT_STATE_VERSION"
@@ -121,6 +124,7 @@ LOG_LINK_RECENT="latest-install.log"
 START_TS=$(date +%s)
 SUMMARY_MESSAGES=()
 ERROR_MESSAGES=()
+PANIC_TAIL_LINES=120
 
 # Colors (TTY only)
 if [[ -t 1 ]]; then
@@ -196,6 +200,8 @@ Behavior Flags:
   --log-dir <dir>               Custom log directory (default: ./logs)
   --generate-installer-readme   Create INSTALLER_README.md with usage guide
   --log-stderr-separate         Log stderr to separate file (adds *.err.log)
+  --panic-lines <N>             How many log lines to show on error (default: 120)
+  --panic-full                  On error, print the entire log (can be long)
   --help                        This help
 
 Examples:
@@ -238,6 +244,8 @@ parse_args() {
       --hostname) HOST_NAME="$2"; shift 2 ;;
       --log-file) LOG_FILE="$2"; shift 2 ;;
       --log-dir) LOG_DIR="$2"; shift 2 ;;
+  --panic-lines) PANIC_TAIL_LINES="$2"; shift 2 ;;
+  --panic-full) FLAG_PANIC_FULL=true; shift ;;
       # Legacy single-user flags (for primary only)
       --user) legacy_single_user_flag "$2"; shift 2 ;;
       --full-name) LEGACY_FULL_NAME="$2"; shift 2 ;;
@@ -373,6 +381,42 @@ setup_logging() {
   ln -sf "$(basename "$LOG_FILE")" "$LOG_DIR/$LOG_LINK_RECENT" || true
   add_summary "log_file=$LOG_FILE"
   info "Logging to: $LOG_FILE"
+}
+
+###############################################################################
+# Panic report (shown automatically on failure)
+###############################################################################
+panic_report() {
+  local code="$1"
+  echo
+  echo "${C_RED}==================== PANIC REPORT (code=$code) ====================${C_RESET}"
+  echo "Script: $0"
+  echo "Host: $(hostname || echo unknown) | Kernel: $(uname -srv || echo unknown)"
+  if command -v nix >/dev/null 2>&1; then
+    echo "Nix: $(nix --version 2>/dev/null | head -n1)"
+  fi
+  if command -v nixos-rebuild >/dev/null 2>&1; then
+    echo "nixos-rebuild: $(nixos-rebuild --version 2>/dev/null | head -n1)"
+  fi
+  echo "Primary user: ${USERS[$PRIMARY_INDEX]:-<unknown>} | Flake host: ${FLAKE_HOST:-<unknown>}"
+  echo "Log file: ${LOG_FILE:-<not-initialized>}"
+  echo
+  if [[ -n "${LOG_FILE:-}" && -f "$LOG_FILE" ]]; then
+    if $FLAG_PANIC_FULL; then
+      echo "--- BEGIN FULL LOG ---"
+      sed -n '1,${p}' "$LOG_FILE"
+      echo "--- END FULL LOG ---"
+    else
+      echo "--- LAST ${PANIC_TAIL_LINES} LINES OF LOG ---"
+      tail -n "$PANIC_TAIL_LINES" "$LOG_FILE" || true
+      echo "--- END TAIL ---"
+    fi
+  else
+    echo "No log file available yet. Showing recent console context above is your best reference."
+  fi
+  echo
+  echo "Tip: Take a photo of this entire block (including the tail) and share it."
+  echo "${C_RED}====================================================================${C_RESET}"
 }
 
 ###############################################################################
@@ -975,5 +1019,5 @@ main() {
 ###############################################################################
 # Trap & Invoke
 ###############################################################################
-trap 'err "Script interrupted or failed (exit code $?)"' ERR
+trap '_code=$?; err "Script interrupted or failed (exit code ${_code})"; panic_report ${_code}; exit ${_code}' ERR
 main "$@"
