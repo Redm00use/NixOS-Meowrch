@@ -487,17 +487,12 @@ perform_backup() {
 }
 
 ###############################################################################
-# Hardware Config
+# Hardware Config (adapted from JaKooLit/NixOS-Hyprland)
 ###############################################################################
-hardware_config_has_root() {
-  local file="$1"
-  [[ -f "$file" ]] || return 1
-  grep -Eq 'fileSystems\."\/"' "$file"
-}
-
 generate_hardware_config() {
   local file="$SCRIPT_DIR/hardware-configuration.nix"
-  local etc_file="/etc/nixos/hardware-configuration.nix"
+  local attempts=0
+  local max_attempts=3
 
   if $FLAG_NO_HARDWARE; then
     info "Skipping hardware config (--no-hardware)"
@@ -505,71 +500,42 @@ generate_hardware_config() {
   fi
 
   if $FLAG_DRY_RUN; then
-    if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE && hardware_config_has_root "$file"; then
-      info "(dry-run) Existing hardware config already contains root filesystem"
-    elif [[ -f "$etc_file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
-      info "(dry-run) Would copy hardware-configuration.nix from /etc/nixos/"
-    else
-      info "(dry-run) Would run nixos-generate-config for hardware-configuration.nix"
-    fi
+    info "(dry-run) Would generate hardware-configuration.nix"
     return
   fi
 
+  # Skip if already exists and not forcing regeneration
   if [[ -f "$file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
-    if hardware_config_has_root "$file"; then
-      info "Hardware config already present with root filesystem"
-      return
-    else
-      warn "Existing hardware config missing root filesystem; refreshing..."
-    fi
-  fi
-
-  if [[ -f "$etc_file" ]] && ! $FLAG_REGENERATE_HARDWARE; then
-    info "Copying hardware-configuration.nix from /etc/nixos/..."
-    sudo cp "$etc_file" "$file"
-    sudo chmod 644 "$file"
-    if hardware_config_has_root "$file"; then
-      success "Hardware configuration copied from /etc/nixos/"
-      add_summary "hardware_config=copied_from_etc"
-      return
-    else
-      warn "Copied hardware configuration is missing root filesystem; regenerating..."
-    fi
+    info "Hardware config exists (use --regenerate-hardware to replace)"
+    add_summary "hardware_config=kept_existing"
+    return
   fi
 
   if ! command -v nixos-generate-config >/dev/null 2>&1; then
-    warn "nixos-generate-config not found; skipping hardware generation"
-    return
+    die "nixos-generate-config not found; cannot generate hardware configuration" 3
   fi
 
-  info "Generating hardware-configuration.nix..."
-  if sudo nixos-generate-config --show-hardware-config > "${file}.tmp"; then
-    if hardware_config_has_root "${file}.tmp"; then
-      mv "${file}.tmp" "$file"
-      success "Hardware configuration generated."
-      add_summary "hardware_config=generated"
-      return
+  info "Generating hardware configuration..."
+  
+  # Retry logic (JaKooLit approach)
+  while [[ $attempts -lt $max_attempts ]]; do
+    if sudo nixos-generate-config --show-hardware-config > "$file" 2>/dev/null; then
+      if [[ -f "$file" ]] && [[ -s "$file" ]]; then
+        success "Hardware configuration successfully generated."
+        add_summary "hardware_config=generated"
+        return
+      fi
     fi
-
-    warn "Generated hardware configuration missing root filesystem; attempting full nixos-generate-config..."
-    rm -f "${file}.tmp" || true
-  else
-    err "Failed to generate hardware configuration."
-    rm -f "${file}.tmp" || true
-  fi
-
-  if sudo nixos-generate-config; then
-    if [[ -f "$etc_file" ]] && hardware_config_has_root "$etc_file"; then
-      info "Copying hardware-configuration.nix produced by nixos-generate-config..."
-      sudo cp "$etc_file" "$file"
-      sudo chmod 644 "$file"
-      success "Hardware configuration generated via nixos-generate-config."
-      add_summary "hardware_config=generated_full"
-      return
+    
+    warn "Failed to generate hardware configuration. Attempt $((attempts + 1)) of $max_attempts."
+    attempts=$((attempts + 1))
+    
+    if [[ $attempts -eq $max_attempts ]]; then
+      die "Unable to generate hardware configuration after $max_attempts attempts. Please run 'sudo nixos-generate-config' manually." 6
     fi
-  fi
-
-  die "Unable to produce hardware-configuration.nix with a root filesystem. Please inspect /etc/nixos and rerun." 6
+    
+    sleep 1
+  done
 }
 
 ###############################################################################
