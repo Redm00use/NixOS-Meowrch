@@ -755,12 +755,9 @@ detect_nixos_config_attrs() {
   fi
   # Last-resort: parse flake.nix locally without evaluating the flake
   if [[ -f "$SCRIPT_DIR/flake.nix" ]]; then
-    awk '
-      /nixosConfigurations\.[^[:space:]=]/ {
-        match($0, /nixosConfigurations\."?([^"]+)"?\s*=|nixosConfigurations\.([A-Za-z0-9_-]+)/, m);
-        if (m[1] != "") print m[1]; else if (m[2] != "") print m[2];
-      }
-    ' "$SCRIPT_DIR/flake.nix" | sed 's/[[:space:]]//g' | sed '/^$/d' | sort -u
+    grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' "$SCRIPT_DIR/flake.nix" \
+      | sed 's/nixosConfigurations\.//' \
+      | sort -u
     return 0
   fi
 }
