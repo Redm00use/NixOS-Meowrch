@@ -739,8 +739,9 @@ detect_nixos_config_attrs() {
     return 0
   fi
   # Fallback: try to parse nix flake show (best-effort, may be noisy)
+  local flake_show_result=""
   if command -v nix >/dev/null 2>&1; then
-    nix flake show "$SCRIPT_DIR" 2>/dev/null | awk '
+    flake_show_result=$(nix flake show "$SCRIPT_DIR" 2>/dev/null | awk '
       /^├──|^└──/ {
         gsub(/[├└]──/,"");
         sub(/^ +/,"",$0);
@@ -748,8 +749,9 @@ detect_nixos_config_attrs() {
           split($0, a, /\./);
           if (length(a) >= 2) print a[2];
         }
-      }' | sed '/^$/d'
-    if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+      }' | sed '/^$/d')
+    if [[ -n "$flake_show_result" ]]; then
+      echo "$flake_show_result"
       return 0
     fi
   fi
