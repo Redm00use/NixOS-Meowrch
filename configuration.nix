@@ -8,8 +8,8 @@
     let
       hardwareConfigPath =
         lib.findFirst (path: builtins.pathExists path) null [
-          /etc/nixos/hardware-configuration.nix
           ./hardware-configuration.nix
+          /etc/nixos/hardware-configuration.nix
         ];
     in
     ([

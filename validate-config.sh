@@ -53,6 +53,27 @@ else
     exit 1
 fi
 
+# Determine flake host attribute dynamically
+FLAKE_HOST=""
+mapfile -t HOSTS < <(grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' flake.nix | sed 's/nixosConfigurations\.//' | sort -u)
+if (( ${#HOSTS[@]} == 1 )); then
+    FLAKE_HOST="${HOSTS[0]}"
+elif (( ${#HOSTS[@]} > 1 )); then
+    for h in "${HOSTS[@]}"; do
+        if [[ "$h" == "meowrch" ]]; then
+            FLAKE_HOST="$h"
+            break
+        fi
+    done
+    [[ -z "$FLAKE_HOST" ]] && FLAKE_HOST="${HOSTS[0]}"
+fi
+if [[ -z "$FLAKE_HOST" ]]; then
+    print_warning "Could not detect nixosConfigurations attribute; defaulting to 'meowrch'"
+    FLAKE_HOST="meowrch"
+else
+    print_status "Using flake host attribute: $FLAKE_HOST"
+fi
+
 # Check for common configuration issues
 print_status "Checking for common configuration issues..."
 
@@ -208,12 +229,12 @@ fi
 
 # Final validation attempt
 print_status "Performing final validation..."
-if nix build .#nixosConfigurations.meowrch.config.system.build.toplevel --dry-run > /dev/null 2>&1; then
+if nix build ".#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel" --dry-run > /dev/null 2>&1; then
     print_success "Configuration builds successfully (dry-run)"
 else
     print_error "Configuration failed to build"
     echo "  Run the following command for detailed error information:"
-    echo "  nix build .#nixosConfigurations.meowrch.config.system.build.toplevel --dry-run"
+    echo "  nix build .#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel --dry-run"
     exit 1
 fi
 
@@ -227,13 +248,13 @@ print_status "2. Edit hardware-configuration.nix to match your actual disk setup
 print_status "3. Replace UUID placeholders with your actual partition UUIDs"
 echo
 print_status "To apply this configuration:"
-print_status "  sudo nixos-rebuild switch --flake .#meowrch"
+print_status "  sudo nixos-rebuild switch --flake .#${FLAKE_HOST}"
 echo
 print_status "To update inputs:"
 print_status "  nix flake update"
 echo
 print_status "To check what will be built:"
-print_status "  nixos-rebuild dry-build --flake .#meowrch"
+print_status "  nixos-rebuild dry-build --flake .#${FLAKE_HOST}"
 echo
 print_status "To find your disk UUIDs:"
 print_status "  lsblk -f"

@@ -516,7 +516,7 @@ generate_hardware_config() {
   fi
 
   info "Generating hardware configuration..."
-  
+
   # Retry logic (JaKooLit approach)
   while [[ $attempts -lt $max_attempts ]]; do
     if sudo nixos-generate-config --show-hardware-config > "$file" 2>/dev/null; then
@@ -526,14 +526,14 @@ generate_hardware_config() {
         return
       fi
     fi
-    
+
     warn "Failed to generate hardware configuration. Attempt $((attempts + 1)) of $max_attempts."
     attempts=$((attempts + 1))
-    
+
     if [[ $attempts -eq $max_attempts ]]; then
       die "Unable to generate hardware configuration after $max_attempts attempts. Please run 'sudo nixos-generate-config' manually." 6
     fi
-    
+
     sleep 1
   done
 }
@@ -776,7 +776,7 @@ detect_nixos_config_attrs() {
       return 0
     fi
   fi
-  
+
   # Fallback: nix eval (requires working nix daemon)
   local out
   if out=$(nix eval --json "$SCRIPT_DIR#nixosConfigurations" --apply builtins.attrNames 2>/dev/null); then
@@ -787,7 +787,7 @@ detect_nixos_config_attrs() {
       return 0
     fi
   fi
-  
+
   # Last fallback: nix flake show
   if command -v nix >/dev/null 2>&1; then
     local flake_show_result
@@ -805,7 +805,7 @@ detect_nixos_config_attrs() {
       return 0
     fi
   fi
-  
+
   # Nothing found
   return 1
 }
@@ -818,7 +818,7 @@ choose_flake_host_if_unset() {
   # Normalize to lowercase for flake host (Linux usernames should be lowercase)
   local primary_lower
   primary_lower=$(echo "$primary" | tr '[:upper:]' '[:lower:]')
-  
+
   local candidates=()
   while IFS= read -r a; do
     [[ -n "$a" ]] && candidates+=("$a")
@@ -881,12 +881,12 @@ validate_flake_host_exists() {
   while IFS= read -r a; do
     [[ -n "$a" ]] && candidates+=("$a")
   done < <(detect_nixos_config_attrs)
-  
+
   if ((${#candidates[@]} == 0)); then
     warn "Unable to detect flake hosts; proceeding with current host '$FLAKE_HOST'. Build will validate."
     return 0
   fi
-  
+
   info "Detected flake hosts: ${candidates[*]}"
 
   # If current host is present among candidates, accept it
@@ -933,6 +933,58 @@ build_system() {
     info "Skipping system build (--no-build)"
     return
   fi
+
+  # Auto-stage and commit hardware/config patches so flake sees them
+  if git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    (
+      cd "$SCRIPT_DIR"
+      local to_add=()
+      [[ -f hardware-configuration.nix ]] && to_add+=("hardware-configuration.nix")
+      [[ -f configuration.nix ]] && to_add+=("configuration.nix")
+      [[ -f flake.nix ]] && to_add+=("flake.nix")
+      [[ -f home/home.nix ]] && to_add+=("home/home.nix")
+      [[ -f modules/system/networking.nix ]] && to_add+=("modules/system/networking.nix")
+
+      if $FLAG_DRY_RUN; then
+        info "(dry-run) Would stage files: ${to_add[*]}"
+      else
+        if ((${#to_add[@]})); then
+          git add -f "${to_add[@]}" || true
+        fi
+        git add -u || true
+        if ! git diff --cached --quiet; then
+          if git -c user.name="Meowrch Installer" -c user.email="installer@local" commit -m "installer: auto-commit hardware and config patches"; then
+            success "Auto-committed installer changes."
+            add_summary "git_commit=performed"
+          else
+            warn "Auto-commit failed; continuing."
+            add_summary "git_commit=failed"
+          fi
+        else
+          info "No staged changes to commit."
+          add_summary "git_commit=none"
+        fi
+      fi
+
+      # If the tree is still dirty (untracked or unstaged), auto-enable --impure
+      local dirty=0
+      if ! git diff --quiet || ! git diff --cached --quiet; then
+        dirty=1
+      else
+        if [[ -n "$(git ls-files -o --exclude-standard)" ]]; then
+          dirty=1
+        fi
+      fi
+      if (( dirty == 1 )) && ! $FLAG_IMPURE; then
+        FLAG_IMPURE=true
+        warn "Git tree is dirty; enabling --impure automatically for nixos-rebuild."
+        add_summary "auto_impure=true"
+      fi
+    )
+  else
+    info "No Git repository detected; skipping auto-commit."
+  fi
+
   local cmd=(sudo nixos-rebuild switch --flake "$SCRIPT_DIR#${FLAKE_HOST}")
   $FLAG_IMPURE && cmd+=(--impure)
   if $FLAG_DRY_RUN; then
@@ -1157,7 +1209,7 @@ main() {
   check_nixos
 
   headline "Meowrch NixOS Advanced Installer"
-  
+
   # Set FLAKE_HOST to lowercase primary user if not explicitly provided
   if ! $FLAG_FLAKE_HOST_SET; then
     local primary_lower
@@ -1167,7 +1219,7 @@ main() {
       info "Using flake host from primary user: $FLAKE_HOST"
     fi
   fi
-  
+
   info "Primary user: ${USERS[$PRIMARY_INDEX]} (total users: ${#USERS[@]})"
   info "Flake host: $FLAKE_HOST | StateVersion: $STATE_VERSION"
   $FLAG_DRY_RUN && warn "DRY RUN MODE: no changes will be written."

@@ -27,7 +27,7 @@ Thumbs.db
 
 # Hardware configuration (may contain sensitive info)
 # Uncomment if you don't want to share your hardware config
-hardware-configuration.nix
+# hardware-configuration.nix
 
 # Logs
 *.log
