@@ -46,7 +46,7 @@ fi
 
 # Check flake syntax
 print_status "Checking flake syntax..."
-if nix flake show --json > /dev/null 2>&1; then
+if nix flake show --json; then
     print_success "Flake syntax is valid"
 else
     print_error "Flake syntax error detected"

@@ -522,6 +522,10 @@ generate_hardware_config() {
     if sudo nixos-generate-config --show-hardware-config > "$file" 2>/dev/null; then
       if [[ -f "$file" ]] && [[ -s "$file" ]]; then
         success "Hardware configuration successfully generated."
+        if [[ -d "$SCRIPT_DIR/.git" ]]; then
+           git add "$file" 2>/dev/null || true
+           info "Staged hardware-configuration.nix to git"
+        fi
         add_summary "hardware_config=generated"
         return
       fi
