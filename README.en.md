@@ -184,123 +184,29 @@ Since we are porting external Arch packages (AUR) which don't have official Nix 
 - Removed all legacy **BSPWM** configurations.
 - Default session is pure **Hyprland**.
 
-### 🎯 Universal Installer
-**No more hardcoded usernames!**
+### 🛠 Installation
 
-🔄 **Works with any username** - system automatically configures for you  
-🎛️ **Interactive menu** - choose exactly what to install  
-✨ **Smart configuration** - asks for your details and updates everything  
-🛡️ **Safe and secure** - creates backups before making changes  
-⚡ **Quick user switching** - change username after installation  
-
-### 🎮 What this means for you?
-- **Simply run** `./install.sh` and follow the prompts
-- **System will ask** for your name and minimal required details  
-- **Everything configures automatically** — aliases and file paths
-- **Easy to share** configuration with other people
-- **User change is now flake-based**: set username / fullName in `flake.nix` (the `change-user.sh` script was removed)
-
-<!-- INSTALLATION -->
-### 🎯 New! Universal Installer
-**Now works with any username!**
-- 🔄 **Automatic configuration** of your username
-- ✨ **Simple interactive installer** with menu
-- 🎛️ **Choose what to install** - everything at once or step by step
-- 🛡️ **Safe** - creates backups
-
-**Installer summary (concise):**  
-1. Prompts for username if not provided.  
-2. Patches `configuration.nix` and `home/home.nix`.  
-3. Optionally generates `hardware-configuration.nix`.  
-4. Creates backup + git commit.  
-5. Runs `nixos-rebuild` and Home Manager (unless skipped).  
-
-Quick start: `chmod +x install.sh && ./install.sh`  
-Useful flags: `--dry-run`, `--no-build`, `--no-home-manager`, `--regenerate-hardware`  
-Former separate INSTALLER_README files were removed; this summary replaces them.
-
-### If you already have NixOS installed:
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
 ```
-### 2. Run the smart installer
+
+### 2. Run the installer
 ```bash
 chmod +x install.sh
 ./install.sh
 ```
 
-**The installer will do everything else!**
-- Ask for your username and details
-- Configure the system for you
-- Check for errors
-- Install everything needed
+**The script will automatically:**
+- Ask for required details
+- Configure the system for your hardware
+- Build and install NixOS
 
 > [!important]
-> After installation, you **must** reboot to apply all changes.
-
-> [!note]
-> Instructions for navigating the installer menu:
-> - Select menu item: Press Spacebar to select the desired item
-> - Advance to next step: Press Enter to proceed to the next step
-
-### 🔧 What can the installer do?
-
-**The installer will show you a menu with options:**
-
-1. **🚀 Full Installation** *(recommended for beginners)*
-   - Configure your username
-   - Auto-detect your hardware  
-   - Check everything for errors
-   - Install the complete system
-
-2. **⚙️ Configure User Only**
-   - Change username if needed
-
-3. **🔧 Generate Hardware Config**
-   - Detect your disks and devices
-   - Only needed once
-
-4. **✅ Validate Configuration**
-   - Find errors before installation
-   - Show what needs fixing
-
-5. **📦 Build System Only**
-   - Apply changes without other setup
-
-6. **🏠 Setup User Environment**
-   - Configure your desktop and programs
-
-### 🎮 Quick User Change
-
-If you already installed the system but want to change username:
-
-```bash
-# New flake-based user change (script removed)
-# 1. Edit flake.nix (variables like: username / fullName)
-# 2. Apply:
-sudo nixos-rebuild switch --flake .#NEW_USERNAME
-```
-
-### 🤓 For Advanced Users
-```bash
-# Build system directly
-sudo nixos-rebuild switch --flake .#meowrch
-
-# Apply user settings  
-home-manager switch --flake .#your_username
-
-# Reboot system
-sudo reboot
-```
-
-<h2>💻 Help & Support</h2>
-<<<<<<< HEAD
+> You must reboot after installation!
+## 💻 Help & Support
 If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00use/NixOS-Meowrch/issues">Issues</a> section.<br><br>
-=======
-If you have questions or need help with the project, please visit our <a href="https://github.com/Redm00use/meowrch-nixos/issues">Issues</a> section.<br><br>
->>>>>>> 44ff34d840889391f08f03ce3231e3ea321583c8
 You can also check the original <a href="https://github.com/meowrch/meowrch">Meowrch project</a> for additional inspiration and themes.<br><br>
 For quick support and discussions, join our <a href="https://t.me/meowrch">Telegram channel</a> or contact directly on Telegram <a href="https://t.me/Redm00us">@Redm00us</a>.<br><br>
 For NixOS-specific questions, refer to the <a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a> and <a href="https://nix-community.github.io/home-manager/">Home Manager documentation</a>.<br><br>
