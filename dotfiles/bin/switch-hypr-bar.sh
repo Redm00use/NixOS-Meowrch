@@ -9,13 +9,23 @@
 # The program was created by DIMFLIX
 # Github: https://github.com/DIMFLIX
 
-session_type=$XDG_SESSION_TYPE
+FLAG_FILE="$HOME/.config/hypr/current_bar"
 
-if [ "$session_type" == "wayland" ]; then
-    cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy
+# Initialize the flag file if necessary
+[ ! -f "$FLAG_FILE" ] && echo "mewline" > "$FLAG_FILE"
 
-elif [ "$session_type" == "x11" ]; then
-    cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | xclip -selection clipboard
-else
-    echo "Тип сеанса не определен или не является Wayland/X11."
-fi
+# Define current and new status bars
+current_bar=$(cat "$FLAG_FILE")
+new_bar=$([ "$current_bar" == "waybar" ] && echo "mewline" || echo "waybar")
+
+# Update the flag file
+echo "$new_bar" > "$FLAG_FILE"
+
+# Stop the current bar
+pkill -x "$current_bar"
+
+# Run the new bar through a single script
+nohup "${XDG_BIN_HOME:-$HOME/bin}/toggle-bar.sh" --start >/dev/null 2>&1 &
+disown
+
+exit 0

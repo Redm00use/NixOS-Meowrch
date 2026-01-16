@@ -160,5 +160,17 @@
         gnome-themes-extra         # Дополнительные темы GNOME
         gsettings-desktop-schemas  # Схемы настроек рабочего стола
         catppuccin-qt5ct           # Catppuccin тема для Qt
-  ];
+        catppuccin-gtk             # GTK-тема Catppuccin
+        gnome-themes-extra         # Дополнительные темы GNOME
+        gsettings-desktop-schemas  # Схемы настроек рабочего стола
+        catppuccin-qt5ct           # Catppuccin тема для Qt
+
+    # ╔════════════════════════════════════════════════════════════════════════════╗
+    # ║                           MEOWRCH v3.0 TOOLS                             ║
+    # ╚════════════════════════════════════════════════════════════════════════════╝
+        mewline                    # Status bar (Dynamic Island style)
+        pawlette                   # Theme switcher wrapper
+        hotkeyhub                  # Keybinding cheatsheet
+        meowrch-settings           # System optimizations
+        meowrch-tools              # Gaming tools
 }

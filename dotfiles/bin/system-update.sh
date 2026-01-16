@@ -7,7 +7,7 @@
 # ┏┛┗┛┣┫┣┫┃┃┃┃┃┃╋╋┃┗━┛┣┫┣┳┛┏┓┗┓
 # ┗━━━┻━━┻┛┗┛┗┻┛╋╋┗━━━┻━━┻━┛┗━┛
 # The program was created by DIMFLIX
-# Github: https://github.com/DIMFLIX-OFFICIAL
+# Github: https://github.com/DIMFLIX
 
 
 SESSION_TYPE=$XDG_SESSION_TYPE
@@ -43,10 +43,10 @@ pkg_installed() {
 }
 
 get_aurhlpr() {
-    if command -v yay &>/dev/null; then
-        echo "yay"
-    elif command -v paru &>/dev/null; then
+    if command -v paru &>/dev/null; then
         echo "paru"
+    elif command -v yay &>/dev/null; then
+        echo "yay"
     else
         echo "No AUR helper found"
         exit 1

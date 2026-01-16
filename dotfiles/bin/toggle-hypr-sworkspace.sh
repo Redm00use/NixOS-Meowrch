@@ -9,13 +9,10 @@
 # The program was created by DIMFLIX
 # Github: https://github.com/DIMFLIX
 
-session_type=$XDG_SESSION_TYPE
-
-if [ "$session_type" == "wayland" ]; then
-    cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy
-
-elif [ "$session_type" == "x11" ]; then
-    cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | xclip -selection clipboard
+# Check if the active window is on a special worxpace
+if hyprctl activewindow | grep -q "special:special"; then
+    hyprctl dispatch movetoworkspace $(hyprctl activeworkspace | awk '{print $3}')
 else
-    echo "Тип сеанса не определен или не является Wayland/X11."
+    hyprctl dispatch movetoworkspacesilent special
 fi
+

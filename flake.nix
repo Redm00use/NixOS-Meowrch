@@ -71,6 +71,8 @@
     meowrch-scripts = pkgs.callPackage ./packages/meowrch-scripts.nix { };
     meowrch-themes  = pkgs.callPackage ./packages/meowrch-themes.nix { };
 
+    overlay-meowrch = final: prev: (import ./pkgs { pkgs = final; });
+
     overlay-portal-gbm-fix = import ./overlays/portal-gbm-fix.nix;
     # overlay-portal-unstable = import ./overlays/portal-unstable.nix; # REMOVED: causes issues
   in
@@ -84,6 +86,7 @@
         ({ pkgs, ... }: {
           nixpkgs.overlays = [
             overlay-unstable
+            overlay-meowrch
             overlay-portal-gbm-fix
             # overlay-portal-unstable  # REMOVED: causes issues
           ];

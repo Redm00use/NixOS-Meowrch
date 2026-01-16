@@ -494,7 +494,16 @@ generate_hardware_config() {
   local attempts=0
   local max_attempts=3
 
-  if $FLAG_NO_HARDWARE; then
+
+# -------------------------------------------------------------------------
+# Update Package Hashes (for Arch-ported packages)
+# -------------------------------------------------------------------------
+if [ -f "$SCRIPT_DIR/scripts/update-pkg-hashes.sh" ]; then
+    chmod +x "$SCRIPT_DIR/scripts/update-pkg-hashes.sh"
+    "$SCRIPT_DIR/scripts/update-pkg-hashes.sh"
+fi
+
+if $FLAG_NO_HARDWARE; then
     info "Skipping hardware config (--no-hardware)"
     return
   fi
