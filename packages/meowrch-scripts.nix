@@ -68,31 +68,16 @@ EOF
       fi
     done
 
-    # Handle Python scripts
+    # Handle Python scripts — wrap with bash to set PATH (avoids Nix heredoc quoting issues)
     for script in $out/bin/*.py; do
       if [ -f "$script" ]; then
         scriptname=$(basename "$script")
         mv "$script" "$script.unwrapped"
-        cat > "$script" << 'PYTHON_WRAPPER_EOF'
-#!/usr/bin/env python3
-import os
-import sys
-
-# Add required paths
-path_additions = os.pathsep.join([
-    os.path.dirname(sys.executable),
-])
-current_path = os.environ.get('PATH', '')
-os.environ['PATH'] = path_additions + os.pathsep + current_path
-
-# Execute the original script
-script_path = __file__ + '.unwrapped'
-with open(script_path, 'r') as f:
-    script_code = f.read()
-
-exec(script_code)
-PYTHON_WRAPPER_EOF
-        sed -i "1s|.*|#!${python3}/bin/python3|" "$script"
+        cat > "$script" << EOF
+#!${bash}/bin/bash
+export PATH="${lib.makeBinPath buildInputs}:\$PATH"
+exec ${python3}/bin/python3 "$script.unwrapped" "\$@"
+EOF
         chmod +x "$script"
       fi
     done
