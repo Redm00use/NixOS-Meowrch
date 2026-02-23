@@ -29,10 +29,10 @@
   # ╚════════════════════════════════════════════════════════════════════════════╝
   home.packages = with pkgs; [
     # --- Музыкальный плеер Яндекс.Музыка ---
-    inputs.yandex-music.packages.${pkgs.system}.default
+    inputs.yandex-music.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # --- Zen Browser ---
-    inputs.zen-browser.packages.${pkgs.system}.default
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -114,7 +114,7 @@
   programs.spicetify = {
     enable = true;
     # Тема Catppuccin для Spicetify
-    theme = inputs.spicetify-nix.legacyPackages.${pkgs.system}.themes.catppuccin;
+    theme = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system}.themes.catppuccin;
     colorScheme = "mocha";
     enabledExtensions = [];
   };

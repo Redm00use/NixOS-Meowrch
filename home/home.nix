@@ -28,10 +28,10 @@
   # ╚════════════════════════════════════════════════════════════════════════════╝
   home.packages = with pkgs; [
     # --- Музыкальный плеер Яндекс.Музыка ---
-    # inputs.yandex-music.packages.${pkgs.system}.default  # Temporarily disabled for syntax check
+    # inputs.yandex-music.packages.${pkgs.stdenv.hostPlatform.system}.default  # Temporarily disabled for syntax check
 
     # --- Zen Browser ---
-    inputs.zen-browser.packages.${pkgs.system}.default
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # --- Кастомные скрипты и темы ---
     meowrch-scripts
@@ -433,10 +433,10 @@
   programs.spicetify = {
     enable = true;
     # Тема Catppuccin для Spicetify
-    theme = inputs.spicetify-nix.legacyPackages.${pkgs.system}.themes.catppuccin;
+    theme = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system}.themes.catppuccin;
     colorScheme = "mocha";
 
-    enabledExtensions = with inputs.spicetify-nix.legacyPackages.${pkgs.system}.extensions; [
+    enabledExtensions = with inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system}.extensions; [
       adblock
       hidePodcasts
       shuffle
@@ -467,7 +467,7 @@
       isDefault = true;
 
       extensions = {
-        packages = with firefox-addons.packages.${pkgs.system}; [
+        packages = with firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
           ublock-origin
           bitwarden
           privacy-badger
