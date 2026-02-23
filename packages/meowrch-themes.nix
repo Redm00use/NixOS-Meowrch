@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, python3, gtk3, qt5, papirus-icon-theme, bibata-cursors }:
+{ lib, stdenv, fetchFromGitHub, python3, papirus-icon-theme, bibata-cursors }:
 
 stdenv.mkDerivation rec {
   pname = "meowrch-themes";
@@ -10,8 +10,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     python3
-    gtk3
-    qt5.qtbase
     papirus-icon-theme
     bibata-cursors
   ];
