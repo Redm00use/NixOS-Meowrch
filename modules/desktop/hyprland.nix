@@ -50,7 +50,7 @@
     # Background and screenshots
     swww
     swayidle
-    swaylock-effects
+    swaylock
 
     # Notifications
     dunst
@@ -91,7 +91,7 @@
   # Necessary services
   services = {
     # Gnome Keyring
-    gnome.gnome-keyring.enable = true;
+    gnome-keyring.enable = true;
 
     # Enable dbus
     dbus = {

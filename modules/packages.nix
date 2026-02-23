@@ -27,7 +27,7 @@
         swww                       # Динамические обои для Wayland
         rofi                       # Лаунчер приложений (меню)
         waybar                     # Панель статуса для Wayland
-        swaylock-effects           # Локскрин с эффектами для Wayland
+        swaylock                   # Локскрин для Wayland
         dunst                      # Демон уведомлений (notification daemon)
         pamixer                    # Управление громкостью через PulseAudio
         playerctl                  # Управление медиаплеерами через MPRIS
@@ -109,8 +109,7 @@
         # amdvlk removed from nixpkgs (deprecated by AMD); RADV from mesa is used instead
         dxvk                       # DirectX 9/10/11 → Vulkan (DXVK)
         mesa-demos                 # Демо-программы для Mesa (тесты)
-        virtualgl                  # Виртуализация OpenGL (удалённо)
-        virtualglLib               # Библиотеки VirtualGL
+        # virtualgl/virtualglLib removed from nixpkgs
 
     # ╔════════════════════════════════════════════════════════════════════════════╗
     # ║                           ВИРТУАЛИЗАЦИЯ                                  ║
@@ -133,9 +132,9 @@
         bluez-tools                # Инструменты BlueZ (CLI)
         glibc                      # GNU C Library (базовые библиотеки)
         xdg-utils                  # XDG-утилиты (открытие файлов, mime)
-        gnome.gnome-keyring        # Хранилище ключей GNOME (пароли, ключи SSH)
+        gnome-keyring              # Хранилище ключей GNOME (пароли, ключи SSH)
         libsecret                  # Библиотека для доступа к хранилищу секретов
-        gnome.seahorse             # Графический интерфейс для GNOME Keyring
+        seahorse                   # Графический интерфейс для GNOME Keyring
         gcr                        # GNOME управление доступом к хранилищу секретов
 
     # ╔════════════════════════════════════════════════════════════════════════════╗

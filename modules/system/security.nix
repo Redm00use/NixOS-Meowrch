@@ -198,7 +198,7 @@
 
     # System monitoring
     lynis
-    chkrootkit
+    # chkrootkit removed from nixpkgs (unmaintained, archived upstream)
 
     # Network security
     nmap
