@@ -451,8 +451,9 @@
     flavor = "mocha";
     accent = "blue";
 
-    # Disable problematic starship theming
+    # Disable problematic integrations
     starship.enable = false;
+    delta.enable = false;  # workaround: programs.git.delta.enable renamed in HM 25.11
   };
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

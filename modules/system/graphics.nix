@@ -24,7 +24,7 @@
 
     extraPackages = with pkgs; [
       mesa
-      amdvlk                  # AMD Vulkan ICD (RADV also available via mesa)
+      # amdvlk removed from nixpkgs (deprecated by AMD); RADV from mesa is used instead
       libva
       libva-utils
       libdrm
@@ -35,7 +35,6 @@
 
     extraPackages32 = with pkgs.driversi686Linux; [
       mesa
-      amdvlk
     ];
   };
 
