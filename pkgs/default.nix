@@ -1,7 +1,11 @@
 { pkgs, ... }:
 
+let
+  fabric = pkgs.callPackage ./fabric {};
+in
 {
-  mewline = pkgs.callPackage ./mewline {};
+  inherit fabric;
+  mewline = pkgs.callPackage ./mewline { inherit fabric; };
   pawlette = pkgs.callPackage ./pawlette {};
   hotkeyhub = pkgs.callPackage ./hotkeyhub {};
   meowrch-settings = pkgs.callPackage ./meowrch-settings {};

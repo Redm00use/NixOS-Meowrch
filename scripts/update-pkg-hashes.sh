@@ -75,6 +75,7 @@ update_hash() {
 # Format: update_hash "folder_name" "github_url" "branch"
 
 update_hash "mewline" "https://github.com/meowrch/mewline" "main"
+update_hash "fabric" "https://github.com/Fabric-Development/fabric" "main"
 update_hash "hotkeyhub" "https://github.com/meowrch/HotkeyHub" "main"
 update_hash "meowrch-settings" "https://github.com/meowrch/meowrch-settings" "main"
 update_hash "meowrch-tools" "https://github.com/meowrch/meowrch-tools" "main"

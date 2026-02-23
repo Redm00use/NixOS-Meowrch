@@ -1,22 +1,25 @@
 { lib
 , python3Packages
 , fetchFromGitHub
+, pkg-config
 , gtk4
 , gtk-layer-shell
 , libadwaita
 , gobject-introspection
 , wrapGAppsHook4
-, pkg-config
 , dart-sass
 , tesseract
 , gnome-bluetooth
 , upower
 , networkmanager
+, playerctl
+, fabric
 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "mewline";
   version = "unstable-2025-01-16";
+  pyproject = true;
 
   src = fetchFromGitHub {
     owner = "meowrch";
@@ -25,23 +28,24 @@ python3Packages.buildPythonApplication rec {
     sha256 = "12gg108bbkl72pjiiic4x7imj9klsbysn5k895cfw161yav22bfl"; # Updated by install.sh
   };
 
-  pyproject = true;
-
   nativeBuildInputs = [
+    python3Packages.setuptools
     gobject-introspection
     wrapGAppsHook4
     pkg-config
-    python3Packages.setuptools
   ];
 
   propagatedBuildInputs = with python3Packages; [
-    pygobject3
+    fabric
     loguru
     dbus-python
     pillow
     psutil
     pydantic
     setproctitle
+    pygobject3
+    pycairo
+    click
   ];
 
   buildInputs = [
@@ -53,13 +57,13 @@ python3Packages.buildPythonApplication rec {
     gnome-bluetooth
     upower
     networkmanager
+    playerctl
   ];
 
-  # fabric dependency is from git and complex — skip dependency checking at build time 
+  # Remove deps not available in nixpkgs
   pythonRelaxDeps = true;
-  pythonRemoveDeps = [ "fabric" "emoji" "pytesseract" "pkgconfig" "systemd" ];
+  pythonRemoveDeps = [ "emoji" "pytesseract" "pkgconfig" "systemd" ];
 
-  # Don't run tests (require display)
   doCheck = false;
 
   meta = with lib; {
