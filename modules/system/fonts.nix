@@ -31,7 +31,7 @@
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-color-emoji
-      noto-fonts-extra
+      # noto-fonts-extra merged into noto-fonts
 
       # Programming fonts
       jetbrains-mono
