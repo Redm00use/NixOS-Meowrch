@@ -49,8 +49,7 @@
   # Common userland tooling / diagnostics
   ############################################
   environment.systemPackages = with pkgs; [
-    # Capability / info
-    glxinfo
+    # Capability / info (glxinfo is part of mesa-demos)
     vulkan-tools
     mesa-demos
     gpu-viewer
