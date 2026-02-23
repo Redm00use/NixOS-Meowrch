@@ -91,7 +91,7 @@
   # Necessary services
   services = {
     # Gnome Keyring
-    gnome-keyring.enable = true;
+    gnome.gnome-keyring.enable = true;
 
     # Enable dbus
     dbus = {

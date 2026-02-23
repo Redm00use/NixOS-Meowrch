@@ -207,13 +207,24 @@ if [ "$CONF_HOSTNAME" != "meowrch" ]; then
     sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" configuration.nix
 fi
 
-# 4. GPU (This would normally require module imports)
-# For now we just log it, as the config is optimized for AMD.
-if [ "$GPU_CHOICE" -ne 0 ]; then
-    echo -e "${YELLOW}[WARN] You selected a non-AMD GPU.${NC}"
-    echo "       Please manually edit 'modules/system/graphics.nix' after installation"
-    echo "       to enable specific drivers (nvidia/intel)."
-fi
+# 4. GPU — swap the GPU-specific module in configuration.nix
+echo -e "${BLUE}[INFO] Configuring GPU driver...${NC}"
+case "$GPU_CHOICE" in
+    0)
+        # AMD (default) — already set in configuration.nix
+        echo -e "${GREEN}[INFO] Using AMD GPU module (default).${NC}"
+        ;;
+    1)
+        # Intel
+        echo -e "${BLUE}[INFO] Switching to Intel GPU module...${NC}"
+        sed -i 's|graphics-amd\.nix.*# GPU_MODULE_LINE|graphics-intel.nix  # GPU_MODULE_LINE|' configuration.nix
+        ;;
+    2)
+        # Nvidia
+        echo -e "${BLUE}[INFO] Switching to Nvidia GPU module...${NC}"
+        sed -i 's|graphics-amd\.nix.*# GPU_MODULE_LINE|graphics-nvidia.nix  # GPU_MODULE_LINE|' configuration.nix
+        ;;
+esac
 
 # --- Phase 3: Hardware Config ---
 

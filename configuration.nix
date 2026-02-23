@@ -19,6 +19,7 @@
       ./modules/system/audio.nix
       ./modules/system/bluetooth.nix
       ./modules/system/graphics.nix
+      ./modules/system/graphics-amd.nix  # GPU_MODULE_LINE (auto-replaced by install.sh)
       ./modules/system/networking.nix
       ./modules/system/security.nix
       ./modules/system/services.nix
