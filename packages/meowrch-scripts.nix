@@ -113,8 +113,8 @@ EOF
     # Brightness control
     ln -sf $out/bin/brightness.sh $out/share/meowrch-scripts/brightness
 
-    # Screenshot
-    ln -sf $out/bin/screenshot.sh $out/share/meowrch-scripts/screenshot
+    # Screenshot (script not in repo currently)
+    # ln -sf $out/bin/screenshot.sh $out/share/meowrch-scripts/screenshot
 
     # Color picker
     ln -sf $out/bin/color-picker.sh $out/share/meowrch-scripts/color-picker
@@ -128,30 +128,6 @@ EOF
     # Rofi menus
     ln -sf $out/bin/rofi-menus $out/share/meowrch-scripts/rofi-menus
 
-    # Create desktop entries for GUI applications
-    mkdir -p $out/share/applications
-
-    cat > $out/share/applications/meowrch-theme-selector.desktop << EOF
-[Desktop Entry]
-Name=Meowrch Theme Selector
-Comment=Select and apply Meowrch themes
-Exec=$out/bin/theme-selector.sh
-Icon=preferences-desktop-theme
-Terminal=false
-Type=Application
-Categories=Settings;DesktopSettings;
-EOF
-
-    cat > $out/share/applications/meowrch-wallpaper-selector.desktop << EOF
-[Desktop Entry]
-Name=Meowrch Wallpaper Selector
-Comment=Select and apply wallpapers
-Exec=$out/bin/wallpaper-selector.sh
-Icon=preferences-desktop-wallpaper
-Terminal=false
-Type=Application
-Categories=Settings;DesktopSettings;
-EOF
   '';
 
   meta = with lib; {
