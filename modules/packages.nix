@@ -106,7 +106,7 @@
         vulkan-loader              # Загрузчик Vulkan (runtime)
         vulkan-tools               # Инструменты Vulkan (отладка)
         vulkan-validation-layers   # Слои валидации Vulkan (debug)
-        amdvlk                     # Vulkan-драйвер AMD (GPU)
+        # amdvlk removed from nixpkgs (deprecated by AMD); RADV from mesa is used instead
         dxvk                       # DirectX 9/10/11 → Vulkan (DXVK)
         mesa-demos                 # Демо-программы для Mesa (тесты)
         virtualgl                  # Виртуализация OpenGL (удалённо)
