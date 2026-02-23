@@ -72,7 +72,6 @@
   in
   {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
-      inherit system;
       specialArgs = {
         inherit inputs spicetify-nix catppuccin-nix zen-browser hyprland hyprland-plugins;
       };
