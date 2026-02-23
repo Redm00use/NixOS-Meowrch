@@ -1,0 +1,141 @@
+{
+  description = "NixOS configuration (Hyprland + Home Manager + themed environment) — NixOS 25.11 Xantusia";
+
+  inputs = {
+    # NixOS 25.11 "Xantusia" — единственный канал
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
+
+    catppuccin-nix = {
+      url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self
+    , nixpkgs
+    , home-manager
+    , hyprland
+    , hyprland-plugins
+    , spicetify-nix
+    , catppuccin-nix
+    , firefox-addons
+    , zen-browser
+    , ...
+  }@inputs:
+  let
+    system = "x86_64-linux";
+
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+
+    # Кастомные пакеты Meowrch (meowrch-scripts, meowrch-themes)
+    meowrch-scripts = pkgs.callPackage ./packages/meowrch-scripts.nix { };
+    meowrch-themes  = pkgs.callPackage ./packages/meowrch-themes.nix { };
+
+    # Overlay с кастомными пакетами (mewline, pawlette, hotkeyhub и т.д.)
+    overlay-meowrch = final: prev: (import ./pkgs { pkgs = final; });
+
+    # Патч для portal/gbm
+    overlay-portal-gbm-fix = import ./overlays/portal-gbm-fix.nix;
+  in
+  {
+    nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = {
+        inherit inputs spicetify-nix catppuccin-nix zen-browser hyprland hyprland-plugins;
+      };
+      modules = [
+        ({ pkgs, ... }: {
+          nixpkgs.overlays = [
+            overlay-meowrch
+            overlay-portal-gbm-fix
+          ];
+        })
+
+        ./configuration.nix
+        catppuccin-nix.nixosModules.catppuccin
+
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          nixpkgs.config.allowUnfree = true;
+
+          home-manager.extraSpecialArgs = {
+            inherit inputs firefox-addons meowrch-scripts meowrch-themes;
+          };
+
+          home-manager.users.meowrch = {
+            imports = [
+              inputs.spicetify-nix.homeManagerModules.default
+              inputs.catppuccin-nix.homeModules.catppuccin
+              ./home/home.nix
+            ];
+          };
+
+          home-manager.backupFileExtension = "backup";
+        }
+
+        ./modules/desktop/hyprland.nix
+      ];
+    };
+
+    # Standalone home-manager (опционально)
+    homeConfigurations.meowrch = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      extraSpecialArgs = {
+        inherit inputs firefox-addons meowrch-scripts meowrch-themes;
+      };
+      modules = [
+        inputs.catppuccin-nix.homeModules.catppuccin
+        ./home/home.nix
+      ];
+    };
+
+    formatter.${system} = pkgs.alejandra;
+
+    devShells.${system}.default = pkgs.mkShell {
+      packages = with pkgs; [
+        git
+        nixd
+        nil
+        alejandra
+      ];
+      shellHook = ''
+        echo "Meowrch NixOS 25.11 dev shell loaded."
+      '';
+    };
+  };
+}
