@@ -69,7 +69,7 @@
 
   # ────────────── Шрифты ──────────────
   fonts = {
-    enableDefaultPackages = true;
+    # enableDefaultPackages is set in fonts.nix
 
     packages = with pkgs; [
       # Основные шрифты
