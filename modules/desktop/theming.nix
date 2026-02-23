@@ -91,7 +91,7 @@
       fira-code
       fira-code-symbols
       source-code-pro
-      ubuntu_font_family
+      ubuntu-classic
       dejavu_fonts
 
       # UI шрифты

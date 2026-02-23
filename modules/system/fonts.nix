@@ -38,12 +38,12 @@
       fira-code
       fira-code-symbols
       source-code-pro
-      ubuntu_font_family
+      ubuntu-classic
       dejavu_fonts
 
       # Interface fonts
       inter
-      ubuntu_font_family
+      ubuntu-classic
       noto-fonts
       open-sans
       roboto
