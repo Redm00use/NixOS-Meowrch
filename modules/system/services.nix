@@ -112,7 +112,7 @@
       enable = true;
       packages = with pkgs; [
         gnome-settings-daemon
-        android-udev-rules
+        # android-udev-rules removed due to being superseded by built-in systemd uaccess rules
       ];
 
       extraRules = ''
