@@ -39,7 +39,7 @@
       fira-code-symbols
       source-code-pro
       ubuntu-classic
-      dejavu-fonts
+      dejavu_fonts
 
       # Interface fonts
       inter
@@ -54,7 +54,7 @@
       vista-fonts
 
       # Liberation fonts (Microsoft alternatives)
-      liberation-fonts
+      liberation_ttf
 
       # Additional fonts
       font-awesome

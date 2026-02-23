@@ -92,7 +92,7 @@
       fira-code-symbols
       source-code-pro
       ubuntu-classic
-      dejavu-fonts
+      dejavu_fonts
 
       # UI шрифты
       inter
