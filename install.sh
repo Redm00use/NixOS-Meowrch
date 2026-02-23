@@ -180,12 +180,15 @@ fi
 # 2. Username
 echo -e "${BLUE}[INFO] Setting username to $CONF_USER...${NC}"
 if [ "$CONF_USER" != "meowrch" ]; then
-    # Patch configuration.nix
+    # Patch configuration.nix — user declaration, group, and groups
     sed -i "s/users.users.meowrch/users.users.$CONF_USER/g" configuration.nix
+    sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" configuration.nix
+    sed -i "s/groups.meowrch/groups.$CONF_USER/g" configuration.nix
     
-    # Patch home/home.nix
+    # Patch home/home.nix — username, homeDirectory, and all hardcoded /home/meowrch paths
     sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" home/home.nix
     sed -i "s|home.homeDirectory = lib.mkForce \"/home/meowrch\"|home.homeDirectory = lib.mkForce \"/home/$CONF_USER\"|g" home/home.nix
+    sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" home/home.nix
     
     # Patch flake.nix (users.meowrch -> users.$CONF_USER)
     sed -i "s/home-manager.users.meowrch/home-manager.users.$CONF_USER/g" flake.nix
@@ -197,6 +200,8 @@ fi
 if [ "$CONF_HOSTNAME" != "meowrch" ]; then
     echo -e "${BLUE}[INFO] Renaming configuration to $CONF_HOSTNAME...${NC}"
     sed -i "s/nixosConfigurations.meowrch/nixosConfigurations.$CONF_HOSTNAME/g" flake.nix
+    # Also update flake references in home-manager aliases (e.g. --flake .#meowrch)
+    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" home/home.nix
 fi
 
 # 4. GPU (This would normally require module imports)

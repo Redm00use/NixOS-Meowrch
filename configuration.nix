@@ -102,6 +102,7 @@
     users.meowrch = {
       isNormalUser = true;
       description = "Meowrch User";
+      group = "meowrch";
       extraGroups = [
         "wheel"
         "networkmanager"
@@ -120,6 +121,7 @@
       ];
       shell = pkgs.fish;
     };
+    groups.meowrch = {};
   };
 
   ############################################
