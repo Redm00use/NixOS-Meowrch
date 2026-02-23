@@ -64,7 +64,7 @@
         history_length = 20;
         
         # Misc/Advanced
-        dmenu = "${pkgs.rofi-wayland}/bin/rofi -dmenu -p dunst";
+        dmenu = "${pkgs.rofi}/bin/rofi -dmenu -p dunst";
         browser = "${pkgs.firefox}/bin/firefox";
         always_run_script = true;
         title = "Dunst";

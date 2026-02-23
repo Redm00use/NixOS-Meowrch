@@ -1,45 +1,37 @@
 { lib
-, stdenv
+, rustPlatform
 , fetchFromGitHub
 , pkg-config
 , gtk4
-, libadwaita
-, wrapGAppsHook
+, wrapGAppsHook4
 }:
 
-stdenv.mkDerivation rec {
+rustPlatform.buildRustPackage rec {
   pname = "hotkeyhub";
   version = "unstable-2025-01-16";
 
   src = fetchFromGitHub {
     owner = "meowrch";
-    repo = "HotkeyHub"; # Case sensitive? Search suggests "HotkeyHub"
+    repo = "HotkeyHub";
     rev = "main";
-    sha256 = "3d2040341275c3960ae0c00385afcb5b6c6e8496e5dc5378e7964272085eebe5"; # TODO: Update this hash
+    sha256 = "1c7gi59m68fxbsswjssn63gyipy6v33hs6pgd0lcyh2w48kwmd2p"; # Updated by install.sh
   };
+
+  cargoHash = lib.fakeHash;  # Will need to be updated after first build attempt
 
   nativeBuildInputs = [
     pkg-config
-    wrapGAppsHook
+    wrapGAppsHook4
   ];
 
   buildInputs = [
     gtk4
-    libadwaita
   ];
-
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/bin
-    cp hotkeyhub $out/bin/ # Assumes binary name
-    # Or if it uses make/meson, adjust accordingly
-    runHook postInstall
-  '';
 
   meta = with lib; {
     description = "Interactive cheatsheet for keybindings";
     homepage = "https://github.com/meowrch/HotkeyHub";
-    license = licenses.mit;
+    license = licenses.gpl3Only;
     mainProgram = "hotkeyhub";
   };
 }

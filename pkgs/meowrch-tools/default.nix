@@ -2,6 +2,11 @@
 , stdenv
 , fetchFromGitHub
 , makeWrapper
+, bash
+, coreutils
+, curl
+, jq
+, python3
 , gamemode
 }:
 
@@ -13,23 +18,44 @@ stdenv.mkDerivation rec {
     owner = "meowrch";
     repo = "meowrch-tools";
     rev = "main";
-    sha256 = "012720fac153f68ceeface798948bbdef4337e079b804eb8cb42d059356e4ef4"; # TODO: Update this hash
+    sha256 = "0f16m8fchh9v78d4vnzk22ba67y31rixjhbd89xaigvnygyih199"; # Updated by install.sh
   };
 
   nativeBuildInputs = [ makeWrapper ];
 
+  dontBuild = true;
+  dontConfigure = true;
+
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/bin
-    
-    # Install scripts/binaries
-    cp -r bin/* $out/bin/
-    chmod +x $out/bin/*
-    
-    # Wrap game-run to ensure gamemode is available
-    wrapProgram $out/bin/meowrch-game-run \
-      --prefix PATH : ${lib.makeBinPath [ gamemode ]}
-      
+
+    # The repo structure is usr/bin/, not bin/
+    cp -r usr $out
+
+    # Make all scripts executable
+    find $out/bin -type f -exec chmod +x {} \;
+
+    # Wrap scripts to ensure dependencies are available
+    for script in $out/bin/*; do
+      if [ -f "$script" ] && head -1 "$script" | grep -q "bash\|sh"; then
+        wrapProgram "$script" \
+          --prefix PATH : ${lib.makeBinPath [ bash coreutils curl jq python3 gamemode ]}
+      fi
+    done
+
+    # Wrap scripts in subdirectories
+    for dir in $out/bin/core $out/bin/wrappers $out/bin/gaming; do
+      if [ -d "$dir" ]; then
+        for script in "$dir"/*; do
+          if [ -f "$script" ]; then
+            chmod +x "$script"
+            wrapProgram "$script" \
+              --prefix PATH : ${lib.makeBinPath [ bash coreutils curl jq python3 gamemode ]}
+          fi
+        done
+      fi
+    done
+
     runHook postInstall
   '';
 

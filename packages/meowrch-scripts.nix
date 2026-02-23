@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, python3, bash, coreutils, findutils, gawk, gnugrep, gnused, procps, systemd, brightnessctl, pamixer, playerctl, hyprland, swww, rofi-wayland, flameshot, wl-clipboard, cliphist, networkmanager, bluez, upower, dunst, waybar }:
+{ lib, stdenv, fetchFromGitHub, python3, bash, coreutils, findutils, gawk, gnugrep, gnused, procps, systemd, brightnessctl, pamixer, playerctl, hyprland, swww, rofi, flameshot, wl-clipboard, cliphist, networkmanager, bluez, upower, dunst, waybar }:
 
 stdenv.mkDerivation rec {
   pname = "meowrch-scripts";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     playerctl
     hyprland
     swww
-    rofi-wayland
+    rofi
     flameshot
     wl-clipboard
     cliphist

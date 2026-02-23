@@ -28,7 +28,7 @@
         grim                       # Скриншоты для Wayland (grab image)
         slurp                      # Выделение области экрана для grim
         swww                       # Динамические обои для Wayland
-        rofi-wayland               # Лаунчер приложений для Wayland (меню)
+        rofi                       # Лаунчер приложений (меню)
         waybar                     # Панель статуса для Wayland
         swaylock-effects           # Локскрин с эффектами для Wayland
         dunst                      # Демон уведомлений (notification daemon)
