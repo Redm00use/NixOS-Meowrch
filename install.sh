@@ -180,10 +180,12 @@ fi
 # 2. Username
 echo -e "${BLUE}[INFO] Setting username to $CONF_USER...${NC}"
 if [ "$CONF_USER" != "meowrch" ]; then
-    # Patch configuration.nix — user declaration, group, and groups
-    sed -i "s/users.users.meowrch/users.users.$CONF_USER/g" configuration.nix
+    # Patch configuration.nix — user declaration, group, description, and groups
+    # NOTE: inside `users = { ... }` block, the text is `users.meowrch`, NOT `users.users.meowrch`
+    sed -i "s/users\.meowrch/users.$CONF_USER/g" configuration.nix
     sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" configuration.nix
-    sed -i "s/groups.meowrch/groups.$CONF_USER/g" configuration.nix
+    sed -i "s/groups\.meowrch/groups.$CONF_USER/g" configuration.nix
+    sed -i "s/description = \"Meowrch User\"/description = \"$CONF_USER\"/" configuration.nix
     
     # Patch home/home.nix — username, homeDirectory, and all hardcoded /home/meowrch paths
     sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" home/home.nix
@@ -200,8 +202,9 @@ fi
 if [ "$CONF_HOSTNAME" != "meowrch" ]; then
     echo -e "${BLUE}[INFO] Renaming configuration to $CONF_HOSTNAME...${NC}"
     sed -i "s/nixosConfigurations.meowrch/nixosConfigurations.$CONF_HOSTNAME/g" flake.nix
-    # Also update flake references in home-manager aliases (e.g. --flake .#meowrch)
+    # Update flake references in aliases (e.g. --flake .#meowrch) in BOTH config files
     sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" home/home.nix
+    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" configuration.nix
 fi
 
 # 4. GPU (This would normally require module imports)
