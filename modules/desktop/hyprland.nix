@@ -49,7 +49,7 @@
 
     # Background and screenshots
     swww
-    swayidle
+    # swayidle replaced by hypridle (already in package list)
     swaylock
 
     # Notifications
@@ -68,7 +68,7 @@
     hypridle
 
     # For animations and effects
-    wlroots
+    # wlroots provided by hyprland, no separate package needed
 
     # Desktop wrapper
     (writeTextFile {

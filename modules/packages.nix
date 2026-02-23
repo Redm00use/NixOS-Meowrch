@@ -1,4 +1,4 @@
-{  config, pkgs, pkgs-unstable, lib, inputs, ... }:
+{  config, pkgs, lib, inputs, ... }:
 {
   environment.systemPackages = with pkgs; [
     # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -49,7 +49,7 @@
     # ║                              РАЗРАБОТКА                                  ║
     # ╚════════════════════════════════════════════════════════════════════════════╝
         # --- Редакторы и инструменты Nix ---
-        pkgs-unstable.zed-editor   # Редактор Zed из нестабильного канала
+        zed-editor                 # Редактор Zed
         nil                        # Язык спецификации Nix (форматирование)
         nixd                       # Язык-сервер для Nix (LSP)
         # --- Системы контроля версий ---
@@ -70,7 +70,7 @@
         python311Packages.pyyaml   # Работа с YAML файлами
         python311Packages.setuptools # setuptools для Python (build system)
         python311Packages.uv       # Быстрый менеджер пакетов Python (uv)
-        python311Packages.pkgconfig # pkg-config для Python (build deps)
+        python311Packages.pkg-config # pkg-config для Python (build deps)
         pyenv                      # Менеджер версий Python
 
     # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -78,7 +78,7 @@
     # ╚════════════════════════════════════════════════════════════════════════════╝
         viber                      # Мессенджер Viber (VoIP, чат)
         discord                    # Discord клиент (чат, голос)
-        pkgs-unstable.materialgram # Клиент Telegram Materialgram (unstable, Qt)
+        materialgram               # Клиент Telegram Materialgram (Qt)
 
     # ╔════════════════════════════════════════════════════════════════════════════╗
     # ║                              МУЛЬТИМЕДИА                                 ║

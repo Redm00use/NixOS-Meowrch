@@ -1,3 +1,3 @@
-self: super: {
-  xdg-desktop-portal-hyprland = self.inputs.nixpkgs-unstable.legacyPackages.${super.system}.xdg-desktop-portal-hyprland;
-}
+# This overlay is no longer needed since nixpkgs-unstable was removed from flake inputs.
+# xdg-desktop-portal-hyprland is now available directly from nixpkgs stable.
+self: super: {}
