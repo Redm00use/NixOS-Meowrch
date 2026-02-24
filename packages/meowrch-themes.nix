@@ -259,24 +259,24 @@ EOF
 
     # Create theme management scripts
     mkdir -p $out/bin
-    cat > $out/bin/meowrch-theme-apply << 'EOF'
+    cat > $out/bin/meowrch-theme-apply << EOF
 #!/usr/bin/env bash
 # Meowrch theme application script
 
-THEME_NAME="$1"
-THEME_DIR="$out/share/themes/$THEME_NAME"
+THEME_NAME="\$1"
+THEME_DIR="$out/share/themes/\$THEME_NAME"
 
-if [ ! -d "$THEME_DIR" ]; then
-    echo "Theme '$THEME_NAME' not found!"
+if [ ! -d "\$THEME_DIR" ]; then
+    echo "Theme '\$THEME_NAME' not found!"
     exit 1
 fi
 
 # Apply GTK theme
-gsettings set org.gnome.desktop.interface gtk-theme "$THEME_NAME"
-gsettings set org.gnome.desktop.wm.preferences theme "$THEME_NAME"
+gsettings set org.gnome.desktop.interface gtk-theme "\$THEME_NAME"
+gsettings set org.gnome.desktop.wm.preferences theme "\$THEME_NAME"
 
 # Apply icon theme
-if [[ "$THEME_NAME" == *"Dark"* ]]; then
+if [[ "\$THEME_NAME" == *"Dark"* ]]; then
     gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
     gsettings set org.gnome.desktop.interface cursor-theme "Bibata-Modern-Classic"
 else
@@ -285,30 +285,30 @@ else
 fi
 
 # Apply Qt theme
-if [[ "$THEME_NAME" == *"Dark"* ]]; then
+if [[ "\$THEME_NAME" == *"Dark"* ]]; then
     export QT_QPA_PLATFORMTHEME=qt5ct
-    cp "$out/share/meowrch/qt/dark.conf" "$HOME/.config/qt5ct/qt5ct.conf"
-    cp "$out/share/meowrch/qt/dark.conf" "$HOME/.config/qt6ct/qt6ct.conf"
+    cp "$out/share/meowrch/qt/dark.conf" "\$HOME/.config/qt5ct/qt5ct.conf"
+    cp "$out/share/meowrch/qt/dark.conf" "\$HOME/.config/qt6ct/qt6ct.conf"
 else
     export QT_QPA_PLATFORMTHEME=qt5ct
-    cp "$out/share/meowrch/qt/light.conf" "$HOME/.config/qt5ct/qt5ct.conf"
-    cp "$out/share/meowrch/qt/light.conf" "$HOME/.config/qt6ct/qt6ct.conf"
+    cp "$out/share/meowrch/qt/light.conf" "\$HOME/.config/qt5ct/qt5ct.conf"
+    cp "$out/share/meowrch/qt/light.conf" "\$HOME/.config/qt6ct/qt6ct.conf"
 fi
 
-echo "Theme '$THEME_NAME' applied successfully!"
+echo "Theme '\$THEME_NAME' applied successfully!"
 EOF
 
     chmod +x $out/bin/meowrch-theme-apply
 
     # Create theme listing script
-    cat > $out/bin/meowrch-theme-list << 'EOF'
+    cat > $out/bin/meowrch-theme-list << EOF
 #!/usr/bin/env bash
 # List available Meowrch themes
 
 echo "Available Meowrch themes:"
 for theme in $out/share/themes/Meowrch-*; do
-    if [ -d "$theme" ]; then
-        basename "$theme"
+    if [ -d "\$theme" ]; then
+        basename "\$theme"
     fi
 done
 EOF
@@ -322,7 +322,7 @@ EOF
     # Create desktop entries for theme management
     mkdir -p $out/share/applications
     
-    cat > $out/share/applications/meowrch-themes.desktop << 'EOF'
+    cat > $out/share/applications/meowrch-themes.desktop << EOF
 [Desktop Entry]
 Name=Meowrch Themes
 Comment=Manage Meowrch desktop themes

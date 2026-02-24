@@ -12,19 +12,46 @@ let
     function show_help() {
       echo "Pawlette for NixOS (Wrapper)"
       echo "Usage:"
-      echo "  pawlette select <theme>   Select a theme and rebuild"
+      echo "  pawlette select <theme>   Select a theme via meowrch.py"
+      echo "  pawlette set-theme <th.>  Alias for select"
       echo "  pawlette list             List available themes"
+      echo "  pawlette get-themes-info  Get JSON themes info"
     }
 
     if [ "$1" == "list" ]; then
       echo "Available themes:"
-      echo "  catppuccin-mocha"
-      echo "  catppuccin-latte"
-      # Add more dynamic listing if possible
+      for theme in ~/.config/meowrch/themes/*; do
+        if [ -d "$theme" ]; then
+          echo "  $(basename "$theme")"
+        fi
+      done
       exit 0
     fi
 
-    if [ "$1" == "select" ]; then
+    if [ "$1" == "get-themes-info" ]; then
+      THEMES_DIR="$HOME/.config/meowrch/themes"
+      echo "{"
+      first=true
+      if [ -d "$THEMES_DIR" ]; then
+        for theme in "$THEMES_DIR"/*; do
+          if [ -d "$theme" ]; then
+            name=$(basename "$theme")
+            logo="$theme/preview.png"
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo ","
+            fi
+            echo -n "  \"$name\": { \"logo\": \"$logo\" }"
+          fi
+        done
+      fi
+      echo ""
+      echo "}"
+      exit 0
+    fi
+
+    if [ "$1" == "select" ] || [ "$1" == "set-theme" ]; then
       THEME="$2"
       if [ -z "$THEME" ]; then
         echo "Error: No theme specified"
@@ -32,15 +59,12 @@ let
       fi
       
       echo "Switching to theme: $THEME"
-      # Here we would ideally sed the theme file
-      # For now, this is a placeholder for the logic
-      echo "Updating configuration..."
-      # sed -i "s/theme = .*/theme = \"$THEME\";/" $THEME_FILE
+      $HOME/.config/meowrch/venv/bin/python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$THEME" 2>/dev/null || \
+      /run/current-system/sw/bin/python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$THEME"
       
-      echo "Rebuilding system..."
-      sudo nixos-rebuild switch --flake .#meowrch
       exit 0
     fi
+
 
     show_help
   '';
