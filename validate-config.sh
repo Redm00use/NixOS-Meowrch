@@ -103,11 +103,12 @@ else
 fi
 
 # Check for string values that should be boolean
-if grep -r 'dnssec = "true"' . --include="*.nix" > /dev/null 2>&1; then
-    print_error "Found dnssec with string value, should be boolean"
-    echo "  Change dnssec = \"true\" to dnssec = true"
+# NOTE: resolved.dnssec is an exception, it MUST be a string "true", "false", or "allow-downgrade"
+if grep -r 'systemd\.enable = "true"' . --include="*.nix" > /dev/null 2>&1; then
+    print_error "Found boolean-like option with string value"
+    echo "  Example: Change systemd.enable = \"true\" to systemd.enable = true"
 else
-    print_success "DNS configuration looks correct"
+    print_success "Boolean types in configuration look correct"
 fi
 
 # Check for old X11 configuration when using Wayland
