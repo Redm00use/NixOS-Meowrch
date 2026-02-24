@@ -36,6 +36,11 @@
     # --- Кастомные скрипты и темы ---
     meowrch-scripts
     meowrch-themes
+    mewline
+    pawlette
+    hotkeyhub
+    meowrch-settings
+    meowrch-tools
 
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
@@ -632,7 +637,15 @@
 
   # Создание необходимых директорий
   home.file.".local/bin/.keep".text = "";
-  home.file.".config/meowrch/.keep".text = "";
+  home.file.".config/.keep".text = "";
+
+  # Подключение конфигураций из репозитория
+  home.file.".config/hypr".source = ../hypr;
+  home.file.".config/kitty".source = ../kitty;
+  home.file.".config/fish".source = ../fish;
+  home.file.".config/fastfetch".source = ../fastfetch;
+  home.file.".config/btop".source = ../btop;
+  home.file.".config/meowrch".source = ../meowrch;
 
   # Автоматический запуск Home Manager
   programs.home-manager.enable = true;
