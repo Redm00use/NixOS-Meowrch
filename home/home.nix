@@ -640,12 +640,12 @@
   home.file.".config/.keep".text = "";
 
   # Подключение конфигураций из репозитория
-  home.file.".config/hypr".source = ../hypr;
-  home.file.".config/kitty".source = ../kitty;
-  home.file.".config/fish".source = ../fish;
-  home.file.".config/fastfetch".source = ../fastfetch;
-  home.file.".config/btop".source = ../btop;
-  home.file.".config/meowrch".source = ../meowrch;
+  home.file.".config/hypr" = { source = ../hypr; recursive = true; };
+  home.file.".config/kitty" = { source = ../kitty; recursive = true; };
+  home.file.".config/fish" = { source = ../fish; recursive = true; };
+  home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; };
+  home.file.".config/btop" = { source = ../btop; recursive = true; };
+  home.file.".config/meowrch" = { source = ../meowrch; recursive = true; };
 
   # Автоматический запуск Home Manager
   programs.home-manager.enable = true;
