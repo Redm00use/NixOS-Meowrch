@@ -340,19 +340,12 @@
   };
 
   # File permissions and security
-  system.activationScripts.security = ''
-    # Secure /tmp
-    chmod 1777 /tmp
-
-    # Secure /var/tmp
-    chmod 1777 /var/tmp
-
-    # Secure home directories
-    chmod 755 /home
-
-    # Secure system files
-    chmod 600 /etc/shadow
-    chmod 644 /etc/passwd
-    chmod 644 /etc/group
-  '';
+  systemd.tmpfiles.rules = [
+    "d /tmp 1777 root root - -"
+    "d /var/tmp 1777 root root - -"
+    "d /home 0755 root root - -"
+    "z /etc/shadow 0600 root root - -"
+    "z /etc/passwd 0644 root root - -"
+    "z /etc/group 0644 root root - -"
+  ];
 }

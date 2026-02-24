@@ -48,51 +48,56 @@
     };
   };
 
-  # Create SDDM theme directory
-  system.activationScripts.sddmTheme = let
-    sddm-theme = pkgs.writeTextDir "share/sddm/themes/meowrch/theme.conf" ''
-      [General]
-      background=#1e1e2e
-      type=color
-      color=#1e1e2e
-      fontSize=10
-      autoFocusPassword=true
+  # Install required Qt packages for SDDM and the theme itself
+  environment.systemPackages = let
+    meowrch-sddm-theme = pkgs.stdenv.mkDerivation {
+      name = "meowrch-sddm-theme";
+      src = if builtins.pathExists ../../dotfiles/sddm_theme then ../../dotfiles/sddm_theme else null;
+      dontUnpack = if builtins.pathExists ../../dotfiles/sddm_theme then false else true;
+      
+      installPhase = ''
+        mkdir -p $out/share/sddm/themes/meowrch
+        
+        # Copy everything from src if it exists
+        if [ -n "$src" ] && [ -d "$src" ]; then
+          cp -r $src/* $out/share/sddm/themes/meowrch/
+        fi
+        
+        # Generate or overwrite theme.conf
+        cat > $out/share/sddm/themes/meowrch/theme.conf <<EOF
+[General]
+background=#1e1e2e
+type=color
+color=#1e1e2e
+fontSize=10
+autoFocusPassword=true
 
-      [Design]
-      backgroundMode=fill
+[Design]
+backgroundMode=fill
 
-      [loginButton]
-      textColor=#cdd6f4
-      backgroundColor=#89b4fa
-      borderColor=#89b4fa
+[loginButton]
+textColor=#cdd6f4
+backgroundColor=#89b4fa
+borderColor=#89b4fa
 
-      [userList]
-      userColor=#cdd6f4
-      userBackgroundColor=#313244
-      userBorderColor=#89b4fa
+[userList]
+userColor=#cdd6f4
+userBackgroundColor=#313244
+userBorderColor=#89b4fa
 
-      [textField]
-      textColor=#cdd6f4
-      backgroundColor=#313244
-      borderColor=#89b4fa
-    '';
-  in ''
-    # Create SDDM theme directory
-    mkdir -p /run/current-system/sw/share/sddm/themes/meowrch
-    cp -f ${sddm-theme}/share/sddm/themes/meowrch/theme.conf /run/current-system/sw/share/sddm/themes/meowrch/
-
-    # Copy other theme files from dotfiles if they exist
-    if [ -d "${./../../dotfiles/sddm_theme}" ]; then
-      cp -rf ${./../../dotfiles/sddm_theme}/* /run/current-system/sw/share/sddm/themes/meowrch/
-    fi
-  '';
-
-  # Install required Qt packages for SDDM
-  environment.systemPackages = with pkgs; [
+[textField]
+textColor=#cdd6f4
+backgroundColor=#313244
+borderColor=#89b4fa
+EOF
+      '';
+    };
+  in with pkgs; [
     libsForQt5.qt5.qtquickcontrols2
     libsForQt5.qt5.qtgraphicaleffects
     libsForQt5.qt5.qtsvg
     libsForQt5.qt5.qtbase
+    meowrch-sddm-theme
   ];
 
   # Create user avatars directory
