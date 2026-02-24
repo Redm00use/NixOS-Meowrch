@@ -17,6 +17,7 @@ stdenv.mkDerivation rec {
   # Don't build, just copy themes
   dontBuild = true;
   dontConfigure = true;
+  dontWrapQtApps = true;
 
   installPhase = ''
     runHook preInstall
