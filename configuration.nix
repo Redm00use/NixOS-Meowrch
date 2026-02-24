@@ -86,10 +86,8 @@
       "splash"
     ];
     kernelPackages = pkgs.linuxPackages_latest;
-    plymouth = {
-      enable = true;
-      theme = "spinner";
-    };
+    # Plymouth causes blinking underscore / DRM locks on some GPUs, disabled for stability
+    plymouth.enable = false;
   };
 
   # Firmware (единственная декларация)
