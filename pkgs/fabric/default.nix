@@ -26,6 +26,11 @@ python3Packages.buildPythonPackage rec {
     pkg-config
   ];
 
+  postPatch = ''
+    # Убираем жесткую привязку к версии pygobject, из-за которой падает сборка
+    sed -i -E 's/pygobject==[0-9.]+/pygobject/g' pyproject.toml || true
+  '';
+
   propagatedBuildInputs = with python3Packages; [
     click
     loguru
