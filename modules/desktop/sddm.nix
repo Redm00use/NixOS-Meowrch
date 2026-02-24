@@ -61,6 +61,7 @@
         # Copy everything from src if it exists
         if [ -n "$src" ] && [ -d "$src" ]; then
           cp -r $src/* $out/share/sddm/themes/meowrch/
+          chmod -R +w $out/share/sddm/themes/meowrch/
         fi
         
         # Generate or overwrite theme.conf
