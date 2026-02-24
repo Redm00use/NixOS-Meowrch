@@ -17,7 +17,7 @@ python3Packages.buildPythonPackage rec {
     owner = "Fabric-Development";
     repo = "fabric";
     rev = "main";
-    sha256 = "0000000000000000000000000000000000000000000000000000"; # Updated by install.sh
+    hash = "sha256-YVlwsUz4SLj8qYAb21ernT3lDB/piU1V6hTW/UjikWA=";
   };
 
   nativeBuildInputs = [
