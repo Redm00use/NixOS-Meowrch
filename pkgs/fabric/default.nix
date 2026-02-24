@@ -28,6 +28,7 @@ python3Packages.buildPythonPackage rec {
 
   postPatch = ''
     # Убираем жесткую привязку к версии pygobject, из-за которой падает сборка
+    sed -i -E 's/PyGObject==[0-9.]+/PyGObject/g' pyproject.toml || true
     sed -i -E 's/pygobject==[0-9.]+/pygobject/g' pyproject.toml || true
   '';
 
