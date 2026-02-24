@@ -42,6 +42,9 @@
     meowrch-settings
     meowrch-tools
 
+    # --- Antigravity (Google) ---
+    inputs.antigravity.packages.${pkgs.stdenv.hostPlatform.system}.default
+
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
   ];
@@ -475,18 +478,10 @@
         packages = with firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
           ublock-origin
           bitwarden
-          privacy-badger
-          decentraleyes
-          clearurls
         ];
       };
 
       settings = {
-        # Privacy and security
-        "privacy.trackingprotection.enabled" = true;
-        "privacy.trackingprotection.socialtracking.enabled" = true;
-        "privacy.donottrackheader.enabled" = true;
-
         # Performance
         "gfx.webrender.all" = true;
         "media.ffmpeg.vaapi.enabled" = true;
@@ -495,6 +490,11 @@
         # Wayland
         "widget.use-xdg-desktop-portal.file-picker" = 1;
         "widget.use-xdg-desktop-portal.mime-handler" = 1;
+
+        # Fix for Google login persistence
+        "network.cookie.cookieBehavior" = 0; # Accept all cookies
+        "privacy.trackingprotection.enabled" = false;
+        "privacy.trackingprotection.socialtracking.enabled" = false;
       };
     };
   };
