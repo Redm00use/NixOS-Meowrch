@@ -4,18 +4,8 @@
   # SDDM Display Manager Configuration
   services.displayManager.sddm = {
     enable = true;
-    # Disable experimental wayland backend for SDDM, as it often causes 
-    # input freezes and requires specific Qt6 Wayland compositor setups.
-    # Hyprland will still run in Wayland natively!
-    wayland.enable = false;
+    wayland.enable = true;
 
-  };
-
-  # SDDM Requires an active display server (X11 since we disabled SDDM Wayland backend)
-  services.xserver.enable = lib.mkForce true;
-
-  # SDDM Display Manager Configuration (continued)
-  services.displayManager.sddm = {
     # SDDM theme configuration
     theme = "meowrch";
 
@@ -95,6 +85,7 @@ EOF
     libsForQt5.qt5.qtquickcontrols2
     libsForQt5.qt5.qtgraphicaleffects
     libsForQt5.qt5.qtsvg
+    libsForQt5.qt5.qtwayland
     libsForQt5.qt5.qtbase
     meowrch-sddm-theme
   ];
