@@ -4,7 +4,10 @@
   # SDDM Display Manager Configuration
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
+    # Disable experimental wayland backend for SDDM, as it often causes 
+    # input freezes and requires specific Qt6 Wayland compositor setups.
+    # Hyprland will still run in Wayland natively!
+    wayland.enable = false;
 
     # SDDM theme configuration
     theme = "meowrch";
@@ -12,7 +15,6 @@
     # General settings
     settings = {
       General = {
-        DisplayServer = "wayland";
         HaltCommand = "/run/current-system/systemd/bin/systemctl poweroff";
         RebootCommand = "/run/current-system/systemd/bin/systemctl reboot";
         InputMethod = "";
@@ -24,7 +26,7 @@
         CursorSize = 24;
         EnableAvatars = true;
         FacesDir = "/var/lib/AccountsService/icons/";
-        ThemeDir = "/run/current-system/sw/share/sddm/themes";
+        # Let NixOS handle ThemeDir automatically!
       };
 
       Users = {
@@ -33,17 +35,6 @@
         MinimumUid = 1000;
         RememberLastUser = true;
         RememberLastSession = true;
-      };
-
-      Wayland = {
-        EnableHiDPI = true;
-        SessionDir = "/run/current-system/sw/share/wayland-sessions";
-      };
-
-      X11 = {
-        EnableHiDPI = true;
-        ServerArguments = "-nolisten tcp";
-        SessionDir = "/run/current-system/sw/share/xsessions";
       };
     };
   };
