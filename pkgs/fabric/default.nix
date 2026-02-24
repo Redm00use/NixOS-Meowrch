@@ -3,9 +3,11 @@
 , fetchFromGitHub
 , gobject-introspection
 , pkg-config
+, gtk3
 , gtk4
 , gtk-layer-shell
 , libadwaita
+, cairo
 }:
 
 python3Packages.buildPythonPackage rec {
@@ -41,9 +43,11 @@ python3Packages.buildPythonPackage rec {
   ];
 
   buildInputs = [
+    gtk3
     gtk4
     gtk-layer-shell
     libadwaita
+    cairo
   ];
 
   pythonImportsCheck = [ "fabric" ];
