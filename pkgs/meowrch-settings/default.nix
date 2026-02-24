@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     owner = "meowrch";
     repo = "meowrch-settings";
     rev = "main";
-    sha256 = "4452f8296420fb27f16878e871425d4f4ee06bc9cdcb74f1f835971fe930ad6d"; # TODO: Update this hash
+    hash = "sha256-E7yfq0CTReMgFgG8G0460hjwEuJaaD0qoUzXS/nT7Cw=";
   };
 
   dontBuild = true;
