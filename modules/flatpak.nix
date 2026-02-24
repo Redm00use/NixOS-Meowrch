@@ -32,10 +32,21 @@ in {
     };
     
     # Добавляем Flathub репозиторий, если включена соответствующая опция
-    system.activationScripts.flathub = mkIf cfg.enableFlathub (stringAfter [ "users" ] ''
-      echo "Настройка Flathub репозитория..."
-      ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    '');
+    systemd.services.flathub = mkIf cfg.enableFlathub {
+      description = "Add Flathub repository";
+      wantedBy = [ "multi-user.target" ];
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+      path = [ pkgs.flatpak ];
+      script = ''
+        echo "Настройка Flathub репозитория..."
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+    };
     
     # Автоматическое обновление, если включено
     systemd.services.flatpak-update = mkIf cfg.autoUpdate {

@@ -26,12 +26,21 @@
   # Настройка групп пользователей для Flatpak
   users.groups.flatpak = {};
 
-  # Автоматическое добавление Flathub репозитория
-  system.activationScripts.flatpak-repo = ''
-    if [ ! -d "/var/lib/flatpak/repo" ]; then
-      ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    fi
-  '';
+  # Автоматическое добавление Flathub репозитория (после подключения к сети)
+  systemd.services.flatpak-repo = {
+    description = "Add Flathub repository";
+    wantedBy = [ "multi-user.target" ];
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+    path = [ pkgs.flatpak ];
+    script = ''
+      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+  };
 
   # Настройка переменных окружения для Flatpak
   environment.sessionVariables = {
