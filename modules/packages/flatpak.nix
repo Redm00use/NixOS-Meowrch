@@ -34,7 +34,7 @@
     after = [ "network-online.target" ];
     path = [ pkgs.flatpak ];
     script = ''
-      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
     '';
     serviceConfig = {
       Type = "oneshot";
