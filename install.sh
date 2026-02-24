@@ -28,7 +28,7 @@ echo -e "${PURPLE}
                           ▄▀▄     ▄▀▄           ▄▄▄▄▄
                          ▄█░░▀▀▀▀▀░░█▄         █░▄▄░░█
                      ▄▄  █░░░░░░░░░░░█  ▄▄    █░█  █▄█
-                    █▄▄█ █░░▀░░┬░░▀░░█ █▄▄█  █░█   
+                    █▄▄█ █░░▀░░┬░░▀░░█ █▄▄█  █░█
 ███╗░░░███╗███████╗░█████╗░░██╗░░░░░░░██╗██████╗░░█████╗░██╗░░██╗
 ████╗░████║██╔════╝██╔══██╗░██║░░██╗░░██║██╔══██╗██╔══██╗██║░░██║
 ██╔████╔██║█████╗░░██║░░██║░╚██╗████╗██╔╝██████╔╝██║░░╚═╝███████║
@@ -50,7 +50,7 @@ ask() {
     local prompt="$1"
     local default="$2"
     local var_name="$3"
-    
+
     if [ -n "$default" ]; then
         echo -e -n "${GREEN}? ${NC}${prompt} [${CYAN}${default}${NC}]: "
     else
@@ -68,12 +68,12 @@ ask_choice() {
     local prompt="$1"
     shift
     local options=("$@")
-    
+
     echo -e "${GREEN}? ${NC}${prompt}"
     for i in "${!options[@]}"; do
         echo -e "  [${CYAN}$((i+1))${NC}] ${options[$i]}"
     done
-    
+
     while true; do
         echo -e -n "${GREEN}> ${NC}"
         read -r choice
@@ -186,12 +186,12 @@ if [ "$CONF_USER" != "meowrch" ]; then
     sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" configuration.nix
     sed -i "s/groups\.meowrch/groups.$CONF_USER/g" configuration.nix
     sed -i "s/description = \"Meowrch User\"/description = \"$CONF_USER\"/" configuration.nix
-    
+
     # Patch home/home.nix — username, homeDirectory, and all hardcoded /home/meowrch paths
     sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" home/home.nix
     sed -i "s|home.homeDirectory = lib.mkForce \"/home/meowrch\"|home.homeDirectory = lib.mkForce \"/home/$CONF_USER\"|g" home/home.nix
     sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" home/home.nix
-    
+
     # Patch flake.nix (users.meowrch -> users.$CONF_USER)
     sed -i "s/home-manager.users.meowrch/home-manager.users.$CONF_USER/g" flake.nix
     sed -i "s/homeConfigurations.meowrch/homeConfigurations.$CONF_USER/g" flake.nix
@@ -268,15 +268,15 @@ if [ "$MODE" -eq 1 ]; then
     # We must allow unfree
     export NIXPKGS_ALLOW_UNFREE=1
     nixos-install --flake ".#$CONF_HOSTNAME" --root /mnt
-    
+
     echo -e "\n${GREEN}Installation Complete!${NC}"
     echo "You can now reboot into your new Meowrch NixOS system."
     echo "Type 'reboot' to restart."
 else
-    echo -e "${BLUE}[INFO] Starting 'nixos-rebuild switch'...${NC}"
+    echo -e "${BLUE}[INFO] Starting 'nixos-rebuild boot'...${NC}"
     echo "This may take a while."
-    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake ".#$CONF_HOSTNAME"
-    
+    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#$CONF_HOSTNAME"
+
     echo -e "\n${GREEN}Update Complete!${NC}"
-    echo "Changes have been applied. Restart your shell or reboot to see all changes."
+    echo "Changes will be applied on next boot. Please reboot your system."
 fi
