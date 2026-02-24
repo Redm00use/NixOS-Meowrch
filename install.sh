@@ -257,9 +257,9 @@ fi
 # Add hardware-config to git (needed for flake)
 if [ ! -d .git ]; then
     git init >/dev/null
-    git add . >/dev/null
+    git add --all >/dev/null
 else
-    git add hardware-configuration.nix >/dev/null
+    git add --force hardware-configuration.nix >/dev/null
 fi
 
 # --- Phase 4: Hash Updates ---

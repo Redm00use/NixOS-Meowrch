@@ -9,7 +9,7 @@
   imports =
     let
       hardwareConfigPath =
-        lib.findFirst (path: builtins.pathExists path) null [
+        lib.findFirst (path: lib.pathExists path) null [
           ./hardware-configuration.nix
           /etc/nixos/hardware-configuration.nix
         ];

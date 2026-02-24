@@ -54,19 +54,20 @@ else
 fi
 
 # Determine flake host attribute dynamically
+print_status "Detecting flake configurations..."
 FLAKE_HOST=""
-mapfile -t HOSTS < <(grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' flake.nix | sed 's/nixosConfigurations\.//' | sort -u)
-if (( ${#HOSTS[@]} == 1 )); then
-    FLAKE_HOST="${HOSTS[0]}"
-elif (( ${#HOSTS[@]} > 1 )); then
-    for h in "${HOSTS[@]}"; do
+# Try to get hostname from nix flake show, fallback to grep
+HOSTS=$(nix flake show --json 2>/dev/null | grep -oP '"nixosConfigurations":\s*{\s*"\K[^"]+' || grep -oE 'nixosConfigurations\.[A-Za-z0-9_-]+' flake.nix | sed 's/nixosConfigurations\.//' | sort -u)
+
+for h in $HOSTS; do
+    if [[ -n "$h" ]]; then
+        FLAKE_HOST="$h"
         if [[ "$h" == "meowrch" ]]; then
-            FLAKE_HOST="$h"
             break
         fi
-    done
-    [[ -z "$FLAKE_HOST" ]] && FLAKE_HOST="${HOSTS[0]}"
-fi
+    fi
+done
+
 if [[ -z "$FLAKE_HOST" ]]; then
     print_warning "Could not detect nixosConfigurations attribute; defaulting to 'meowrch'"
     FLAKE_HOST="meowrch"
@@ -229,12 +230,18 @@ fi
 
 # Final validation attempt
 print_status "Performing final validation..."
-if nix build ".#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel" --dry-run > /dev/null 2>&1; then
+# Use --impure because some configs might depend on external paths or variables
+if nix build ".#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel" --dry-run --impure > /dev/null 2>&1; then
     print_success "Configuration builds successfully (dry-run)"
 else
     print_error "Configuration failed to build"
+    echo "  Possible reasons:"
+    echo "  1. No internet connection to fetch flake inputs"
+    echo "  2. hardware-configuration.nix is missing or not added to git (run: git add -f hardware-configuration.nix)"
+    echo "  3. Syntax error in configuration files"
+    echo ""
     echo "  Run the following command for detailed error information:"
-    echo "  nix build .#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel --dry-run"
+    echo "  nix build .#nixosConfigurations.${FLAKE_HOST}.config.system.build.toplevel --dry-run --impure"
     exit 1
 fi
 
@@ -248,7 +255,7 @@ print_status "2. Edit hardware-configuration.nix to match your actual disk setup
 print_status "3. Replace UUID placeholders with your actual partition UUIDs"
 echo
 print_status "To apply this configuration:"
-print_status "  sudo nixos-rebuild switch --flake .#${FLAKE_HOST}"
+print_status "  sudo nixos-rebuild switch --flake .#${FLAKE_HOST} --impure"
 echo
 print_status "To update inputs:"
 print_status "  nix flake update"
