@@ -16,8 +16,7 @@ rustPlatform.buildRustPackage rec {
     rev = "main";
     sha256 = "1c7gi59m68fxbsswjssn63gyipy6v33hs6pgd0lcyh2w48kwmd2p"; # Updated by install.sh
   };
-
-  cargoHash = lib.fakeHash;  # Will need to be updated after first build attempt
+  cargoHash = "sha256-qatwDu4F1Xwemsp8CtLLIZ+CHYN4IZRJ5MRwN45QJy4=";
 
   nativeBuildInputs = [
     pkg-config
