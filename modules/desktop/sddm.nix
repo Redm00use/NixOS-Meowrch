@@ -12,7 +12,7 @@
   };
 
   # SDDM Requires an active display server (X11 since we disabled SDDM Wayland backend)
-  services.xserver.enable = true;
+  services.xserver.enable = lib.mkForce true;
 
   # SDDM Display Manager Configuration (continued)
   services.displayManager.sddm = {
