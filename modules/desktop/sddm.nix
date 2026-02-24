@@ -9,6 +9,13 @@
     # Hyprland will still run in Wayland natively!
     wayland.enable = false;
 
+  };
+
+  # SDDM Requires an active display server (X11 since we disabled SDDM Wayland backend)
+  services.xserver.enable = true;
+
+  # SDDM Display Manager Configuration (continued)
+  services.displayManager.sddm = {
     # SDDM theme configuration
     theme = "meowrch";
 
