@@ -6,6 +6,16 @@
 
 set -e
 
+# Logging setup
+LOG_FILE="$(pwd)/install.log"
+# Clear or create log file with header
+echo "--- Meowrch NixOS Installation Log: $(date) ---" > "$LOG_FILE"
+# Redirect stdout and stderr to both console and log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+# Error handling
+trap 'echo -e "\n${RED}[ERROR] Installation failed at line $LINENO. Check $LOG_FILE for details.${NC}"' ERR
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -270,6 +280,7 @@ if [ "$MODE" -eq 1 ]; then
     nixos-install --flake ".#$CONF_HOSTNAME" --root /mnt
 
     echo -e "\n${GREEN}Installation Complete!${NC}"
+    echo -e "${BLUE}Detailed logs are saved to: $LOG_FILE${NC}"
     echo "You can now reboot into your new Meowrch NixOS system."
     echo "Type 'reboot' to restart."
 else
@@ -278,5 +289,6 @@ else
     sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#$CONF_HOSTNAME"
 
     echo -e "\n${GREEN}Update Complete!${NC}"
+    echo -e "${BLUE}Detailed logs are saved to: $LOG_FILE${NC}"
     echo "Changes will be applied on next boot. Please reboot your system."
 fi
