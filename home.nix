@@ -10,8 +10,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = "redm00us";
-  home.homeDirectory = "/home/redm00us";
+  home.username = "meowrch";
+  home.homeDirectory = "/home/meowrch";
   home.stateVersion = "24.11";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -33,6 +33,9 @@
 
     # --- Zen Browser ---
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    # --- Python dependency for meowrch.py (yaml) ---
+    (python311.withPackages (ps: with ps; [ pyyaml ]))
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -44,11 +47,11 @@
     # --- Алиасы ---
     shellAliases = {
       # Быстрая пересборка системы
-      b = "sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#nixos --impure";
+      b = "sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /home/meowrch/NixOS-Meowrch#meowrch --impure";
       # Открыть конфиг NixOS в VSCode от root
-      c = "code --user-data-dir=\"$HOME/.vscode-root\" /etc/nixos/configuration.nix";
+      c = "code --user-data-dir=\"$HOME/.vscode-root\" /home/meowrch/NixOS-Meowrch/configuration.nix";
       # Обновить флейк и пересобрать систему
-      u = "cd /etc/nixos/ & nix flake update && sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#nixos --impure";
+      u = "cd /home/meowrch/NixOS-Meowrch/ && nix flake update && sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /home/meowrch/NixOS-Meowrch#meowrch --impure";
       # Быстрый вывод информации о системе
       f = "fastfetch";
       # Очистка мусора Nix

@@ -65,7 +65,7 @@
         gnumake                    # GNU Make
 
         # --- Python ---
-        python3                    # Python 3 интерпретатор
+        (python3.withPackages (ps: with ps; [ pyyaml pillow ]))
         python3Packages.pip        # pip для Python 3 (менеджер пакетов)
 
     # ╔════════════════════════════════════════════════════════════════════════════╗

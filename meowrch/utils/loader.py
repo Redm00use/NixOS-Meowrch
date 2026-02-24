@@ -8,7 +8,7 @@ from utils.options import (
 	CopyOption, CopyOrGenOption, TmuxCfgOption, GTKOption, FishOption, 
 	WaybarCfgOption, KittyOption, DunstOption, CavaOption
 )
-from vars import HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG	
+from vars import HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE	
 
 
 ##==> Настройки применения тем для конфигураций
@@ -109,7 +109,8 @@ for vscode in [".vscode", ".vscode-oss"]:
 
 ##==> Логирование
 ###############################################
-log_file = MEOWRCH_DIR / "logs.log"
+log_file = LOG_FILE
+log_file.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s',

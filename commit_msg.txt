@@ -1,0 +1,15 @@
+Release 3.3.1: Final touches and fixes / Последние штрихи и исправления
+
+ENG:
+- Fixed wallpapers: added pyyaml to system packages globally.
+- Updated hyprland.conf: fixed swww-daemon startup.
+- Fixed home.nix: corrected alias paths to $HOME/NixOS-Meowrch.
+- Updated hotkeys: using python3 directly to avoid pyenv issues.
+- Fixed mewline dependencies after painful efforts.
+
+RUS:
+- Исправлены обои: python3.withPackages с pyyaml добавлен глобально.
+- Обновлен hyprland.conf: исправлен запуск демона (swww-daemon вместо swww init).
+- Исправлен home.nix: корректные пути для алиасов b, c, u на $HOME/NixOS-Meowrch.
+- Обновлены хоткеи: прямой вызов python3 для обхода проблем с pyenv.
+- АДСКИЕ МУЧЕНИЯ: исправил работу mewline и восстановил зависимости!

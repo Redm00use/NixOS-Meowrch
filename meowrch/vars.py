@@ -9,8 +9,9 @@ OOMOX_TEMPLATES = MEOWRCH_DIR / "oomox_templates"
 BASE_CONFIGS: Path = MEOWRCH_DIR / "base_configs" 
 MEOWRCH_ASSETS: Path = MEOWRCH_DIR / "utils" / "assets"
 
-MEOWRCH_CONFIG: Path = MEOWRCH_DIR / "config.yaml"
-WALLPAPER_SYMLINC: Path = MEOWRCH_DIR / "current_wallpaper"
+MEOWRCH_CONFIG: Path = Path.home() / ".cache" / "meowrch" / "config.yaml"
+LOG_FILE: Path = Path.home() / ".cache" / "meowrch" / "logs.log"
+WALLPAPER_SYMLINC: Path = Path.home() / ".cache" / "meowrch" / "current_wallpaper"
 
 ROFI_SELECTING_THEME: Path = Path.home() / ".config" / "rofi" / "selecting.rasi"
 

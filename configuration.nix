@@ -102,6 +102,7 @@
       isNormalUser = true;
       description = "Meowrch User";
       group = "meowrch";
+      initialPassword = "1";
       extraGroups = [
         "wheel"
         "networkmanager"

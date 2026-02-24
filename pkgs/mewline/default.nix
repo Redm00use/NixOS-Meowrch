@@ -2,11 +2,12 @@
 , python3Packages
 , fetchFromGitHub
 , pkg-config
+, gtk3
 , gtk4
 , gtk-layer-shell
 , libadwaita
 , gobject-introspection
-, wrapGAppsHook4
+, wrapGAppsHook3
 , dart-sass
 , tesseract
 , gnome-bluetooth
@@ -14,6 +15,9 @@
 , networkmanager
 , playerctl
 , fabric
+, libcvc
+, libgray
+, libdbusmenuGtk3
 }:
 
 python3Packages.buildPythonApplication rec {
@@ -31,8 +35,13 @@ python3Packages.buildPythonApplication rec {
   nativeBuildInputs = [
     python3Packages.setuptools
     gobject-introspection
-    wrapGAppsHook4
+    wrapGAppsHook3
     pkg-config
+  ];
+
+  # Ensure dart-sass is available in PATH at runtime
+  makeWrapperArgs = [
+    "--prefix" "PATH" ":" "${dart-sass}/bin"
   ];
 
   propagatedBuildInputs = with python3Packages; [
@@ -46,9 +55,13 @@ python3Packages.buildPythonApplication rec {
     pygobject3
     pycairo
     click
+    systemd-python
+    pytesseract
+    emoji
   ];
 
   buildInputs = [
+    gtk3
     gtk4
     gtk-layer-shell
     libadwaita
@@ -58,11 +71,37 @@ python3Packages.buildPythonApplication rec {
     upower
     networkmanager
     playerctl
+    libcvc
+    libgray
+    libdbusmenuGtk3
   ];
 
   # Remove deps not available in nixpkgs
   pythonRelaxDeps = true;
-  pythonRemoveDeps = [ "emoji" "pytesseract" "pkgconfig" "systemd" ];
+  pythonRemoveDeps = [ "pkgconfig" "systemd" ];
+
+  # Include .scss style files which setuptools skips by default
+  postPatch = ''
+    # Tell setuptools to include non-Python files
+    cat >> pyproject.toml << 'EOF'
+
+[tool.setuptools.package-data]
+mewline = ["styles/**/*.scss", "styles/**/*.css"]
+EOF
+
+    # Redirect writable style paths from read-only Nix store to XDG cache
+    # THEME_STYLE must be writable — mewline writes the active theme here
+    # MAIN_STYLE must also be readable from a location where sass can @import siblings
+    substituteInPlace src/mewline/constants.py \
+      --replace-fail 'THEME_STYLE = STYLES_FOLDER / "theme.scss"' \
+        'THEME_STYLE = APP_CACHE_DIRECTORY / "theme.scss"'
+  '';
+
+  postInstall = ''
+    # Copy styles directory to the installed package
+    site=$out/lib/python*/site-packages/mewline
+    cp -r src/mewline/styles $site/ 2>/dev/null || true
+  '';
 
   doCheck = false;
 

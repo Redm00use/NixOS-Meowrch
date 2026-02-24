@@ -8,6 +8,10 @@
 { config, pkgs, lib, inputs, firefox-addons, meowrch-scripts, meowrch-themes, ... }:
 
 {
+  imports = [
+    ./modules/rofi.nix
+  ];
+
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
@@ -64,7 +68,7 @@
 
       # Проверка конфигурации без применения
       check = "sudo nixos-rebuild dry-build --flake .#meowrch";
-      test = "sudo nixos-rebuild test --flake .#meowrch";
+      test-os = "sudo nixos-rebuild test --flake .#meowrch";
 
       # Обновление системы
       update = "cd /home/meowrch/meowrch-nixos && nix flake update && rebuild";

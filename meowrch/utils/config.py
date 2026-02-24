@@ -27,8 +27,21 @@ class Config:
 		Returns:
 			dict: Data from a YML file in the form of a dictionary.
 		"""
+		# If user config doesn't exist, try to copy it from the script directory
 		if not MEOWRCH_CONFIG.exists():
-			raise NoConfigFile()
+			default_config = MEOWRCH_DIR / "config.yaml"
+			if default_config.exists():
+				try:
+					MEOWRCH_CONFIG.parent.mkdir(parents=True, exist_ok=True)
+					import shutil
+					shutil.copy(default_config, MEOWRCH_CONFIG)
+					# Make sure it's writeable
+					MEOWRCH_CONFIG.chmod(0o644)
+				except Exception as e:
+					logging.error(f"Failed to copy default config: {e}")
+					return {}
+			else:
+				raise NoConfigFile()
 
 		with open(MEOWRCH_CONFIG, 'r') as f:
 			data = yaml.load(f, Loader=yaml.FullLoader)
