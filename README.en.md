@@ -65,7 +65,17 @@ NixOS-Meowrch/
 
 ## 🚀 Installation
 
-Simple and automated installation process:
+### 1. Preparation (Important!)
+Before you begin, ensure you have NixOS installed (any version works: Minimal ISO, GNOME, or KDE).
+
+You will need **Git** to clone this repository. If you don't have it yet, run:
+```bash
+# Temporarily install git
+nix-shell -p git
+```
+*Alternatively, add `git` to `environment.systemPackages` in your `/etc/nixos/configuration.nix` and run `sudo nixos-rebuild switch`.*
+
+### 2. Installation
 
 ```bash
 # 1. Clone the repository
