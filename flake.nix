@@ -33,18 +33,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zen-browser = {
-      url = "github:youwen5/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    antigravity = {
-      url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -58,7 +48,6 @@
     , spicetify-nix
     , catppuccin-nix
     , firefox-addons
-    , zen-browser
     , ...
   }@inputs:
   let
@@ -83,7 +72,7 @@
   {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
       specialArgs = {
-        inherit inputs spicetify-nix catppuccin-nix zen-browser hyprland hyprland-plugins pkgs-unstable;
+        inherit inputs spicetify-nix catppuccin-nix hyprland hyprland-plugins pkgs-unstable;
       };
       modules = [
         ({ pkgs, ... }: {

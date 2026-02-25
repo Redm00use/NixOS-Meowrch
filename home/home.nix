@@ -34,9 +34,6 @@
     # --- Музыкальный плеер Яндекс.Музыка ---
     # inputs.yandex-music.packages.${pkgs.stdenv.hostPlatform.system}.default  # Temporarily disabled for syntax check
 
-    # --- Zen Browser ---
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-
     # --- Кастомные скрипты и темы ---
     meowrch-scripts
     meowrch-themes
@@ -45,9 +42,6 @@
     pawlette
     # hotkeyhub and meowrch-settings are now in systemPackages
     meowrch-tools
-
-    # --- Antigravity (Google) ---
-    inputs.antigravity.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
