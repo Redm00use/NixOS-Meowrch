@@ -140,7 +140,7 @@
       allow_remote_control = "yes";
       update_check_interval = "24";
       startup_session = "none";
-      clipboard_control = "write-clipboard write-primary";
+      clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
       term = "xterm-kitty";
       
       # OS specific tweaks
