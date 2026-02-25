@@ -21,7 +21,7 @@
             <img src="https://img.shields.io/badge/Install-Meowrch_NixOS-success?style=for-the-badge&logo=nixos&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="#-установка-пакетов-гайд">
-            <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
+            <img src="https://img.shields.ok/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="#-meowrch-wiki">
             <img src="https://img.shields.io/badge/Wiki-Config_System-blue?style=for-the-badge&logo=bookstack&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
@@ -37,6 +37,7 @@
 - [✨ Особенности](#-features)
 - [📁 Структура проекта](#-project-structure)
 - [🚀 Установка](#-installation)
+- [🔧 Использование и Обновление](#-daily-usage)
 - [📦 Гайд по пакетам](#-установка-пакетов-гайд)
 - [📖 Meowrch Wiki](#-meowrch-wiki)
 - [⌨️ Хоткеи и Команды](#️-хоткеи-и-команды)
@@ -82,55 +83,39 @@ NixOS-Meowrch/
 # Временная установка git для клонирования
 nix-shell -p git
 ```
-*Либо добавьте `git` в `environment.systemPackages` вашего `/etc/nixos/configuration.nix` и сделайте `sudo nixos-rebuild switch`.*
+
+> [!CAUTION]
+> **ВАЖНО:** Не удаляйте и не перемещайте папку с репозиторием (`~/NixOS-Meowrch`) после установки! 
+> В NixOS на Flakes эта папка является «сердцем» вашей системы. Без неё вы не сможете обновляться или менять настройки.
 
 ### 2. Установка
 
 ```bash
-# 1. Клонируйте репозиторий
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
-
-# 2. Запустите установщик
 chmod +x install.sh
 ./install.sh
 ```
 
-Установщик предложит:
-1. **Режим** — обновить текущую систему или установить на новый диск
-2. **Hostname** — имя вашей машины
-3. **Username** — имя пользователя
-4. **GPU** — AMD / Intel / Nvidia (автоматическая настройка модулей)
-5. **Shell** — Fish / Zsh / Bash
-
-### После установки
-
-```bash
-# Перезагрузка
-reboot
-
-# Добавить обои
-cp ~/Pictures/*.{jpg,png} ~/.local/share/wallpapers/
-```
-
 ## 🔧 Daily Usage
 
-### Основные команды
+### Как обновлять систему?
+
+Благодаря Flakes, вы можете получать обновления нашего порта Meowrch прямо из GitHub:
 
 ```bash
-# Пересборка после изменений
-sudo nixos-rebuild switch --flake ~/meowrch-nixos#nixos
+# 1. Зайдите в папку и подтяните последние изменения кода
+cd ~/NixOS-Meowrch && git pull
 
-# Обновить все зависимости
-cd ~/meowrch-nixos && nix flake update
-sudo nixos-rebuild switch --flake .#nixos
-
-# Очистить старые поколения
-sudo nix-collect-garbage -d
-
-# Откатиться на предыдущее состояние
-sudo nixos-rebuild switch --rollback
+# 2. Обновите хэши пакетов и пересоберите систему одной командой
+update-pkgs
 ```
+
+### Основные команды (Алиасы)
+*   `rebuild` — пересобрать систему после правок в конфиге.
+*   `update-pkgs` — полное обновление всех компонентов Meowrch.
+*   `cleanup` — очистка системы от старых версий (освобождает место).
+*   `rollback` — вернуться к предыдущей версии, если что-то сломалось.
 
 ## ⌨️ Хоткеи и Команды
 
@@ -150,6 +135,7 @@ sudo nixos-rebuild switch --rollback
 | `Super + Arrows` | Фокус окна (← ↓ ↑ →) |
 | `Super + 1-0` | Перейти на рабочий стол 1-10 |
 | `Super + Shift + 1-0` | Переместить окно на стол 1-10 |
+| `Super + Shift + Arrows` | Изменить размер окна |
 | `Super + Ctrl + Left/Right` | Предыдущий/следующий рабочий стол |
 | **Приложения и Меню** | |
 | `Super + D` | Лаунчер приложений (Rofi) |
@@ -203,21 +189,12 @@ sudo nixos-rebuild switch --rollback
 ```bash
 rebuild
 ```
-Система сама скачает пакет и добавит его в меню приложений.
-
-### 4. Временная установка (без конфига)
-Если программа нужна на один раз:
-```bash
-nix shell nixpkgs#название_пакета
-```
-Программа будет доступна, пока вы не закроете терминал.
 
 ## 📖 Meowrch Wiki
 
 Добро пожаловать в базу знаний по настройке вашей системы! Здесь описано, как менять «поведение» рабочих столов и окон.
 
 ### 1. Где лежат настройки?
-В нашей системе настройки Hyprland разделены на модули для удобства.
 Все основные файлы находятся здесь:
 `home/modules/hypr-configs/`
 
@@ -228,35 +205,17 @@ nix shell nixpkgs#название_пакета
 
 ### 2. Как добавить свой хоткей?
 Откройте `home/modules/hypr-configs/keybindings.conf` в **Zed IDE**.
-Синтаксис простой:
-`bind = МОДИФИКАТОР, КЛАВИША, ДЕЙСТВИЕ, КОМАНДА`
+Синтаксис: `bind = МОДИФИКАТОР, КЛАВИША, ДЕЙСТВИЕ, КОМАНДА`
 
-**Примеры:**
-*   `bind = $mainMod, F, exec, firefox` — запуск Firefox по `Super + F`.
-*   `bind = $subMod, G, exec, gimp` — запуск GIMP по `Super + Shift + G`.
-
-### 3. Как настраивать правила окон?
-Если вы хотите, чтобы программа всегда открывалась в определенном виде, правьте `home/modules/hypr-configs/windowrules.conf`.
-
-**Полезные примеры:**
-*   **Сделать окно плавающим**:
-    `windowrule = float, ^(telegram-desktop)$`
-*   **Задать точный размер**:
-    `windowrule = size 800 600, ^(pavucontrol)$`
-*   **Открыть на определенном воркспейсе**:
-    `windowrule = workspace 3, ^(discord)$`
-*   **Размытие фона (Blur)**:
-    `layerrule = blur, rofi`
-
-> [!TIP]
-> Чтобы узнать "имя" окна (class) для правила, введите в терминале команду `hyprctl clients` или используйте утилиту `hyprprop`.
+### 3. Как настроить правила окон?
+Правьте `home/modules/hypr-configs/windowrules.conf`.
+Пример: `windowrule = float, ^(telegram-desktop)$`
 
 ### 4. Как применить изменения?
-Любые правки в файлах `.conf` в этой папке требуют пересборки:
+Любые правки в файлах `.conf` требуют пересборки:
 ```bash
 rebuild
 ```
-После завершения команды ваши новые хоткеи и правила вступят в силу мгновенно.
 
 ### Алиасы терминала (Fish)
 

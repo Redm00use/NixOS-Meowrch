@@ -37,6 +37,7 @@
 - [✨ Features](#-features)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Installation](#-installation)
+- [🔧 Daily Usage & Updates](#-daily-usage)
 - [📦 Package Management](#-package-management-guide)
 - [📖 Meowrch Wiki](#-meowrch-wiki)
 - [⌨️ Hotkeys & Commands](#️-hotkeys--commands)
@@ -82,24 +83,39 @@ You will need **Git** to clone this repository. If you don't have it yet, run:
 # Temporarily install git
 nix-shell -p git
 ```
-*Alternatively, add `git` to `environment.systemPackages` in your `/etc/nixos/configuration.nix` and run `sudo nixos-rebuild switch`.*
+
+> [!CAUTION]
+> **IMPORTANT:** Do NOT delete or move the repository folder (`~/NixOS-Meowrch`) after installation! 
+> In a Flake-based NixOS setup, this folder is the source code of your system. Without it, you won't be able to update or change settings.
 
 ### 2. Installation
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
-
-# 2. Run the installer
 chmod +x install.sh
 ./install.sh
 ```
 
-**The installer will automatically:**
-- Detect your hardware.
-- Ask for your desired hostname and username.
-- Configure the system and build the configuration.
+## 🔧 Daily Usage
+
+### How to update the system?
+
+Thanks to Flakes, you can get updates for our Meowrch port directly from GitHub:
+
+```bash
+# 1. Enter the folder and pull the latest code changes
+cd ~/NixOS-Meowrch && git pull
+
+# 2. Update package hashes and rebuild the system with one command
+update-pkgs
+```
+
+### Main Commands (Aliases)
+*   `rebuild` — Rebuild the system after config changes.
+*   `update-pkgs` — Complete update of all Meowrch components.
+*   `cleanup` — Remove old system generations (frees disk space).
+*   `rollback` — Revert to the previous working version if something breaks.
 
 ## ⌨️ Hotkeys & Commands
 
@@ -153,80 +169,49 @@ In NixOS, packages are not installed via `apt install` or `pacman -S`. Instead, 
 
 ### 1. Where to find packages?
 Use the official search engine: **[search.nixos.org](https://search.nixos.org/packages)**.
-*   Select the **25.11** channel (matching your system).
+*   Select the **25.11** channel.
 *   Copy the package name (e.g., `telegram-desktop`).
 
 ### 2. Where to add them?
-Use the pre-installed **Zed IDE** to edit your configuration (run `zed` in terminal or find it in the app menu).
+Use the pre-installed **Zed IDE** to edit your configuration (run `zed` in terminal).
 
 There are two main places in this configuration:
 
 *   **User Applications** (Recommended):
     File: `home/home.nix` → `home.packages` section.
-    *Add browsers, messengers, players here.*
 *   **System Utilities**:
     File: `modules/packages/packages.nix` → `environment.systemPackages` section.
-    *Add drivers, system libraries, and CLI tools here.*
 
 ### 3. How to apply?
 After adding the package name to the list, save the file and run:
 ```bash
 rebuild
 ```
-The system will automatically download the package and add it to your app menu.
-
-### 4. Temporary Installation (without config)
-If you need a program just once:
-```bash
-nix shell nixpkgs#package_name
-```
-The program will be available until you close the terminal session.
 
 ## 📖 Meowrch Wiki
 
-Welcome to the knowledge base for configuring your system! Here you'll learn how to change the behavior of your desktops and windows.
+Welcome to the knowledge base for configuring your system!
 
 ### 1. Configuration File Locations
-In our system, Hyprland settings are modularized for better management.
-All primary configuration files are located here:
 `home/modules/hypr-configs/`
 
 *   `keybindings.conf` — Manage keyboard shortcuts.
-*   `windowrules.conf` — Define window behaviors (floating, size, etc.).
-*   `monitors.conf` — Resolution and display layouts.
-*   `autostart.conf` — Apps that launch automatically upon login.
+*   `windowrules.conf` — Define window behaviors.
+*   `monitors.conf` — Display layouts.
+*   `autostart.conf` — Auto-launch apps.
 
 ### 2. How to add a Custom Keybinding
 Open `home/modules/hypr-configs/keybindings.conf` in **Zed IDE**.
-The syntax is straightforward:
-`bind = MODIFIER, KEY, ACTION, COMMAND`
-
-**Examples:**
-*   `bind = $mainMod, F, exec, firefox` — Launch Firefox with `Super + F`.
-*   `bind = $subMod, G, exec, gimp` — Launch GIMP with `Super + Shift + G`.
+Syntax: `bind = MODIFIER, KEY, ACTION, COMMAND`
 
 ### 3. How to set Window Rules
-If you want a program to always behave in a certain way, edit `home/modules/hypr-configs/windowrules.conf`.
-
-**Common Examples:**
-*   **Force floating mode**:
-    `windowrule = float, ^(telegram-desktop)$`
-*   **Set specific window size**:
-    `windowrule = size 800 600, ^(pavucontrol)$`
-*   **Open on a specific workspace**:
-    `windowrule = workspace 3, ^(discord)$`
-*   **Enable Background Blur**:
-    `layerrule = blur, rofi`
-
-> [!TIP]
-> To find the exact "class" of a window for a rule, run `hyprctl clients` in your terminal or use the `hyprprop` utility.
+Edit `home/modules/hypr-configs/windowrules.conf`.
+Example: `windowrule = float, ^(telegram-desktop)$`
 
 ### 4. Applying Changes
-Any changes made to the `.conf` files in this directory require a system rebuild to take effect:
 ```bash
 rebuild
 ```
-Once the command finishes, your new keybindings and rules will be active immediately.
 
 ### Terminal Aliases (Fish)
 
