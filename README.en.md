@@ -1,7 +1,5 @@
 <div align="center">
     <img src=".meta/logo.png" width="300px">
-    <br>
-    <img src=".meta/assets/fastfetch_preview.jpg" width="800px">
     <h1>🐱 Meowrch NixOS</h1>
     <p><i>Beautiful, declarative, and reproducible NixOS configuration based on <a href="https://github.com/meowrch/meowrch">Meowrch</a></i></p>
     <p>
