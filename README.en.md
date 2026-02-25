@@ -120,6 +120,8 @@ Use the official search engine: **[search.nixos.org](https://search.nixos.org/pa
 *   Copy the package name (e.g., `telegram-desktop`).
 
 ### 2. Where to add them?
+Use the pre-installed **Zed IDE** to edit your configuration (run `zed` in terminal or find it in the app menu).
+
 There are two main places in this configuration:
 
 *   **User Applications** (Recommended):
