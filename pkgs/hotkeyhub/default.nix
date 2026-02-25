@@ -8,13 +8,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "hotkeyhub";
-  version = "unstable-2025-01-16";
+  version = "0.3";
 
   src = fetchFromGitHub {
     owner = "meowrch";
     repo = "HotkeyHub";
-    rev = "main";
-    sha256 = "1c7gi59m68fxbsswjssn63gyipy6v33hs6pgd0lcyh2w48kwmd2p"; # Updated by install.sh
+    rev = "v0.3";
+    sha256 = "sha256-V7TKJyJcQM8oaO8aDcfYxt/o3zBWa8m1Xt0hU1OJ77A=";
   };
   cargoHash = "sha256-qatwDu4F1Xwemsp8CtLLIz+cHYN4IZRJ5MRwN43QJy4=";
 

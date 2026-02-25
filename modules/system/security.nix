@@ -220,6 +220,9 @@
 
   # Kernel security parameters
   boot.kernel.sysctl = {
+    # Disable NMI watchdog for performance
+    "kernel.nmi_watchdog" = 0;
+
     # Kernel pointer restriction
     "kernel.kptr_restrict" = 2;
 

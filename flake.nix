@@ -138,7 +138,7 @@
     packages.${system} = let
       customPkgs = import ./pkgs { inherit pkgs; };
     in {
-      inherit (customPkgs) fabric fabric-cli mewline pawlette meowrch-themes;
+      inherit (customPkgs) fabric fabric-cli mewline pawlette meowrch-themes hotkeyhub meowrch-settings meowrch-scripts meowrch-tools;
     };
 
     devShells.${system}.default = pkgs.mkShell {

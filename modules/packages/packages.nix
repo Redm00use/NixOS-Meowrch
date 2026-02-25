@@ -165,5 +165,8 @@
         # Meowrch
         pawlette                   # Менеджер тем Meowrch
         meowrch-themes             # Официальные темы Meowrch
+        meowrch-settings           # Системные оптимизации Meowrch
+        hotkeyhub                  # Шпаргалка по хоткеям
+        meowrch-tools              # Утилиты Meowrch
   ];
 }

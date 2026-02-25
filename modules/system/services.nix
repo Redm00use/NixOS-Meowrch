@@ -1,6 +1,29 @@
 { config, pkgs, lib, ... }:
 
 {
+  # System Optimizations from meowrch-settings
+  boot = {
+    kernel.sysctl = {
+      "vm.swappiness" = 100;
+      "vm.vfs_cache_pressure" = 50;
+      "vm.dirty_bytes" = 268435456;
+      "vm.page-cluster" = 0;
+      "vm.dirty_background_bytes" = 67108864;
+      "vm.dirty_writeback_centisecs" = 1500;
+      "net.core.netdev_max_backlog" = 4096;
+      "fs.file-max" = 2097152;
+    };
+    
+    extraModprobeConfig = ''
+      # NVIDIA GPU Optimizations
+      options nvidia NVreg_UsePageAttributeTable=1 NVreg_InitializeSystemMemoryAllocations=0 NVreg_RegistryDwords=RmEnableAggressiveVblank=1 NVreg_EnableS0ixPowerManagement=1
+      
+      # AMD GPU Optimizations
+      options amdgpu si_support=1 cik_support=1
+      options radeon si_support=0 cik_support=0
+    '';
+  };
+
   # System Services Configuration
   services = {
     # Display Manager (SDDM configuration moved to desktop module)
@@ -112,6 +135,7 @@
       enable = true;
       packages = with pkgs; [
         gnome-settings-daemon
+        meowrch-settings
         # android-udev-rules removed due to being superseded by built-in systemd uaccess rules
       ];
 

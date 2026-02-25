@@ -43,8 +43,7 @@
     mewline
     fabric-cli
     pawlette
-    hotkeyhub
-    meowrch-settings
+    # hotkeyhub and meowrch-settings are now in systemPackages
     meowrch-tools
 
     # --- Antigravity (Google) ---
