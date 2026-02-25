@@ -1,4 +1,26 @@
-# Meowrch v3.0 (NixOS Edition) - Release Notes
+# NixOS-Meowrch Release History
+
+## 🐱 V3.4.0 (The Stability Update) - 2026-02-25
+
+This release focuses on stability, correct system integration, and user convenience.
+
+### 🚀 Highlights
+- **Universal Wayland Session Manager (UWSM)**: Full integration for faster and more stable sessions.
+- **Mewline Systemd Service**: Mewline is now managed by systemd with auto-restart on failure. No more disappearing bars!
+- **Simplified Maintenance**: New `update-pkgs` command to sync all custom Meowrch components in one click.
+- **Dark Mode Enforcement**: GTK4/Libadwaita apps (like GNOME Settings and HotkeyHub) now strictly respect dark theme.
+- **Clean Configuration**: Removed experimental/unused browsers and components to slim down the build.
+
+### 🛠 Technical Changes
+- Updated `mewline` to **v1.4.1**.
+- Updated `meowrch-tools` to **v3.1.1** (flattened bin structure).
+- Updated `meowrch-settings` to **v3.1.3** (NixOS-specific udev patches).
+- Restored original **Rofi** layout and styling.
+- Comprehensive **README** overhaul with beginner-friendly guides and accurate keybindings.
+
+---
+
+# Meowrch v3.0 (NixOS Edition) - Legacy Notes
 
 This release brings the visual and functional overhaul of **Meowrch v3.0** (originally Arch-based) to NixOS.
 
