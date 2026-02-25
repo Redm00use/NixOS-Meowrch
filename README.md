@@ -18,6 +18,9 @@
         <a href="#-установка-пакетов-гайд">
             <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
+        <a href="#-meowrch-wiki">
+            <img src="https://img.shields.io/badge/Wiki-Config_System-blue?style=for-the-badge&logo=bookstack&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
+        </a>
     </p>
 </div>
 
@@ -143,6 +146,52 @@ rebuild
 nix shell nixpkgs#название_пакета
 ```
 Программа будет доступна, пока вы не закроете терминал.
+
+## 📖 Meowrch Wiki
+
+Добро пожаловать в базу знаний по настройке вашей системы! Здесь описано, как менять «поведение» рабочих столов и окон.
+
+### 1. Где лежат настройки?
+В нашей системе настройки Hyprland разделены на модули для удобства.
+Все основные файлы находятся здесь:
+`home/modules/hypr-configs/`
+
+*   `keybindings.conf` — горячие клавиши (хоткеи).
+*   `windowrules.conf` — правила для окон (плавающие окна, размеры).
+*   `monitors.conf` — настройки мониторов и разрешений.
+*   `autostart.conf` — приложения, которые запускаются сами при входе.
+
+### 2. Как добавить свой хоткей?
+Откройте `home/modules/hypr-configs/keybindings.conf` в **Zed IDE**.
+Синтаксис простой:
+`bind = МОДИФИКАТОР, КЛАВИША, ДЕЙСТВИЕ, КОМАНДА`
+
+**Примеры:**
+*   `bind = $mainMod, F, exec, firefox` — запуск Firefox по `Super + F`.
+*   `bind = $subMod, G, exec, gimp` — запуск GIMP по `Super + Shift + G`.
+
+### 3. Как настроить правила окон?
+Если вы хотите, чтобы программа всегда открывалась в определенном виде, правьте `home/modules/hypr-configs/windowrules.conf`.
+
+**Полезные примеры:**
+*   **Сделать окно плавающим**:
+    `windowrule = float, ^(telegram-desktop)$`
+*   **Задать точный размер**:
+    `windowrule = size 800 600, ^(pavucontrol)$`
+*   **Открыть на определенном воркспейсе**:
+    `windowrule = workspace 3, ^(discord)$`
+*   **Размытие фона (Blur)**:
+    `layerrule = blur, rofi`
+
+> [!TIP]
+> Чтобы узнать "имя" окна (class) для правила, введите в терминале команду `hyprctl clients` или используйте утилиту `hyprprop`.
+
+### 4. Как применить изменения?
+Любые правки в файлах `.conf` в этой папке требуют пересборки:
+```bash
+rebuild
+```
+После завершения команды ваши новые хоткеи и правила вступят в силу мгновенно.
 
 ### Алиасы терминала (Fish)
 

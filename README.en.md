@@ -18,6 +18,9 @@
         <a href="#-package-management-guide">
             <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
+        <a href="#-meowrch-wiki">
+            <img src="https://img.shields.io/badge/Wiki-Config_System-blue?style=for-the-badge&logo=bookstack&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
+        </a>
     </p>
 </div>
 
@@ -144,6 +147,52 @@ If you need a program just once:
 nix shell nixpkgs#package_name
 ```
 The program will be available until you close the terminal session.
+
+## 📖 Meowrch Wiki
+
+Welcome to the knowledge base for configuring your system! Here you'll learn how to change the behavior of your desktops and windows.
+
+### 1. Configuration File Locations
+In our system, Hyprland settings are modularized for better management.
+All primary configuration files are located here:
+`home/modules/hypr-configs/`
+
+*   `keybindings.conf` — Manage keyboard shortcuts.
+*   `windowrules.conf` — Define window behaviors (floating, size, etc.).
+*   `monitors.conf` — Resolution and display layouts.
+*   `autostart.conf` — Apps that launch automatically upon login.
+
+### 2. How to add a Custom Keybinding
+Open `home/modules/hypr-configs/keybindings.conf` in **Zed IDE**.
+The syntax is straightforward:
+`bind = MODIFIER, KEY, ACTION, COMMAND`
+
+**Examples:**
+*   `bind = $mainMod, F, exec, firefox` — Launch Firefox with `Super + F`.
+*   `bind = $subMod, G, exec, gimp` — Launch GIMP with `Super + Shift + G`.
+
+### 3. How to set Window Rules
+If you want a program to always behave in a certain way, edit `home/modules/hypr-configs/windowrules.conf`.
+
+**Common Examples:**
+*   **Force floating mode**:
+    `windowrule = float, ^(telegram-desktop)$`
+*   **Set specific window size**:
+    `windowrule = size 800 600, ^(pavucontrol)$`
+*   **Open on a specific workspace**:
+    `windowrule = workspace 3, ^(discord)$`
+*   **Enable Background Blur**:
+    `layerrule = blur, rofi`
+
+> [!TIP]
+> To find the exact "class" of a window for a rule, run `hyprctl clients` in your terminal or use the `hyprprop` utility.
+
+### 4. Applying Changes
+Any changes made to the `.conf` files in this directory require a system rebuild to take effect:
+```bash
+rebuild
+```
+Once the command finishes, your new keybindings and rules will be active immediately.
 
 ### Terminal Aliases (Fish)
 
