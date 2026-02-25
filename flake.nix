@@ -5,6 +5,9 @@
     # NixOS 25.11 "Xantusia" — единственный канал
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    # Нестабильный канал
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,6 +51,7 @@
 
   outputs = { self
     , nixpkgs
+    , nixpkgs-unstable
     , home-manager
     , hyprland
     , hyprland-plugins
@@ -65,11 +69,10 @@
       config.allowUnfree = true;
     };
 
-    # Кастомные пакеты Meowrch (meowrch-scripts, meowrch-themes)
-    meowrch-scripts = pkgs.callPackage ./packages/meowrch-scripts.nix {
-      hyprland = pkgs.hyprland;
+    pkgs-unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
     };
-    meowrch-themes  = pkgs.callPackage ./packages/meowrch-themes.nix { };
 
     # Overlay с кастомными пакетами (mewline, pawlette, hotkeyhub и т.д.)
     overlay-meowrch = final: prev: (import ./pkgs { pkgs = final; });
@@ -80,7 +83,7 @@
   {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
       specialArgs = {
-        inherit inputs spicetify-nix catppuccin-nix zen-browser hyprland hyprland-plugins;
+        inherit inputs spicetify-nix catppuccin-nix zen-browser hyprland hyprland-plugins pkgs-unstable;
       };
       modules = [
         ({ pkgs, ... }: {
@@ -100,7 +103,7 @@
           nixpkgs.config.allowUnfree = true;
 
           home-manager.extraSpecialArgs = {
-            inherit inputs firefox-addons meowrch-scripts meowrch-themes;
+            inherit inputs firefox-addons pkgs-unstable;
           };
 
           home-manager.users.meowrch = {
@@ -122,7 +125,7 @@
     homeConfigurations.meowrch = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit inputs firefox-addons meowrch-scripts meowrch-themes;
+        inherit inputs firefox-addons pkgs-unstable;
       };
       modules = [
         inputs.catppuccin-nix.homeModules.catppuccin
@@ -135,9 +138,7 @@
     packages.${system} = let
       customPkgs = import ./pkgs { inherit pkgs; };
     in {
-      inherit (customPkgs) fabric fabric-cli mewline;
-      meowrch-scripts = meowrch-scripts;
-      meowrch-themes = meowrch-themes;
+      inherit (customPkgs) fabric fabric-cli mewline pawlette meowrch-themes;
     };
 
     devShells.${system}.default = pkgs.mkShell {

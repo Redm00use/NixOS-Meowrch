@@ -1,20 +1,47 @@
 #!/usr/bin/env bash
 sleep 1
-killall xdg-desktop-portal-hyprland
-killall xdg-desktop-portal-gnome
-killall xdg-desktop-portal-kde
-killall xdg-desktop-portal-lxqt
-killall xdg-desktop-portal-wlr
-killall xdg-desktop-portal
+
+# Gracefully kill existing portals
+for portal in \
+    xdg-desktop-portal-hyprland \
+    xdg-desktop-portal-gnome \
+    xdg-desktop-portal-kde \
+    xdg-desktop-portal-lxqt \
+    xdg-desktop-portal-wlr \
+    xdg-desktop-portal
+do
+    pkill -x "$portal" 2>/dev/null || true
+done
+
 sleep 1
 
-# Use different directory on NixOS
-if [ -d /run/current-system/sw/libexec ]; then
-    libDir=/run/current-system/sw/libexec
-else
-    libDir=/usr/lib
+# On NixOS portals live in /run/current-system/sw/libexec
+# On other distros they are in /usr/lib or /usr/libexec
+find_portal_bin() {
+    local name="$1"
+    for dir in \
+        /run/current-system/sw/libexec \
+        /usr/lib \
+        /usr/libexec \
+        /usr/local/libexec
+    do
+        if [ -x "$dir/$name" ]; then
+            echo "$dir/$name"
+            return
+        fi
+    done
+    # Fallback: use PATH
+    command -v "$name" 2>/dev/null || true
+}
+
+PORTAL_HYPR=$(find_portal_bin "xdg-desktop-portal-hyprland")
+PORTAL_MAIN=$(find_portal_bin "xdg-desktop-portal")
+
+if [ -n "$PORTAL_HYPR" ]; then
+    "$PORTAL_HYPR" &
+    sleep 2
 fi
 
-$libDir/xdg-desktop-portal-hyprland &
-sleep 2
-$libDir/xdg-desktop-portal &
+if [ -n "$PORTAL_MAIN" ]; then
+    "$PORTAL_MAIN" &
+fi

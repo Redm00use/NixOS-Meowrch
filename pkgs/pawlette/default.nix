@@ -1,72 +1,53 @@
-{ pkgs, ... }:
+{ lib
+, python3
+, fetchFromGitHub
+}:
 
-let
-  # Pawlette wrapper that mimics the original behavior but adapted for NixOS
-  # Instead of git switching, it updates a theme file and rebuilds
-  pawlette = pkgs.writeShellScriptBin "pawlette" ''
-    set -e
+python3.pkgs.buildPythonApplication rec {
+  pname = "pawlette";
+  version = "0.1.0";
+  pyproject = true;
+
+  src = fetchFromGitHub {
+    owner = "Meowrch";
+    repo = "pawlette";
+    rev = "f214a8a8b3da97d002ed3ac411c0701c88197cfc";
+    hash = "sha256-xiv4fuWtrXiV+blWw2xLaBUhigDffcrnnDYq3o01V/s=";
+  };
+
+  postPatch = ''
+    # Relax pydantic version requirement and fix systemd package name for NixOS
+    substituteInPlace pyproject.toml \
+      --replace 'pydantic>=2.12.0,<3.0.0' 'pydantic>=2.11.0,<3.0.0' \
+      --replace '"systemd>=0.17.1"' '"systemd-python>=0.17.1"'
     
-    THEME_FILE="/etc/nixos/modules/desktop/theme-current.nix" # Adjust path as needed
-    FLAKE_DIR="/etc/nixos"
-    
-    function show_help() {
-      echo "Pawlette for NixOS (Wrapper)"
-      echo "Usage:"
-      echo "  pawlette select <theme>   Select a theme via meowrch.py"
-      echo "  pawlette set-theme <th.>  Alias for select"
-      echo "  pawlette list             List available themes"
-      echo "  pawlette get-themes-info  Get JSON themes info"
-    }
-
-    if [ "$1" == "list" ]; then
-      echo "Available themes:"
-      for theme in ~/.config/meowrch/themes/*; do
-        if [ -d "$theme" ]; then
-          echo "  $(basename "$theme")"
-        fi
-      done
-      exit 0
-    fi
-
-    if [ "$1" == "get-themes-info" ]; then
-      THEMES_DIR="$HOME/.config/meowrch/themes"
-      echo "{"
-      first=true
-      if [ -d "$THEMES_DIR" ]; then
-        for theme in "$THEMES_DIR"/*; do
-          if [ -d "$theme" ]; then
-            name=$(basename "$theme")
-            logo="$theme/preview.png"
-            if [ "$first" = true ]; then
-              first=false
-            else
-              echo ","
-            fi
-            echo -n "  \"$name\": { \"logo\": \"$logo\" }"
-          fi
-        done
-      fi
-      echo ""
-      echo "}"
-      exit 0
-    fi
-
-    if [ "$1" == "select" ] || [ "$1" == "set-theme" ]; then
-      THEME="$2"
-      if [ -z "$THEME" ]; then
-        echo "Error: No theme specified"
-        exit 1
-      fi
-      
-      echo "Switching to theme: $THEME"
-      $HOME/.config/meowrch/venv/bin/python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$THEME" 2>/dev/null || \
-      /run/current-system/sw/bin/python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$THEME"
-      
-      exit 0
-    fi
-
-
-    show_help
+    # Fix AttributeError and ValueError in journal handler initialization
+    substituteInPlace src/pawlette/common/setup_loguru.py \
+      --replace "journal.JournaldLogHandler" "journal.JournalHandler" \
+      --replace 'journal.JournalHandler("pawlette")' 'journal.JournalHandler(SYSLOG_IDENTIFIER="pawlette")'
   '';
-in
-pawlette
+
+  nativeBuildInputs = [
+    python3.pkgs.setuptools
+    python3.pkgs.wheel
+  ];
+
+  propagatedBuildInputs = with python3.pkgs; [
+    loguru
+    packaging
+    pydantic
+    requests
+    systemd-python
+    tqdm
+  ];
+
+  pythonImportsCheck = [ "pawlette" ];
+
+  meta = with lib; {
+    description = "Utility for changing themes in the meowrch";
+    homepage = "https://github.com/Meowrch/pawlette";
+    license = licenses.gpl3Plus;
+    maintainers = [ ];
+    mainProgram = "pawlette";
+  };
+}

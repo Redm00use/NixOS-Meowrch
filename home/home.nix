@@ -5,7 +5,7 @@
 # ║                                                                          ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
-{ config, pkgs, lib, inputs, firefox-addons, meowrch-scripts, meowrch-themes, ... }:
+{ config, pkgs, lib, inputs, firefox-addons, pkgs-unstable, ... }:
 
 {
   imports = [
@@ -52,6 +52,7 @@
 
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
+    pkgs-unstable.gemini-cli
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

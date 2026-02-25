@@ -161,5 +161,9 @@
         catppuccin-qt5ct           # Catppuccin тема для Qt
         gnome-themes-extra         # Дополнительные темы GNOME
         gsettings-desktop-schemas  # Схемы настроек рабочего стола
+        
+        # Meowrch
+        pawlette                   # Менеджер тем Meowrch
+        meowrch-themes             # Официальные темы Meowrch
   ];
 }

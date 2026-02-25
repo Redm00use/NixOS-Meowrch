@@ -22,14 +22,14 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "mewline";
-  version = "0.1.0-unstable-2026-02-25";
+  version = "1.4.1";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "meowrch";
     repo = "mewline";
-    rev = "afb3ffb4cf52e72b30c132601a29a63b1ea4081d";
-    hash = "sha256-N6DFD2aGjkfjWTOr1e3yUjj6fgTdsVhiM/tbfnej5Zw=";
+    rev = "v1.4.1";
+    hash = "sha256-1C0htvLBBO5YSWgWq/3SdCZZ4+mExRjlFYfOtRAI74k=";
   };
 
   nativeBuildInputs = [

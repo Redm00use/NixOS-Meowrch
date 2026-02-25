@@ -132,7 +132,7 @@ check_battery_notifications() {
 
                     # Для 3% делаем чтобы ноутбук уходил в сон
                     if [ "$threshold" -eq 3 ]; then
-                        sh ${XDG_BIN_HOME:-$HOME/bin}/screen-lock.sh --suspend
+                        sh ${XDG_BIN_HOME:-$HOME/.local/bin}/screen-lock.sh --suspend
                         exit 0
                     fi 
                     

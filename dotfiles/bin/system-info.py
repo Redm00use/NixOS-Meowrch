@@ -1,12 +1,27 @@
 import os
 import json
-import psutil
-import GPUtil
 import argparse
-import pyamdgpuinfo
 import configparser
 from os.path import expandvars
 from dataclasses import dataclass
+
+try:
+    import psutil
+    HAS_PSUTIL = True
+except ImportError:
+    HAS_PSUTIL = False
+
+try:
+    import GPUtil
+    HAS_GPUTIL = True
+except ImportError:
+    HAS_GPUTIL = False
+
+try:
+    import pyamdgpuinfo
+    HAS_PYAMDGPUINFO = True
+except ImportError:
+    HAS_PYAMDGPUINFO = False
 
 
 # ┏━━━┳━━┳━┓┏━┳━━━┳┓╋╋┏━━┳━┓┏━┓
@@ -59,23 +74,32 @@ def get_cpu_info(label_mode: str):
 	label_mode: str = utilization - Вывод загруженности в процентах
 	label_mode: str = temp - Вывод температуры в градусах Цельсия
 	"""
+	if not HAS_PSUTIL:
+		return {'text': '󰍛 N/A', 'tooltip': 'psutil not installed', 'critical': False}
 
 	with open("/proc/cpuinfo", "r") as cpu_info:
 		lines = cpu_info.readlines()
-	
+
+	cpu_name = "Unknown"
 	for line in lines:
-		if "name" in line:
+		if "model name" in line:
 			cpu_name = line.split(":")[1].strip()
 			break
 
 	cpu_percent = int(psutil.cpu_percent(interval=1))
 
 	try:
-		cpu_temp = int(psutil.sensors_temperatures()['coretemp'][0].current)
-	except:
+		temps = psutil.sensors_temperatures()
+		if 'coretemp' in temps:
+			cpu_temp = int(temps['coretemp'][0].current)
+		elif 'k10temp' in temps:  # AMD
+			cpu_temp = int(temps['k10temp'][0].current)
+		else:
+			cpu_temp = "N/A"
+	except Exception:
 		cpu_temp = "N/A"
 
-	icons = get_icon(cpu_percent, 0 if cpu_temp == "N/A" else cpu_temp)
+	icons = get_icon(cpu_percent, 0 if cpu_temp == "N/A" else int(cpu_temp))
 	percent_icon = icons.percent_icon
 	percent_critical = icons.percent_critical
 	temp_icon = icons.temp_icon
@@ -84,10 +108,12 @@ def get_cpu_info(label_mode: str):
 	return {
 		'text': f"󰍛 {str(cpu_temp)}°C" if label_mode == 'temp' else f"󰍛 {str(cpu_percent)}%",
 		'tooltip': f"󰍛 Name: {cpu_name}\n{percent_icon}Utilization: {str(cpu_percent)}%\n{temp_icon}Temp: {str(cpu_temp)}°C",
-		'critical': temp_critical if label_mode == "temp" else percent_critical
+		'critical': bool(temp_critical) if label_mode == "temp" else bool(percent_critical)
 	}
 
 def get_ram_info():
+	if not HAS_PSUTIL:
+		return {'text': '  N/A', 'tooltip': 'psutil not installed', 'critical': False}
 	svmem = psutil.virtual_memory()
 	total = str(round(svmem.total / (1024.0 ** 3), 2))
 	used = round(svmem.used / (1000 ** 2) / 1000, 2)
@@ -112,40 +138,43 @@ def get_ram_info():
 def get_gpu_info(label_mode: str):
 	percent_critical = False
 	temp_critical = False
+	gpu_name = 'N/A'
+	gpu_percent: object = 'N/A'
+	gpu_temp: object = 'N/A'
+	percent_icon = "󰾆 "
+	temp_icon = " "
 
-	try:
-		gpu = GPUtil.getGPUs()[0]
-		gpu_name = gpu.name
-		gpu_percent: float = round(gpu.load * 100, 2)
-		gpu_temp: float = round(gpu.temperature, 2)
-
-		icons = get_icon(gpu_percent, gpu_temp)
-		percent_icon = icons.percent_icon
-		percent_critical = icons.percent_critical
-		temp_icon = icons.temp_icon
-		temp_critical = icons.temp_critical
-	except:
+	if HAS_GPUTIL:
 		try:
-			first_gpu = pyamdgpuinfo.get_gpu(0)
-			gpu_name = "N/A"
-			gpu_percent = int(first_gpu.query_load())
-			gpu_temp = first_gpu.query_temperature()
-			icons = get_icon(gpu_percent, gpu_temp)
+			gpu = GPUtil.getGPUs()[0]
+			gpu_name = gpu.name
+			gpu_percent = round(gpu.load * 100, 2)
+			gpu_temp = round(gpu.temperature, 2)
+			icons = get_icon(int(gpu_percent), int(gpu_temp))
 			percent_icon = icons.percent_icon
 			percent_critical = icons.percent_critical
 			temp_icon = icons.temp_icon
 			temp_critical = icons.temp_critical
-		except:
-			gpu_name = 'N/A'
-			gpu_percent = 'N/A'
-			gpu_temp = 'N/A'
-			percent_icon = "󰾆 "
-			temp_icon = " "
+		except Exception:
+			pass
+	elif HAS_PYAMDGPUINFO:
+		try:
+			first_gpu = pyamdgpuinfo.get_gpu(0)
+			gpu_name = first_gpu.name if hasattr(first_gpu, 'name') else 'AMD GPU'
+			gpu_percent = int(first_gpu.query_load())
+			gpu_temp = first_gpu.query_temperature()
+			icons = get_icon(int(gpu_percent), int(gpu_temp))
+			percent_icon = icons.percent_icon
+			percent_critical = icons.percent_critical
+			temp_icon = icons.temp_icon
+			temp_critical = icons.temp_critical
+		except Exception:
+			pass
 
 	return {
 		'text': f"󰢮 {str(gpu_temp)}°C" if label_mode == 'temp' else f"󰢮 {str(gpu_percent)}%",
 		'tooltip': f"󰢮 Name: {gpu_name}\n{percent_icon}Utilization: {str(gpu_percent)}%\n{temp_icon}Temp: {str(gpu_temp)}°C",
-		'critical': temp_critical if label_mode == "temp" else percent_critical
+		'critical': bool(temp_critical) if label_mode == "temp" else bool(percent_critical)
 	}
 
 def get_system_info_config(config_path: str):

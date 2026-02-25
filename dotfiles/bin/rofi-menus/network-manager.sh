@@ -109,8 +109,10 @@ manage_wifi() {
         rm /tmp/wifi_list.txt
         return
     else
-        # Проверяем состояние выбранной сети
-        local device_status=$(nmcli -t -f STATE device show wlan0 | grep STATE | cut -d: -f2)
+        # Get actual WiFi interface name (not hardcoded wlan0)
+        local wifi_iface
+        wifi_iface=$(nmcli -t -f TYPE,DEVICE device status 2>/dev/null | awk -F: '/^wifi/{print $2; exit}')
+        wifi_iface="${wifi_iface:-wlan0}"
 
         # Определяем действие в зависимости от состояния сети
         local action
@@ -133,7 +135,7 @@ manage_wifi() {
                 fi
                 ;;
             "  Disconnect")
-                nmcli device disconnect wlan0 && notify-send "Disconnected" "You have been disconnected from $chosen_id."
+                nmcli device disconnect "$wifi_iface" && notify-send "Disconnected" "You have been disconnected from $chosen_id."
                 ;;
             "  Forget")
                 nmcli connection delete id "$chosen_id" && notify-send "Forgotten" "The network $chosen_id has been forgotten."
@@ -211,7 +213,7 @@ main_menu() {
 	        
     if [[ $status_mode == true ]]; then
         get_status
-        exit 1
+        exit 0
     fi
 
     ##==> Если служба не запущена

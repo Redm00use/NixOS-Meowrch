@@ -55,12 +55,13 @@ update_hash() {
         echo "🔑 Calculated Hash: $hash"
 
         # Update the file
-        # We look for "sha256 = ...;" line
-        # Use a temporary file for sed to avoid portability issues
-        local sed_tmp=$(mktemp)
-        
-        # Replace lib.fakeSha256 OR any existing string in quotes
-        sed "s|sha256 = .*;|sha256 = \"$hash\";|" "$nix_file" > "$sed_tmp" && mv "$sed_tmp" "$nix_file"
+        # We look for "sha256 = ...;" or "hash = ...;" line
+        if grep -q "hash =" "$nix_file"; then
+            sri_hash="sha256-$(nix-hash --to-base64 --type sha256 $hash)"
+            sed -i "s|hash = .*;|hash = \"$sri_hash\";|" "$nix_file"
+        else
+            sed -i "s|sha256 = .*;|sha256 = \"$hash\";|" "$nix_file"
+        fi
         
         echo "✅ Updated $nix_file"
         rm -f "$tmp_file"
@@ -74,7 +75,7 @@ update_hash() {
 # Define packages to update
 # Format: update_hash "folder_name" "github_url" "branch"
 
-update_hash "mewline" "https://github.com/meowrch/mewline" "main"
+update_hash "mewline" "https://github.com/meowrch/mewline" "v1.4.1"
 update_hash "fabric" "https://github.com/Fabric-Development/fabric" "main"
 update_hash "hotkeyhub" "https://github.com/meowrch/HotkeyHub" "main"
 update_hash "meowrch-settings" "https://github.com/meowrch/meowrch-settings" "main"

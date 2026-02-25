@@ -33,9 +33,9 @@ launch_bar() {
     # Use service type for auto-restart capability when UWSM is active
     # nohup is needed here because we want the bar to survive toggle-bar.sh exit
     if [[ "$bar_name" == "mewline" ]]; then
-        nohup "${XDG_BIN_HOME:-$HOME/bin}/uwsm-launcher.sh" -t service -s s "$bar_name" >/dev/null 2>&1 &
+        nohup "${XDG_BIN_HOME:-$HOME/.local/bin}/uwsm-launcher.sh" -t service -s s "$bar_name" >/dev/null 2>&1 &
     else
-        nohup "${XDG_BIN_HOME:-$HOME/bin}/uwsm-launcher.sh" -t service -s s "$bar_name" >/dev/null 2>&1 &
+        nohup "${XDG_BIN_HOME:-$HOME/.local/bin}/uwsm-launcher.sh" -t service -s s "$bar_name" >/dev/null 2>&1 &
     fi
     disown
 }

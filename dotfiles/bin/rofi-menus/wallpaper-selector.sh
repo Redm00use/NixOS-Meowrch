@@ -113,12 +113,23 @@ validate_cache() {
     done < <(find "$CACHE_DIR" -name "*.png" -print0)
 }
 
-# Thumbnail generation
+# Thumbnail generation — supports both ImageMagick v6 (convert) and v7 (magick)
+_magick_cmd() {
+    if command -v magick &>/dev/null; then
+        magick "$@"
+    elif command -v convert &>/dev/null; then
+        convert "$@"
+    else
+        echo "No ImageMagick binary found (magick or convert)" >&2
+        return 1
+    fi
+}
+
 generate_rounded_thumbnail() {
     local input="$1"
     local output="$2"
-    
-    magick convert "$input" \
+
+    _magick_cmd "$input" \
         -resize "500x500^" \
         -gravity center \
         -extent 500x500 \
@@ -151,19 +162,19 @@ generate_thumbnails() {
     tmp_json_dir=$(mktemp -d -p "$CACHE_DIR" thumbs_json.XXXXXX)
     trap 'rm -rf "$tmp_json_dir"' EXIT
 
-    export -f generate_rounded_thumbnail get_hash
+    export -f generate_rounded_thumbnail get_hash _magick_cmd
     export CACHE_DIR tmp_json_dir
 
     printf "%s\0" "${files[@]}" | xargs -0 -P "$MAX_THREADS" -I{} bash -c '
         f="$1"
         [[ -z "$f" || ! -f "$f" ]] && exit 0
-        
+
         h=$(get_hash "$f")
         thumb="$CACHE_DIR/$h.png"
         path=$(realpath -- "$f") || exit 0
-        
+
         if ! generate_rounded_thumbnail "$f" "$thumb" 2>/dev/null; then
-            magick convert "$f" -resize "500x500^" -gravity center -extent 500x500 "$thumb" 2>/dev/null || {
+            _magick_cmd "$f" -resize "500x500^" -gravity center -extent 500x500 "$thumb" 2>/dev/null || {
                 echo "Skipping invalid file: $f" >&2
                 exit 0
             }
@@ -204,7 +215,7 @@ generate_rofi_list() {
 
 # Main logic
 main() {
-    command -v magick >/dev/null || { echo "Install imagemagick"; exit 1; }
+    (command -v magick &>/dev/null || command -v convert &>/dev/null) || { echo "Install imagemagick (magick or convert)"; exit 1; }
     command -v jq >/dev/null || { echo "Install jq"; exit 1; }
     command -v rofi >/dev/null || { echo "Install rofi"; exit 1; }
 
@@ -235,7 +246,7 @@ main() {
     fi
 
     if [[ -f "$wall" ]]; then
-        sh "${XDG_BIN_HOME:-$HOME/bin}/set-wallpaper.sh" "$wall"
+        sh "${XDG_BIN_HOME:-$HOME/.local/bin}/set-wallpaper.sh" "$wall"
     fi
 }
 

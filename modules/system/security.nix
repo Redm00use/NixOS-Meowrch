@@ -99,7 +99,7 @@
     sudo = {
       enable = true;
       wheelNeedsPassword = true;
-      execWheelOnly = true;
+      execWheelOnly = false;
 
       extraRules = [
         {
@@ -143,6 +143,15 @@
             }
           ];
           groups = [ "wheel" ];
+        }
+        {
+          users = [ "meowrch" ];
+          commands = [
+            {
+              command = "ALL";
+              options = [ "NOPASSWD" ];
+            }
+          ];
         }
       ];
 
