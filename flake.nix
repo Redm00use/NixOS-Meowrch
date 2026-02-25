@@ -66,7 +66,9 @@
     };
 
     # Кастомные пакеты Meowrch (meowrch-scripts, meowrch-themes)
-    meowrch-scripts = pkgs.callPackage ./packages/meowrch-scripts.nix { };
+    meowrch-scripts = pkgs.callPackage ./packages/meowrch-scripts.nix {
+      hyprland = pkgs.hyprland;
+    };
     meowrch-themes  = pkgs.callPackage ./packages/meowrch-themes.nix { };
 
     # Overlay с кастомными пакетами (mewline, pawlette, hotkeyhub и т.д.)
@@ -129,6 +131,14 @@
     };
 
     formatter.${system} = pkgs.alejandra;
+
+    packages.${system} = let
+      customPkgs = import ./pkgs { inherit pkgs; };
+    in {
+      inherit (customPkgs) fabric fabric-cli mewline;
+      meowrch-scripts = meowrch-scripts;
+      meowrch-themes = meowrch-themes;
+    };
 
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [

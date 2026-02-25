@@ -22,14 +22,14 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "mewline";
-  version = "unstable-2025-01-16";
+  version = "0.1.0-unstable-2026-02-25";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "meowrch";
     repo = "mewline";
-    rev = "main";
-    sha256 = "12gg108bbkl72pjiiic4x7imj9klsbysn5k895cfw161yav22bfl"; # Updated by install.sh
+    rev = "afb3ffb4cf52e72b30c132601a29a63b1ea4081d";
+    hash = "sha256-N6DFD2aGjkfjWTOr1e3yUjj6fgTdsVhiM/tbfnej5Zw=";
   };
 
   nativeBuildInputs = [
@@ -95,6 +95,16 @@ EOF
     substituteInPlace src/mewline/constants.py \
       --replace-fail 'THEME_STYLE = STYLES_FOLDER / "theme.scss"' \
         'THEME_STYLE = APP_CACHE_DIRECTORY / "theme.scss"'
+
+    # Fix upstream bug: screen_brightness getter crashes with AttributeError
+    # when no backlight device is found (screen_backlight_path is never set).
+    substituteInPlace src/mewline/services/brightness.py \
+      --replace-fail \
+        'brightness_path = self.screen_backlight_path / "brightness"' \
+        'brightness_path = getattr(self, "screen_backlight_path", None)
+        if brightness_path is None:
+            return -1
+        brightness_path = brightness_path / "brightness"'
   '';
 
   postInstall = ''

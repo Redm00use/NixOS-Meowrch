@@ -41,6 +41,7 @@
     meowrch-scripts
     meowrch-themes
     mewline
+    fabric-cli
     pawlette
     hotkeyhub
     meowrch-settings
@@ -63,19 +64,19 @@
     shellAliases = {
       # === УПРАВЛЕНИЕ NIXOS ===
       # Быстрая пересборка системы
-      rebuild = "sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake .#meowrch --impure";
+      rebuild = "sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /home/meowrch/NixOS-Meowrch#meowrch --impure";
       b = "rebuild";  # короткий алиас
 
       # Проверка конфигурации без применения
-      check = "sudo nixos-rebuild dry-build --flake .#meowrch";
-      test-os = "sudo nixos-rebuild test --flake .#meowrch";
+      check = "sudo nixos-rebuild dry-build --flake /home/meowrch/NixOS-Meowrch#meowrch";
+      test-os = "sudo nixos-rebuild test --flake /home/meowrch/NixOS-Meowrch#meowrch";
 
       # Обновление системы
-      update = "cd /home/meowrch/meowrch-nixos && nix flake update && rebuild";
+      update = "cd /home/meowrch/NixOS-Meowrch && nix flake update && rebuild";
       u = "update";  # короткий алиас
 
       # Валидация конфигурации
-      validate = "cd /home/meowrch/meowrch-nixos && ./validate-config.sh";
+      validate = "cd /home/meowrch/NixOS-Meowrch && ./validate-config.sh";
 
       # === УПРАВЛЕНИЕ NIX ===
       # Очистка мусора
@@ -103,13 +104,13 @@
 
       # === РЕДАКТИРОВАНИЕ КОНФИГУРАЦИИ ===
       # Открыть конфиг в редакторе
-      config = "cd /home/meowrch/meowrch-nixos && zed .";
+      config = "cd /home/meowrch/NixOS-Meowrch && zed .";
       c = "config";
 
       # Быстрое редактирование основных файлов
-      edit-config = "zed /home/meowrch/meowrch-nixos/configuration.nix";
-      edit-home = "zed /home/meowrch/meowrch-nixos/home/home.nix";
-      edit-flake = "zed /home/meowrch/meowrch-nixos/flake.nix";
+      edit-config = "zed /home/meowrch/NixOS-Meowrch/configuration.nix";
+      edit-home = "zed /home/meowrch/NixOS-Meowrch/home/home.nix";
+      edit-flake = "zed /home/meowrch/NixOS-Meowrch/flake.nix";
 
       # === ИНФОРМАЦИЯ О СИСТЕМЕ ===
       # Системная информация
@@ -202,9 +203,9 @@
       wallpaper = "python ~/.config/meowrch/meowrch.py --action select-wallpaper";
 
       # Быстрый доступ к конфигурации
-      cd-config = "cd /home/meowrch/meowrch-nixos";
-      cd-home = "cd /home/meowrch/meowrch-nixos/home";
-      cd-modules = "cd /home/meowrch/meowrch-nixos/modules";
+      cd-config = "cd /home/meowrch/NixOS-Meowrch";
+      cd-home = "cd /home/meowrch/NixOS-Meowrch/home";
+      cd-modules = "cd /home/meowrch/NixOS-Meowrch/modules";
     };
 
     # --- Пользовательские функции ---
@@ -244,7 +245,7 @@
         set backup_name "nixos-config-$timestamp"
 
         mkdir -p $backup_dir
-        cp -r /home/meowrch/meowrch-nixos "$backup_dir/$backup_name"
+        cp -r /home/meowrch/NixOS-Meowrch "$backup_dir/$backup_name"
         echo "📦 Конфигурация сохранена в: $backup_dir/$backup_name"
       '';
 
@@ -427,6 +428,9 @@
     SDL_VIDEODRIVER = "wayland";
     QT_QPA_PLATFORM = "wayland";
 
+    # XDG directories (critical for scripts)
+    XDG_BIN_HOME = "$HOME/.local/bin";
+
     # Default applications
     EDITOR = "zed";
     VISUAL = "zed";
@@ -435,6 +439,7 @@
 
     # Development
     NIXPKGS_ALLOW_UNFREE = "1";
+    # OPENROUTER_API_KEY задаётся локально в ~/.config/fish/conf.d/99-local-secrets.fish
   };
 
   # (Git configuration block intentionally removed; git package can still be installed via system packages)
@@ -566,7 +571,8 @@
   # Zed config file
   home.file.".config/zed/settings.json".text = builtins.toJSON {
     # Theme
-    theme = "Catppuccin Mocha";
+    theme = "One Dark Pro";
+    theme_mode = "dark";
 
     # UI Settings
     ui_font_size = 14;
@@ -589,7 +595,12 @@
     languages = {
       Nix = {
         language_servers = ["nil"];
-        formatter = "alejandra";
+        formatter = {
+          external = {
+            command = "alejandra";
+            arguments = ["-"];
+          };
+        };
       };
     };
 
@@ -612,9 +623,60 @@
     # Vim mode (optional)
     vim_mode = false;
 
-    # Assistant (disable if not needed)
+    # Assistant / AI Agent — OpenRouter (DeepSeek R1 0528 по умолчанию)
     assistant = {
-      enabled = false;
+      enabled = true;
+      version = "2";
+      default_model = {
+        provider = "openrouter";
+        model = "deepseek/deepseek-r1-0528";
+      };
+      system_prompt = "Всегда отвечай на русском языке. Код и технические термины можно оставлять на английском, но все объяснения, комментарии и ответы пиши на русском.";
+    };
+
+    # Дополнительные провайдеры AI
+    # API ключ читается из env: OPENROUTER_API_KEY (задан локально, не в git)
+    language_models = {
+      openrouter = {
+        available_models = [
+          {
+            provider = "openrouter";
+            name = "anthropic/claude-3.7-sonnet";
+            display_name = "Claude 3.7 Sonnet";
+            max_tokens = 200000;
+          }
+          {
+            provider = "openrouter";
+            name = "anthropic/claude-3.5-sonnet";
+            display_name = "Claude 3.5 Sonnet";
+            max_tokens = 200000;
+          }
+          {
+            provider = "openrouter";
+            name = "google/gemini-2.0-flash";
+            display_name = "Gemini 2.0 Flash";
+            max_tokens = 1000000;
+          }
+          {
+            provider = "openrouter";
+            name = "openai/gpt-4o";
+            display_name = "GPT-4o";
+            max_tokens = 128000;
+          }
+          {
+            provider = "openrouter";
+            name = "deepseek/deepseek-r1-0528";
+            display_name = "DeepSeek R1 0528";
+            max_tokens = 64000;
+          }
+          {
+            provider = "openrouter";
+            name = "deepseek/deepseek-r1";
+            display_name = "DeepSeek R1";
+            max_tokens = 64000;
+          }
+        ];
+      };
     };
   };
 
@@ -626,7 +688,7 @@
         "ctrl-/" = "editor::ToggleComments";
         "ctrl-d" = "editor::SelectNext";
         "ctrl-shift-k" = "editor::DeleteLine";
-        "ctrl-shift-d" = "editor::DuplicateLine";
+        "ctrl-shift-d" = "editor::DuplicateLineDown";
         "ctrl-p" = "file_finder::Toggle";
         "ctrl-shift-p" = "command_palette::Toggle";
         "ctrl-shift-f" = "search::ToggleReplace";
