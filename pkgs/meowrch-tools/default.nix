@@ -12,13 +12,13 @@
 
 stdenv.mkDerivation rec {
   pname = "meowrch-tools";
-  version = "unstable-2025-01-16";
+  version = "3.1.1";
 
   src = fetchFromGitHub {
     owner = "meowrch";
     repo = "meowrch-tools";
-    rev = "main";
-    sha256 = "0f16m8fchh9v78d4vnzk22ba67y31rixjhbd89xaigvnygyih199"; # Updated by install.sh
+    rev = "v3.1.1";
+    hash = "sha256-KQUY/fN2v6h6Qm1B2WMOwx+jlhDz200aOjtByByqJjg=";
   };
 
   nativeBuildInputs = [ makeWrapper ];

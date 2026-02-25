@@ -79,7 +79,7 @@ update_hash "mewline" "https://github.com/meowrch/mewline" "v1.4.1"
 update_hash "fabric" "https://github.com/Fabric-Development/fabric" "main"
 update_hash "hotkeyhub" "https://github.com/meowrch/HotkeyHub" "v0.3"
 update_hash "meowrch-settings" "https://github.com/meowrch/meowrch-settings" "v3.1.3"
-update_hash "meowrch-tools" "https://github.com/meowrch/meowrch-tools" "main"
+update_hash "meowrch-tools" "https://github.com/meowrch/meowrch-tools" "v3.1.1"
 
 echo "----------------------------------------------------------------"
 echo "🎉 All package hashes updated!"
