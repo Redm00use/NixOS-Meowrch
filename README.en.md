@@ -82,7 +82,7 @@ chmod +x install.sh
 | `Super + Shift + Arrows` | Resize active window |
 | `Super + Ctrl + Left/Right` | Previous/Next workspace |
 | **Apps & Menus** | |
-| `Super + A` | App Launcher (Rofi) |
+| `Super + D` | App Launcher (Rofi) |
 | `Super + E` | File Manager (Nemo) |
 | `Super + V` | Clipboard Manager |
 | `Super + W` | Select Wallpaper (Rofi) |
