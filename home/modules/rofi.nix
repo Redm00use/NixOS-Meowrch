@@ -61,22 +61,22 @@
 
   # Create custom Rofi theme
   home.file.".config/rofi/themes/meowrch.rasi".text = ''
-    /*
-     * Meowrch Rofi Theme
-     * Based on Catppuccin Mocha
-     */
+    /**
+     * Meowrch Original Rofi Theme
+     * Colors: Catppuccin Mocha
+     **/
 
     * {
         bg-col:  #1e1e2e;
-        bg-col-light: #313244;
-        border-col: #45475a;
-        selected-col: #89b4fa;
+        bg-col-light: #1e1e2e;
+        border-col: #b4befe;
+        selected-col: #b4befe;
         blue: #89b4fa;
         fg-col: #cdd6f4;
         fg-col2: #f38ba8;
         grey: #6c7086;
         width: 600;
-        font: "JetBrainsMono Nerd Font 12";
+        font: "JetBrainsMono Nerd Font 11";
     }
 
     element-text, element-icon , mode-switcher {
@@ -85,134 +85,99 @@
     }
 
     window {
-        height: 360px;
-        border: 3px;
+        height: 450px;
+        width: 700px;
+        border: 2px;
         border-color: @border-col;
         background-color: @bg-col;
-        border-radius: 15px;
+        border-radius: 12px;
     }
 
     mainbox {
         background-color: @bg-col;
-        border-radius: 15px;
     }
 
     inputbar {
         children: [prompt,entry];
         background-color: @bg-col;
-        border-radius: 10px;
-        padding: 8px;
-        margin: 10px 10px 0px 10px;
-        border: 2px;
-        border-color: @border-col;
+        border-radius: 5px;
+        padding: 2px;
     }
 
     prompt {
-        background-color: @selected-col;
-        padding: 6px 12px;
+        background-color: @blue;
+        padding: 6px;
         text-color: @bg-col;
-        border-radius: 6px;
-        margin: 0px 10px 0px 0px;
-        font: "JetBrainsMono Nerd Font Bold 12";
+        border-radius: 3px;
+        margin: 20px 0px 0px 20px;
     }
 
     textbox-prompt-colon {
         expand: false;
-        str: "";
+        str: ":";
     }
 
     entry {
         padding: 6px;
-        margin: 0px 0px 0px 0px;
+        margin: 20px 0px 0px 10px;
         text-color: @fg-col;
         background-color: @bg-col;
-        placeholder: "Search...";
-        placeholder-color: @grey;
-        vertical-align: 0.5;
     }
 
     listview {
         border: 0px 0px 0px;
         padding: 6px 0px 0px;
-        margin: 10px 10px 0px 10px;
-        columns: 1;
-        lines: 8;
+        margin: 10px 0px 0px 20px;
+        columns: 2;
+        lines: 5;
         background-color: @bg-col;
-        spacing: 0px;
-        cycle: true;
-        dynamic: true;
-        layout: vertical;
     }
 
     element {
-        padding: 8px 12px;
+        padding: 5px;
         background-color: @bg-col;
-        text-color: @fg-col;
-        border-radius: 8px;
-        margin: 0px 0px 2px 0px;
+        text-color: @fg-col  ;
     }
 
     element-icon {
-        size: 24px;
-        margin: 0px 10px 0px 0px;
+        size: 25px;
     }
 
-    element.selected {
-        background-color: @selected-col;
-        text-color: @bg-col;
-    }
-
-    element.selected.active {
-        background-color: @selected-col;
-        text-color: @bg-col;
+    element selected {
+        background-color:  @selected-col ;
+        text-color: @bg-col  ;
+        border-radius: 5px;
     }
 
     mode-switcher {
         spacing: 0;
-        margin: 10px;
-        background-color: @bg-col-light;
-        border-radius: 10px;
-        padding: 5px;
-    }
+      }
 
     button {
-        padding: 8px 12px;
+        padding: 10px;
         background-color: @bg-col-light;
         text-color: @grey;
-        vertical-align: 0.5;
+        vertical-align: 0.5; 
         horizontal-align: 0.5;
-        border-radius: 6px;
-        margin: 2px;
     }
 
-    button.selected {
-        background-color: @selected-col;
-        text-color: @bg-col;
-        font: "JetBrainsMono Nerd Font Bold 12";
+    button selected {
+      background-color: @bg-col;
+      text-color: @blue;
     }
 
     message {
         background-color: @bg-col-light;
-        margin: 10px;
-        padding: 10px;
-        border-radius: 10px;
-        border: 2px;
-        border-color: @border-col;
+        margin: 2px;
+        padding: 2px;
+        border-radius: 5px;
     }
 
     textbox {
         padding: 6px;
-        margin: 0px 0px 0px 0px;
-        text-color: @fg-col2;
+        margin: 20px 0px 0px 20px;
+        text-color: @blue;
         background-color: @bg-col-light;
-    }
-
-    error-message {
-        padding: 10px;
-        border: 2px solid;
-        border-radius: 10px;
-        border-color: @fg-col2;
-        background-color: @bg-col;
     }
   '';
 
