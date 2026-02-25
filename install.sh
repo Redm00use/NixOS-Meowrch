@@ -47,7 +47,7 @@ echo -e "${PURPLE}
 ╚═╝░░░░░╚═╝╚══════╝░╚════╝░░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝
 ${NC}"
 
-echo -e "${CYAN}Welcome to Meowrch NixOS Installer v3.3.1${NC}"
+echo -e "${CYAN}Welcome to Meowrch NixOS Installer v3.4.0${NC}"
 echo -e "${BLUE}Starting pre-install checks...${NC}" && sleep 1
 
 # Check if running on NixOS ISO
