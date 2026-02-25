@@ -6,6 +6,7 @@
     enable = true;
     package = pkgs.hyprland;
     xwayland.enable = true;
+    withUWSM = true;
   };
 
   # XDG Desktop Portal is configured in services.nix
@@ -41,6 +42,7 @@
     # Core dependencies
     hyprland
     waybar
+    uwsm
 
     # Screen management tools
     wlr-randr
@@ -123,16 +125,6 @@
   };
 
 
-
-  # Create XDG desktop entry for Hyprland
-  environment.etc."xdg/wayland-sessions/hyprland.desktop".text = ''
-    [Desktop Entry]
-    Name=Hyprland
-    Comment=Hyprland Tiling Wayland Compositor
-    Exec=hyprland-wrapped
-    Type=Application
-    DesktopNames=Hyprland
-  '';
 
   # Add to system path
   environment.pathsToLink = [ "/libexec" ];

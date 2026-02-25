@@ -89,5 +89,5 @@ in {
   # '';
 
   # SDDM default session
-  services.displayManager.defaultSession = "hyprland";
+  services.displayManager.defaultSession = "hyprland-uwsm";
 }
