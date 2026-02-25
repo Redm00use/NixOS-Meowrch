@@ -170,6 +170,7 @@
       m = "micro";
       rebuild = "sudo nixos-rebuild switch --flake .#meowrch";
       update = "nix flake update";
+      update-pkgs = "cd /home/meowrch/NixOS-Meowrch && ./scripts/update-pkg-hashes.sh && nix flake update && sudo nixos-rebuild switch --flake .#meowrch --impure";
       clean = "sudo nix-collect-garbage -d";
       search = "nix search nixpkgs";
     };

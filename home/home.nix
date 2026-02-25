@@ -73,6 +73,7 @@
 
       # Обновление системы
       update = "cd /home/meowrch/NixOS-Meowrch && nix flake update && rebuild";
+      update-pkgs = "cd /home/meowrch/NixOS-Meowrch && ./scripts/update-pkg-hashes.sh && nix flake update && rebuild";
       u = "update";  # короткий алиас
 
       # Валидация конфигурации
