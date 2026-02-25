@@ -13,7 +13,12 @@
             <img src="https://img.shields.io/badge/NixOS-25.11-blue?style=for-the-badge&logo=nixos&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="https://t.me/meowrch">
-            <img src="https://img.shields.ok/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
+            <img src="https://img.shields.io/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
+        </a>
+    </p>
+    <p>
+        <a href="#-installation">
+            <img src="https://img.shields.io/badge/Install-Meowrch_NixOS-success?style=for-the-badge&logo=nixos&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="#-установка-пакетов-гайд">
             <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
@@ -60,11 +65,56 @@ NixOS-Meowrch/
 
 ## 🚀 Installation
 
+### Требования
+- Работающая установка NixOS (минимальная ISO или существующая система)
+- Интернет-соединение
+
+### Установка
+
 ```bash
+# 1. Клонируйте репозиторий
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
+
+# 2. Запустите установщик
 chmod +x install.sh
 ./install.sh
+```
+
+Установщик предложит:
+1. **Режим** — обновить текущую систему или установить на новый диск
+2. **Hostname** — имя вашей машины
+3. **Username** — имя пользователя
+4. **GPU** — AMD / Intel / Nvidia (автоматическая настройка модулей)
+5. **Shell** — Fish / Zsh / Bash
+
+### После установки
+
+```bash
+# Перезагрузка
+reboot
+
+# Добавить обои
+cp ~/Pictures/*.{jpg,png} ~/.local/share/wallpapers/
+```
+
+## 🔧 Daily Usage
+
+### Основные команды
+
+```bash
+# Пересборка после изменений
+sudo nixos-rebuild switch --flake ~/meowrch-nixos#nixos
+
+# Обновить все зависимости
+cd ~/meowrch-nixos && nix flake update
+sudo nixos-rebuild switch --flake .#nixos
+
+# Очистить старые поколения
+sudo nix-collect-garbage -d
+
+# Откатиться на предыдущее состояние
+sudo nixos-rebuild switch --rollback
 ```
 
 ## ⌨️ Хоткеи и Команды
@@ -170,7 +220,7 @@ nix shell nixpkgs#название_пакета
 *   `bind = $mainMod, F, exec, firefox` — запуск Firefox по `Super + F`.
 *   `bind = $subMod, G, exec, gimp` — запуск GIMP по `Super + Shift + G`.
 
-### 3. Как настроить правила окон?
+### 3. Как настраивать правила окон?
 Если вы хотите, чтобы программа всегда открывалась в определенном виде, правьте `home/modules/hypr-configs/windowrules.conf`.
 
 **Полезные примеры:**
@@ -202,7 +252,8 @@ rebuild
 | `update` | `nix flake update && rebuild` | Обновить flake.lock и пересобрать систему |
 | `cleanup` | `sudo nix-collect-garbage -d` | Очистка старых поколений и мусора |
 | `optimize` | `sudo nix-store --optimise` | Оптимизация Nix store (экономия места) |
-| `rollback` | `sudo nixos-rebuild switch --rollback` | Откат к предыдущему состоянию |
+| `generations` | `sudo nix-env --list-generations` | Список всех версий (поколений) системы |
+| `rollback` | `sudo nixos-rebuild switch --rollback` | Откат к предыдущему удачному состоянию |
 | `cls` | `clear` | Очистить экран |
 | `ll` | `ls -la` | Список файлов с деталями |
 | `validate` | `./validate-config.sh` | Проверка синтаксиса конфигурации |
@@ -216,7 +267,7 @@ rebuild
 | | |
 |---|---|
 | **Оригинальный проект** | [Meowrch (Arch Linux)](https://github.com/meowrch/meowrch) |
-| **Порт на NixOS** | [@Redm00us](https://t.me/Redm00us) |
+| **Порт на NixOS** | [@Redm00use](https://t.me/Redm00use) |
 | **Telegram** | [@meowrch](https://t.me/meowrch) |
 
 <div align="center">

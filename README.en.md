@@ -15,6 +15,11 @@
         <a href="https://t.me/meowrch">
             <img src="https://img.shields.io/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
+    </p>
+    <p>
+        <a href="#-installation">
+            <img src="https://img.shields.io/badge/Install-Meowrch_NixOS-success?style=for-the-badge&logo=nixos&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
+        </a>
         <a href="#-package-management-guide">
             <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
@@ -60,12 +65,22 @@ NixOS-Meowrch/
 
 ## 🚀 Installation
 
+Simple and automated installation process:
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
+
+# 2. Run the installer
 chmod +x install.sh
 ./install.sh
 ```
+
+**The installer will automatically:**
+- Detect your hardware.
+- Ask for your desired hostname and username.
+- Configure the system and build the configuration.
 
 ## ⌨️ Hotkeys & Commands
 
@@ -200,7 +215,7 @@ Once the command finishes, your new keybindings and rules will be active immedia
 |-------|---------|-------------|
 | `rebuild` | `sudo nixos-rebuild switch...` | Rebuild system from flake |
 | `update-pkgs` | `./scripts/update-pkg-hashes.sh && ...` | Update all package hashes & rebuild |
-| `update` | `nix flake update && rebuild` | Update flake.lock & rebuild |
+| `update` | `nix flake update & rebuild` | Update flake.lock & rebuild |
 | `cleanup` | `sudo nix-collect-garbage -d` | Remove old generations and garbage |
 | `optimize` | `sudo nix-store --optimise` | Optimize Nix store (save space) |
 | `generations` | `sudo nix-env --list-generations` | List all system versions |
