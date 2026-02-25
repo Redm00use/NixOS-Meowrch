@@ -15,6 +15,9 @@
         <a href="https://t.me/meowrch">
             <img src="https://img.shields.io/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
+        <a href="#-package-management-guide">
+            <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
+        </a>
     </p>
 </div>
 
@@ -106,6 +109,39 @@ chmod +x install.sh
 | `Super + Alt + A` | Open App Launcher |
 | `Super + Alt + W` | Open Wallpapers |
 | `Super + Alt + code:60` | Open Emoji |
+
+## 📦 Package Management Guide
+
+In NixOS, packages are not installed via `apt install` or `pacman -S`. Instead, they are **declared** in the configuration files.
+
+### 1. Where to find packages?
+Use the official search engine: **[search.nixos.org](https://search.nixos.org/packages)**.
+*   Select the **25.11** channel (matching your system).
+*   Copy the package name (e.g., `telegram-desktop`).
+
+### 2. Where to add them?
+There are two main places in this configuration:
+
+*   **User Applications** (Recommended):
+    File: `home/home.nix` → `home.packages` section.
+    *Add browsers, messengers, players here.*
+*   **System Utilities**:
+    File: `modules/packages/packages.nix` → `environment.systemPackages` section.
+    *Add drivers, system libraries, and CLI tools here.*
+
+### 3. How to apply?
+After adding the package name to the list, save the file and run:
+```bash
+rebuild
+```
+The system will automatically download the package and add it to your app menu.
+
+### 4. Temporary Installation (without config)
+If you need a program just once:
+```bash
+nix shell nixpkgs#package_name
+```
+The program will be available until you close the terminal session.
 
 ### Terminal Aliases (Fish)
 

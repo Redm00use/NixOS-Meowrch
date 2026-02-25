@@ -13,7 +13,10 @@
             <img src="https://img.shields.io/badge/NixOS-25.11-blue?style=for-the-badge&logo=nixos&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="https://t.me/meowrch">
-            <img src="https://img.shields.io/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
+            <img src="https://img.shields.ok/badge/Telegram-Meowrch-blue?style=for-the-badge&logo=telegram&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
+        </a>
+        <a href="#-установка-пакетов-гайд">
+            <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
     </p>
 </div>
@@ -105,6 +108,39 @@ chmod +x install.sh
 | `Super + Alt + A` | Открыть App Launcher |
 | `Super + Alt + W` | Открыть Wallpapers |
 | `Super + Alt + code:60` | Открыть Emoji |
+
+## 📦 Установка пакетов (Гайд)
+
+В NixOS пакеты не устанавливаются через `apt install` или `pacman -S`. Вместо этого они **декларируются** в конфигурации.
+
+### 1. Где искать пакеты?
+Используйте официальный поиск: **[search.nixos.org](https://search.nixos.org/packages)**.
+*   Выберите ветку **25.11** (она соответствует вашей системе).
+*   Скопируйте название пакета (например, `telegram-desktop`).
+
+### 2. Куда вписывать?
+В этом конфиге есть два основных места:
+
+*   **Пользовательские приложения** (рекомендуется):
+    Файл: `home/home.nix` → раздел `home.packages`.
+    *Сюда пишем браузеры, мессенджеры, плееры.*
+*   **Системные утилиты**:
+    Файл: `modules/packages/packages.nix` → раздел `environment.systemPackages`.
+    *Сюда пишем драйверы, системные библиотеки, консольные тулзы.*
+
+### 3. Как применить?
+После того как вы вписали название пакета в список, сохраните файл и выполните команду:
+```bash
+rebuild
+```
+Система сама скачает пакет и добавит его в меню приложений.
+
+### 4. Временная установка (без конфига)
+Если программа нужна на один раз:
+```bash
+nix shell nixpkgs#название_пакета
+```
+Программа будет доступна, пока вы не закроете терминал.
 
 ### Алиасы терминала (Fish)
 
