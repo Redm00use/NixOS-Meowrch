@@ -13,7 +13,7 @@ BIN="${XDG_BIN_HOME:-$HOME/.local/bin}"
 SESSION_TYPE="${XDG_SESSION_TYPE:-wayland}"
 DESKTOP="${XDG_CURRENT_DESKTOP:-}"
 
-choice=$(printf "  Lock\n󰍃  Logout\n󰒲  Suspend\n  Reboot\n  Shutdown" | rofi -dmenu)
+choice=$(printf "󰌾  Lock\n󰍃  Logout\n󰒲  Suspend\n󰑓  Reboot\n󰐥  Shutdown" | rofi -dmenu)
 
 do_logout() {
     if [[ "$DESKTOP" == *"Hyprland"* ]] || [[ "$DESKTOP" == *"hyprland"* ]]; then
@@ -28,7 +28,7 @@ do_logout() {
 }
 
 case "$choice" in
-    "  Lock")
+    "󰌾  Lock")
         sh "${BIN}/screen-lock.sh"
         ;;
     "󰍃  Logout")
@@ -37,10 +37,10 @@ case "$choice" in
     "󰒲  Suspend")
         sh "${BIN}/screen-lock.sh" --suspend
         ;;
-    "  Reboot")
+    "󰑓  Reboot")
         systemctl reboot
         ;;
-    "  Shutdown")
+    "󰐥  Shutdown")
         systemctl poweroff
         ;;
 esac
