@@ -35,7 +35,7 @@ class CopyOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 
@@ -145,7 +145,7 @@ class DunstOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 
@@ -180,7 +180,7 @@ class CavaOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 
@@ -215,7 +215,7 @@ class FishOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 
@@ -272,7 +272,7 @@ class KittyOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 @dataclass
@@ -306,7 +306,7 @@ class WaybarCfgOption(BaseOption):
 
 		logging.error(
 			f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-			f"There is no {'folder' if self.is_dir else 'file'} \"{self.name}\" in the theme folder"
+			f"There is no file \"{self.name}\" in the theme folder"
 		)
 
 @dataclass
