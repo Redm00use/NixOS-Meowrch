@@ -5,6 +5,7 @@ ENG:
 - Mewline (Dynamic Island) is now a systemd user service with auto-restart.
 - Updated all Meowrch components to latest stable versions (Mewline v1.4.1, Tools v3.1.1, Settings v3.1.3).
 - Added 'update-pkgs' command for easy maintenance.
+- Fixed broken emojis and icons across the entire system (Fastfetch, Powermenu, etc.).
 - Enforced dark mode for GTK4/Libadwaita apps (HotkeyHub, GNOME Settings).
 - Restored original Meowrch Rofi theme and layout.
 - Comprehensive README overhaul with beginner guides and accurate keybindings.
@@ -14,6 +15,7 @@ RUS:
 - Mewline переведен на систему сервисов systemd с автоматическим перезапуском при сбоях.
 - Все компоненты Meowrch обновлены до последних стабильных версий.
 - Добавлена команда 'update-pkgs' для удобного обновления всех пакетов одной командой.
+- Исправлены битые эмодзи и иконки по всей системе (Fastfetch, Powermenu и др.).
 - Принудительный темный режим для приложений GTK4/Libadwaita (HotkeyHub, Настройки GNOME).
 - Восстановлен оригинальный вид и макет Rofi из Meowrch (Arch).
 - Полное обновление документации README с гайдами для новичков и точными хоткеями.

@@ -8,6 +8,7 @@ This release focuses on stability, correct system integration, and user convenie
 - **Universal Wayland Session Manager (UWSM)**: Full integration for faster and more stable sessions.
 - **Mewline Systemd Service**: Mewline is now managed by systemd with auto-restart on failure. No more disappearing bars!
 - **Simplified Maintenance**: New `update-pkgs` command to sync all custom Meowrch components in one click.
+- **Visual Polish**: Fixed broken emojis and icons across the entire system (Fastfetch, Powermenu, Brightness, Network Manager) to match modern Nerd Font 3.0+ standards.
 - **Dark Mode Enforcement**: GTK4/Libadwaita apps (like GNOME Settings and HotkeyHub) now strictly respect dark theme.
 - **Clean Configuration**: Removed experimental/unused browsers and components to slim down the build.
 
