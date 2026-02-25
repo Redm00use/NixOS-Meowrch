@@ -15,33 +15,17 @@ let
         chmod -R +w $out/share/sddm/themes/meowrch/
       fi
       
-      # Generate or overwrite theme.conf
-      cat > $out/share/sddm/themes/meowrch/theme.conf <<EOF
+      # Only generate theme.conf if it doesn't exist in src
+      if [ ! -f "$out/share/sddm/themes/meowrch/theme.conf" ]; then
+        cat > $out/share/sddm/themes/meowrch/theme.conf <<EOF
 [General]
 background=#1e1e2e
 type=color
 color=#1e1e2e
 fontSize=10
 autoFocusPassword=true
-
-[Design]
-backgroundMode=fill
-
-[loginButton]
-textColor=#cdd6f4
-backgroundColor=#89b4fa
-borderColor=#89b4fa
-
-[userList]
-userColor=#cdd6f4
-userBackgroundColor=#313244
-userBorderColor=#89b4fa
-
-[textField]
-textColor=#cdd6f4
-backgroundColor=#313244
-borderColor=#89b4fa
 EOF
+      fi
     '';
   };
 in {
@@ -82,6 +66,7 @@ in {
 
   # Install required Qt packages for SDDM and the theme itself
   environment.systemPackages = with pkgs; [
+    libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtquickcontrols2
     libsForQt5.qt5.qtgraphicaleffects
     libsForQt5.qt5.qtsvg
