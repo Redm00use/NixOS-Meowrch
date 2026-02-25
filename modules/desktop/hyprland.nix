@@ -31,6 +31,9 @@
 
     # For correct cursor size
     XCURSOR_SIZE = "24";
+
+    # Force dark theme for Libadwaita
+    ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
   };
 
   # Dependencies for Hyprland

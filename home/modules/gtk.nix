@@ -398,6 +398,7 @@
   home.sessionVariables = {
     # GTK theme variables
     GTK_THEME = "Adwaita:dark";
+    ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
     GTK2_RC_FILES = "$HOME/.gtkrc-2.0";
     
     # Cursor theme
