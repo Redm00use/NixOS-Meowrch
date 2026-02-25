@@ -15,8 +15,8 @@ ENABLED_COLOR=""
 DISABLED_COLOR=""
 SIGNAL_ICONS=("󰤟 " "󰤢 " "󰤥 " "󰤨 ")
 SECURED_SIGNAL_ICONS=("󰤡 " "󰤤 " "󰤧 " "󰤪 ")
-WIFI_CONNECTED_ICON=" "
-ETHERNET_CONNECTED_ICON=" "
+WIFI_CONNECTED_ICON="󰄬 "
+ETHERNET_CONNECTED_ICON="󰄬 "
 
 get_status() {
     if nmcli -t -f TYPE,STATE device status | grep 'ethernet:connected' > /dev/null; then

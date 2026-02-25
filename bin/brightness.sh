@@ -7,7 +7,7 @@
 # ┏┛┗┛┣┫┣┫┃┃┃┃┃┃╋╋┃┗━┛┣┫┣┳┛┏┓┗┓
 # ┗━━━┻━━┻┛┗┛┗┻┛╋╋┗━━━┻━━┻━┛┗━┛
 # The program was created by DIMFLIX (Modified by K1rsN7)
-# Github: https://github.com/DIMFLIX-OFFICIAL
+# Github: https://github.com/DIMFLIX
 
 SESSION_TYPE="$XDG_SESSION_TYPE"
 DEFAULT_COLOR="#61afef"
@@ -37,20 +37,20 @@ brightness_icon() {
     local color="$2"
     
     case $value in
-        9[0-9]%) icon="" ;;
-        8[0-9]%) icon="" ;;
-        7[0-9]%) icon="" ;;
-        6[0-9]%) icon="" ;;
-        5[1-9]%) icon="" ;;
-        4[0-9]%) icon="" ;;
-        3[0-9]%) icon="" ;;
-        2[0-9]%) icon="" ;;
-        1[0-9]%) icon="" ;;
-        [1-9]%) icon="" ;;
-        100%) icon="";;
-        50%) icon="";;
-        0%) icon="" ;;  
-        *) icon="" ;;
+        9[0-9]%) icon="󰃠" ;;
+        8[0-9]%) icon="󰃠" ;;
+        7[0-9]%) icon="󰃟" ;;
+        6[0-9]%) icon="󰃟" ;;
+        5[1-9]%) icon="󰃟" ;;
+        4[0-9]%) icon="󰃞" ;;
+        3[0-9]%) icon="󰃞" ;;
+        2[0-9]%) icon="󰃞" ;;
+        1[0-9]%) icon="󰃞" ;;
+        [1-9]%) icon="󰃞" ;;
+        100%) icon="󰃠";;
+        50%) icon="󰃟";;
+        0%) icon="󰃞" ;;  
+        *) icon="󰃠" ;;
     esac 
 
     if [[ "$SESSION_TYPE" == "wayland" ]]; then

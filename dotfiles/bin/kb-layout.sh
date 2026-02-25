@@ -14,7 +14,7 @@ COLOR="#ffffff"
 LANG_MODE=false
 CAPS_MODE=false
 PLAIN_MODE=false
-CAPS_ICON="󰪛 "
+CAPS_ICON="󰪛"
 
 get_lang() {
     if [ "$SESSION_TYPE" == "wayland" ]; then
