@@ -55,6 +55,25 @@
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
+  # ║                               Systemd Services                           ║
+  # ╚════════════════════════════════════════════════════════════════════════════╝
+  systemd.user.services.mewline = {
+    Unit = {
+      Description = "Mewline Dynamic Island Status Bar";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.mewline}/bin/mewline";
+      Restart = "on-failure";
+      RestartSec = "3";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
+  # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                               Fish Shell                                 ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
   programs.fish = {
