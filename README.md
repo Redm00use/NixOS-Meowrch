@@ -33,6 +33,15 @@
 > Порт оригинального **[Meowrch](https://github.com/meowrch/meowrch)** (Arch Linux) на **NixOS**.
 > Полная совместимость с экосистемой Nix, декларативность, воспроизводимость и стабильность.
 
+## 📑 Содержание
+- [✨ Особенности](#-features)
+- [📁 Структура проекта](#-project-structure)
+- [🚀 Установка](#-installation)
+- [📦 Гайд по пакетам](#-установка-пакетов-гайд)
+- [📖 Meowrch Wiki](#-meowrch-wiki)
+- [⌨️ Хоткеи и Команды](#️-хоткеи-и-команды)
+- [🎨 Темы](#-theming)
+
 ## ✨ Features
 
 | Feature | Implementation |
