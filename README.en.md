@@ -30,6 +30,54 @@
 - **Convenience:** Automated installer, Rofi app menu, Dunst notifications.
 - **Unique:** Includes custom scripts and tools from the original Meowrch.
 
+## ⌨️ Hotkeys & Commands
+
+### Hyprland Keybindings
+
+| Key | Action |
+|-----|--------|
+| `Super + Return` | Open Terminal (Kitty) |
+| `Super + A` | Application Launcher (Rofi) |
+| `Super + E` | File Manager (Nemo) |
+| `Super + Q` | Close active window |
+| `Super + K` | Kill window process |
+| `Super + Space` | Toggle floating mode |
+| `Alt + Return` | Fullscreen mode |
+| `Super + 1-0` | Switch Workspace |
+| `Super + Shift + 1-0` | Move window to Workspace |
+| `Super + Arrows` | Focus window (left/right/up/down) |
+| `Super + L` | Lock Screen |
+| `Super + X` | Power Menu |
+| `Super + W` | Select Wallpaper |
+| `Super + T` | Select Theme (Pawlette) |
+| `Super + V` | Clipboard Manager |
+| `Super + C` | Color Picker (Eye dropper) |
+| `Super + Shift + B` | Toggle Status Bar (Mewline) |
+| `Super + /` | Hotkeys Cheat Sheet (HotkeyHub) |
+| `Super + Shift + H` | Hotkeys Cheat Sheet (HotkeyHub) |
+| `Super + N` | Notification Center (SwayNC) |
+| `Super + Alt + S` | Move window to hidden workspace |
+| `Super + S` | Show hidden workspace |
+| `Print` | Area Screenshot |
+| `Super + Print` | Fullscreen Screenshot |
+| `XF86Audio*` | Volume Controls |
+| `XF86MonBrightness*` | Brightness Controls |
+
+### Terminal Aliases (Fish)
+
+| Alias | Command | Description |
+|-------|---------|-------------|
+| `rebuild` | `sudo nixos-rebuild switch...` | Rebuild system from flake |
+| `update-pkgs` | `./scripts/update-pkg-hashes.sh && ...` | Update all package hashes and rebuild |
+| `update` | `nix flake update && rebuild` | Update flake.lock and rebuild system |
+| `cleanup` | `sudo nix-collect-garbage -d` | Remove old generations and garbage |
+| `optimize` | `sudo nix-store --optimise` | Optimize Nix store (save disk space) |
+| `generations` | `sudo nix-env --list-generations` | List all system versions (generations) |
+| `rollback` | `sudo nixos-rebuild switch --rollback` | Revert to previous working state |
+| `cls` | `clear` | Clear terminal screen |
+| `ll` | `ls -la` | Detailed file list |
+| `validate` | `./validate-config.sh` | Check configuration syntax |
+
 ## 🛠 Installation
 
 Simple and automated installation process:

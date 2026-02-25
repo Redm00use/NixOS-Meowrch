@@ -156,23 +156,47 @@ sudo nixos-rebuild switch --rollback
 
 | Клавиша | Действие |
 |---------|----------|
-| `Super + Return` | Терминал (Kitty) |
-| `Super + A` | Лаунчер (Rofi) |
+| `Super + Return` | Открыть Терминал (Kitty) |
+| `Super + A` | Лаунчер приложений (Rofi) |
 | `Super + E` | Файловый менеджер (Nemo) |
-| `Super + Q` | Закрыть окно |
-| `Super + Space` | Переключить floating |
-| `Super + 1-0` | Переключить workspace |
-| `Super + Shift + 1-0` | Переместить окно на workspace |
-| `Super + стрелки` | Фокус по направлению |
+| `Super + Q` | Закрыть активное окно |
+| `Super + K` | Принудительно убить процесс окна |
+| `Super + Space` | Переключить режим плавающего окна |
+| `Alt + Return` | Полноэкранный режим |
+| `Super + 1-0` | Переключить рабочий стол |
+| `Super + Shift + 1-0` | Переместить окно на рабочий стол |
+| `Super + Стрелки` | Фокус окна (влево/вправо/вверх/вниз) |
 | `Super + L` | Заблокировать экран |
-| `Super + X` | Меню питания |
+| `Super + X` | Меню управления питанием |
 | `Super + W` | Выбор обоев |
+| `Super + T` | Выбор цветовой темы (Pawlette) |
 | `Super + V` | Менеджер буфера обмена |
-| `Super + B` | Показать/скрыть Waybar |
+| `Super + C` | Пипетка (Color Picker) |
+| `Super + Shift + B` | Переключить статус-бар (Mewline) |
+| `Super + /` | Шпаргалка по хоткеям (HotkeyHub) |
+| `Super + Shift + H` | Шпаргалка по хоткеям (HotkeyHub) |
+| `Super + N` | Центр уведомлений (SwayNC) |
+| `Super + Alt + S` | Переместить в скрытый воркспейс |
+| `Super + S` | Показать скрытый воркспейс |
 | `Print` | Скриншот (область) |
 | `Super + Print` | Скриншот (весь экран) |
-| `XF86Audio*` | Громкость |
-| `XF86MonBrightness*` | Яркость |
+| `XF86Audio*` | Управление громкостью |
+| `XF86MonBrightness*` | Управление яркостью |
+
+### Алиасы терминала (Fish)
+
+| Алиас | Команда | Описание |
+|-------|---------|----------|
+| `rebuild` | `sudo nixos-rebuild switch...` | Пересобрать систему из flake |
+| `update-pkgs` | `./scripts/update-pkg-hashes.sh && ...` | Обновить хэши всех пакетов и пересобрать |
+| `update` | `nix flake update && rebuild` | Обновить flake.lock и пересобрать систему |
+| `cleanup` | `sudo nix-collect-garbage -d` | Очистка старых поколений и мусора |
+| `optimize` | `sudo nix-store --optimise` | Оптимизация Nix store (экономия места) |
+| `generations` | `sudo nix-env --list-generations` | Список всех версий (поколений) системы |
+| `rollback` | `sudo nixos-rebuild switch --rollback` | Откат к предыдущему удачному состоянию |
+| `cls` | `clear` | Очистить экран |
+| `ll` | `ls -la` | Список файлов с деталями |
+| `validate` | `./validate-config.sh` | Проверка синтаксиса конфигурации |
 
 ## 🎨 Theming
 
