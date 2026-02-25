@@ -32,6 +32,14 @@ stdenv.mkDerivation rec {
     # The repo structure is usr/bin/, not bin/
     cp -r usr $out
 
+    # Move scripts from subdirectories to main bin/ for easier access
+    for dir in $out/bin/core $out/bin/wrappers $out/bin/gaming; do
+      if [ -d "$dir" ]; then
+        mv "$dir"/* $out/bin/ 2>/dev/null || true
+        rmdir "$dir"
+      fi
+    done
+
     # Make all scripts executable
     find $out/bin -type f -exec chmod +x {} \;
 
@@ -40,19 +48,6 @@ stdenv.mkDerivation rec {
       if [ -f "$script" ] && head -1 "$script" | grep -q "bash\|sh"; then
         wrapProgram "$script" \
           --prefix PATH : ${lib.makeBinPath [ bash coreutils curl jq python3 gamemode ]}
-      fi
-    done
-
-    # Wrap scripts in subdirectories
-    for dir in $out/bin/core $out/bin/wrappers $out/bin/gaming; do
-      if [ -d "$dir" ]; then
-        for script in "$dir"/*; do
-          if [ -f "$script" ]; then
-            chmod +x "$script"
-            wrapProgram "$script" \
-              --prefix PATH : ${lib.makeBinPath [ bash coreutils curl jq python3 gamemode ]}
-          fi
-        done
       fi
     done
 
