@@ -25,6 +25,10 @@ python3.pkgs.buildPythonApplication rec {
     substituteInPlace src/pawlette/common/setup_loguru.py \
       --replace "journal.JournaldLogHandler" "journal.JournalHandler" \
       --replace 'journal.JournalHandler("pawlette")' 'journal.JournalHandler(SYSLOG_IDENTIFIER="pawlette")'
+
+    # Patch system themes path for NixOS
+    substituteInPlace src/pawlette/constants.py \
+      --replace 'SYS_THEMES_FOLDER = Path(f"/usr/share/{APPLICATION_NAME}")' 'SYS_THEMES_FOLDER = Path("/run/current-system/sw/share/pawlette")'
   '';
 
   nativeBuildInputs = [

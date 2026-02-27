@@ -31,14 +31,14 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/share/pawlette/themes
+    mkdir -p $out/share/pawlette
     
     # Copy themes from their sources
-    cp -r ${mocha-src} $out/share/pawlette/themes/catppuccin-mocha
-    cp -r ${latte-src} $out/share/pawlette/themes/catppuccin-latte
+    cp -r ${mocha-src} $out/share/pawlette/catppuccin-mocha
+    cp -r ${latte-src} $out/share/pawlette/catppuccin-latte
     
     # Ensure they are readable
-    chmod -R u+w $out/share/pawlette/themes
+    chmod -R u+w $out/share/pawlette
     runHook postInstall
   '';
 

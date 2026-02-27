@@ -2,16 +2,16 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 Column {
-    spacing: 0
+    spacing: 30
     
     Text {
         id: dateLabel
 
-        anchors.right: parent.right
+        anchors.left: parent.left
         opacity: config.DateOpacity
 
         renderType: Text.NativeRendering
-        font.family: config.Font
+        font.family: mainFont.name
         font.pointSize: config.DateSize
         font.bold: config.DateIsBold == "true" ? true : false
         color: config.DateColor
@@ -24,11 +24,11 @@ Column {
     Text {
         id: timeLabel
 
-        anchors.right: parent.right
+        anchors.left: parent.left
         opacity: config.TimeOpacity
 
         renderType: Text.NativeRendering
-        font.family: config.Font
+        font.family: mainFont.name
         font.pointSize: config.TimeSize
         font.bold: config.TimeIsBold == "true" ? true : false
         color: config.TimeColor
