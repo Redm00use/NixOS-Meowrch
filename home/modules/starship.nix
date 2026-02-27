@@ -151,13 +151,6 @@
         format = "via $symbol[$ram( | $swap)]($style) ";
       };
       
-      # Load
-      load = {
-        disabled = false;
-        format = "load [$loadavg1( $loadavg5( $loadavg15))]($style) ";
-        style = "bold blue";
-      };
-      
       # Package version
       package = {
         format = "is [$symbol$version]($style) ";
@@ -172,7 +165,6 @@
       # Python
       python = {
         symbol = " ";
-        python_binary = ["./venv/bin/python" "python" "python3" "python2"];
         detect_extensions = ["py"];
         version_format = "v\${raw}";
         format = "via [\${symbol}\${pyenv_prefix}(\${version} )(\\($virtualenv\\) )]($style)";
@@ -189,7 +181,6 @@
         symbol = " ";
         style = "bold green";
         disabled = false;
-        not_capable_style = "bold red";
         detect_extensions = ["js" "mjs" "cjs" "ts" "mts" "cts"];
         detect_files = ["package.json" ".node-version"];
         detect_folders = ["node_modules"];
@@ -430,20 +421,14 @@
         disabled = false;
       };
       
-      # VCSH
-      vcsh = {
-        symbol = "";
-        style = "bold yellow";
-        format = "vcsh [$symbol$repo]($style) ";
-        disabled = false;
-      };
+            # VCSH
+            vcsh = {
+              symbol = "";
+              style = "bold yellow";
+              format = "vcsh [$symbol$repo]($style) ";
+              disabled = false;
+            };
+          };
+        };
+      }
       
-      # Fill
-      fill = {
-        symbol = " ";
-        style = "bold black";
-        disabled = false;
-      };
-    };
-  };
-}
