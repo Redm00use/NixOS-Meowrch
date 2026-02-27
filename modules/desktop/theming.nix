@@ -36,37 +36,6 @@
     gsettings-desktop-schemas
   ];
 
-  # ────────────── Конфигурационные файлы ──────────────
-  environment.etc = {
-    # GTK2 system-wide
-    "gtk-2.0/gtkrc".text = ''
-      gtk-theme-name = "Catppuccin-Mocha-Standard-Blue-Dark"
-      gtk-icon-theme-name = "Papirus-Dark"
-      gtk-cursor-theme-name = "Bibata-Modern-Classic"
-      gtk-cursor-theme-size = 24
-      gtk-font-name = "Noto Sans 11"
-    '';
-
-    # GTK3 system-wide
-    "gtk-3.0/settings.ini".text = ''
-      [Settings]
-      gtk-theme-name=Catppuccin-Mocha-Standard-Blue-Dark
-      gtk-icon-theme-name=Papirus-Dark
-      gtk-cursor-theme-name=Bibata-Modern-Classic
-      gtk-cursor-theme-size=24
-      gtk-font-name=Noto Sans 11
-      gtk-application-prefer-dark-theme=1
-    '';
-
-    # Тема иконок по умолчанию
-    "icons/default/index.theme".text = ''
-      [Icon Theme]
-      Name=Default
-      Comment=Default Cursor Theme
-      Inherits=Bibata-Modern-Classic
-    '';
-  };
-
   # ────────────── Шрифты ──────────────
   fonts = {
     # enableDefaultPackages is set in fonts.nix
@@ -159,9 +128,6 @@
 
   # ────────────── Переменные окружения ──────────────
   environment.variables = {
-    # GTK темы
-    GTK_THEME = "Catppuccin-Mocha-Standard-Blue-Dark";
-
     # Курсоры
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
@@ -176,9 +142,6 @@
 
   # ────────────── Сессионные переменные ──────────────
   environment.sessionVariables = {
-    # GTK настройки
-    GTK2_RC_FILES = "$XDG_CONFIG_HOME/gtk-2.0/gtkrc";
-
     # Qt настройки
     QT_QPA_PLATFORM = "wayland;xcb";
     QT_AUTO_SCREEN_SCALE_FACTOR = "1";
@@ -202,27 +165,5 @@
     enable = true;
     platformTheme = "qt5ct";
     style = "adwaita-dark";
-  };
-
-  # ────────────── Systemd сервисы ──────────────
-  systemd.user.services = {
-    # Применение GTK настроек
-    apply-gtk-theme = {
-      description = "Apply GTK theme settings";
-      wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      script = ''
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "Catppuccin-Mocha-Standard-Blue-Dark"
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-theme "Bibata-Modern-Classic"
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-size 24
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface monospace-font-name "JetBrainsMono Nerd Font 11"
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-    };
   };
 }
