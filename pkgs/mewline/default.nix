@@ -18,6 +18,7 @@
 , libcvc
 , libgray
 , libdbusmenuGtk3
+, brightnessctl
 }:
 
 python3Packages.buildPythonApplication rec {
@@ -39,9 +40,9 @@ python3Packages.buildPythonApplication rec {
     pkg-config
   ];
 
-  # Ensure dart-sass is available in PATH at runtime
+  # Ensure dart-sass and brightnessctl are available in PATH at runtime
   makeWrapperArgs = [
-    "--prefix" "PATH" ":" "${dart-sass}/bin"
+    "--prefix" "PATH" ":" "${lib.makeBinPath [ dart-sass brightnessctl ]}"
   ];
 
   propagatedBuildInputs = with python3Packages; [
@@ -95,6 +96,7 @@ EOF
 
     # Fix upstream bug: screen_brightness getter crashes with AttributeError
     # when no backlight device is found (screen_backlight_path is never set).
+    # We return -1 to signal that brightness is not available (e.g. on Desktop).
     substituteInPlace src/mewline/services/brightness.py \
       --replace-fail \
         'brightness_path = self.screen_backlight_path / "brightness"' \
@@ -102,6 +104,13 @@ EOF
         if brightness_path is None:
             return -1
         brightness_path = brightness_path / "brightness"'
+
+    # Patch the UI to hide brightness slider if not available (-1)
+    # This targets the Popup widget where the slider is usually located.
+    if [ -f src/mewline/widgets/popup.py ]; then
+      substituteInPlace src/mewline/widgets/popup.py \
+        --replace-fail 'self.brightness_service' 'self.brightness_service if self.brightness_service.screen_brightness != -1 else None' || true
+    fi
   '';
 
   postInstall = ''
