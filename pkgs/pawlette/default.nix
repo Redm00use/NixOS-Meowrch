@@ -29,6 +29,12 @@ python3.pkgs.buildPythonApplication rec {
     # Patch system themes path for NixOS
     substituteInPlace src/pawlette/constants.py \
       --replace 'SYS_THEMES_FOLDER = Path(f"/usr/share/{APPLICATION_NAME}")' 'SYS_THEMES_FOLDER = Path("/run/current-system/sw/share/pawlette")'
+
+    # Fix symlink source path in manager to use the actual theme path found
+    # This ensures that when applying a theme, the symlink points to Nix Store instead of local share.
+    substituteInPlace src/pawlette/core/manager.py \
+      --replace 'path = cnst.THEMES_FOLDER / theme_name' 'path = cnst.THEMES_FOLDER / theme_name; sys_path = cnst.SYS_THEMES_FOLDER / theme_name' \
+      --replace 'for p in [sys_path, path]:' 'for p in [sys_path, path]:'
   '';
 
   nativeBuildInputs = [
