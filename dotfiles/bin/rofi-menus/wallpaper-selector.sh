@@ -14,6 +14,7 @@ DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 WALLPAPERS_DIRS=(
     "${DATA_HOME}/wallpapers"
     "${DATA_HOME}/pawlette/theme_wallpapers"
+    "$HOME/.config/meowrch/wallpapers"
 )
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mewline/thumbs"
 RANDOM_ICON="${DATA_HOME}/meowrch/assets/random.png"
@@ -246,7 +247,7 @@ main() {
     fi
 
     if [[ -f "$wall" ]]; then
-        sh "${XDG_BIN_HOME:-$HOME/.local/bin}/set-wallpaper.sh" "$wall"
+        sh "$HOME/.config/meowrch/bin/set-wallpaper.sh" "$wall"
     fi
 }
 
