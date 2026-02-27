@@ -32,7 +32,6 @@
         waybar                     # Панель статуса для Wayland
         swaylock-effects           # Локскрин для Wayland с эффектами
         hyprlock                   # Новый локскрин для Hyprland
-        dunst                      # Демон уведомлений (notification daemon)
         pamixer                    # Управление громкостью через PulseAudio
         playerctl                  # Управление медиаплеерами через MPRIS
         kdePackages.polkit-kde-agent-1 # Агент polkit для KDE (авторизация)

@@ -64,23 +64,11 @@
     # Time synchronization
     timesyncd.enable = true;
 
-    # Power management (TLP - works reliably in NixOS)
-    tlp = {
-      enable = true;
-      settings = {
-        CPU_SCALING_GOVERNOR_ON_AC = "performance";
-        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        ENERGY_PERF_POLICY_ON_AC = "performance";
-        ENERGY_PERF_POLICY_ON_BAT = "balance_power";
-        PCIE_ASPM_ON_AC = "default";
-        PCIE_ASPM_ON_BAT = "powersupersave";
-        WIFI_PWR_ON_AC = "off";
-        WIFI_PWR_ON_BAT = "on";
-      };
-    };
+    # Power management (Power Profiles Daemon - required by mewline)
+    power-profiles-daemon.enable = true;
 
-    # Power profiles daemon (alternative power management - disabled in favor of TLP)
-    # power-profiles-daemon.enable = false;
+    # TLP is disabled as it conflicts with power-profiles-daemon
+    tlp.enable = false;
 
     # UPower for battery information
     upower.enable = true;
