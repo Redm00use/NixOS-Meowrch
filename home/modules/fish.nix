@@ -265,6 +265,13 @@
       # Set custom variables
       set -g fish_greeting
       
+      # Fastfetch at startup
+      if status is-interactive
+        if command -q fastfetch
+          fastfetch
+        end
+      end
+
       # Enable vi mode
       fish_vi_key_bindings
       
