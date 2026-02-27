@@ -19,6 +19,18 @@
       unmanaged = [
         "*,except:type:wifi,except:type:ethernet"
       ];
+
+      # NetworkManager settings (NixOS 25.11 format)
+      settings = {
+        connectivity = {
+          uri = "http://nmcheck.gnome.org/check_network_status.txt";
+          interval = 300;
+        };
+        connection = {
+          # 0 = unknown, 1 = yes, 2 = no, 3 = none (guess)
+          "connection.metered" = 2;
+        };
+      };
     };
 
     # Wireless configuration
