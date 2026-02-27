@@ -350,19 +350,6 @@
     };
   };
 
-  # System timer for maintenance
-  systemd.timers = {
-    meowrch-maintenance = {
-      description = "Meowrch system maintenance timer";
-      timerConfig = {
-        OnCalendar = "weekly";
-        Persistent = true;
-        RandomizedDelaySec = "1h";
-      };
-      wantedBy = [ "timers.target" ];
-    };
-  };
-
   # Enable important services by default
   systemd.targets.multi-user.wants = [
     "meowrch-fix-permissions.service"
