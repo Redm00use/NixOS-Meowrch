@@ -2,6 +2,8 @@
 , python3
 , fetchFromGitHub
 , meowrch-themes
+, glib
+, makeWrapper
 }:
 
 python3.pkgs.buildPythonApplication rec {
@@ -42,14 +44,20 @@ python3.pkgs.buildPythonApplication rec {
 
     # Force dark mode preference
     substituteInPlace src/pawlette/core/system_theme_appliers.py \
-      --replace 'self.gsettings_key, theme_name' 'self.gsettings_key, theme_name]; subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"], check=False) #' \
+      --replace 'self.gsettings_key, theme_name' 'self.gsettings_key, theme_name]; subprocess.run(["${glib}/bin/gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"], check=False) #' \
       --replace 'self._update_gtk_config(config, theme_name)' 'self._update_gtk_config(config, theme_name); self._update_gtk_config(config, "gtk-application-prefer-dark-theme=1", key_only=True) if hasattr(self, "_update_gtk_config") else None'
   '';
 
   nativeBuildInputs = [
     python3.pkgs.setuptools
     python3.pkgs.wheel
+    makeWrapper
   ];
+
+  postInstall = ''
+    wrapProgram $out/bin/pawlette \
+      --prefix PATH : ${lib.makeBinPath [ glib ]}
+  '';
 
   propagatedBuildInputs = with python3.pkgs; [
     loguru
