@@ -301,7 +301,7 @@
       set -gx WAKATIME_HOME $XDG_CONFIG_HOME/wakatime
       
       # Wayland/Qt settings
-      set -gx QT_QPA_PLATFORM wayland;xcb
+      set -gx QT_QPA_PLATFORM "wayland;xcb"
       set -gx QT_QPA_PLATFORMTHEME qt6ct
       set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
       set -gx GDK_SCALE 1
