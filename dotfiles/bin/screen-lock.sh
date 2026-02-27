@@ -56,12 +56,41 @@ lock_x11() {
 }
 
 
+lock_wayland() {
+    local fg=c0caf5
+    local wrong=db4b4b
+    local date=7aa2f7
+    local verify=7aa2f7
+    local lock_image="$HOME/.config/meowrch/current_wallpaper"
+
+    swaylock \
+        --screenshots \
+        --clock \
+        --indicator \
+        --indicator-radius 100 \
+        --indicator-thickness 7 \
+        --effect-blur 7x5 \
+        --effect-vignette 0.5:0.5 \
+        --ring-color "$fg" \
+        --key-hl-color "$verify" \
+        --text-color "$fg" \
+        --line-color 00000000 \
+        --inside-color 00000088 \
+        --separator-color 00000000 \
+        --ring-ver-color "$verify" \
+        --inside-ver-color 00000088 \
+        --ring-wrong-color "$wrong" \
+        --inside-wrong-color 00000088 \
+        --font "Fira Code"
+}
+
+
 case "$SESSION_TYPE" in
     "wayland")
         if [[ "$1" == "--suspend" ]]; then
             systemctl suspend
         else
-            hyprlock
+            lock_wayland
         fi
         ;;
     "x11")

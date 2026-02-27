@@ -30,7 +30,8 @@
         swww                       # Динамические обои для Wayland
         rofi                       # Лаунчер приложений (меню)
         waybar                     # Панель статуса для Wayland
-        swaylock                   # Локскрин для Wayland
+        swaylock-effects           # Локскрин для Wayland с эффектами
+        hyprlock                   # Новый локскрин для Hyprland
         dunst                      # Демон уведомлений (notification daemon)
         pamixer                    # Управление громкостью через PulseAudio
         playerctl                  # Управление медиаплеерами через MPRIS

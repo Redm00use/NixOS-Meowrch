@@ -55,7 +55,8 @@
     # Background and screenshots
     swww
     # swayidle replaced by hypridle (already in package list)
-    swaylock
+    swaylock-effects
+    hyprlock
 
     # Notifications
     dunst
