@@ -1,7 +1,7 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Controls 2.12
-import QtMultimedia 5.12
+import QtQuick
+import QtQuick.Window
+import QtQuick.Controls
+import QtMultimedia
 import "components"
 
 Item {
@@ -15,53 +15,38 @@ Item {
     height: Screen.height
     width: Screen.width
 
-    Image {
-        id: background
-        
-        anchors.fill: parent
-        height: parent.height
-        width: parent.width
-        fillMode: Image.PreserveAspectCrop
-
-        source: config.Background
-
-        asynchronous: false
-        cache: true
-        mipmap: true
-        clip: true
-        visible: true
-    }
+        Image {
+            id: background
+            anchors.fill: parent
+            height: parent.height
+            width: parent.width
+            fillMode: Image.PreserveAspectCrop
     
-    MediaPlayer {
-        id: mediaPlayer
-        source: config.VideoBackground
-        loops: MediaPlayer.Infinite
-        muted: true 
-        autoPlay: true
-        playbackRate: 1.0
-
-        onStopped: {
-            if (playbackState === MediaPlayer.StoppedState) {
-                seek(0)
-                play()
-            }
+            source: config.Background
+    
+            asynchronous: false
+            cache: true
+            mipmap: true
+            clip: true
+            visible: true
         }
-
-        playlist: Playlist {
-            playbackMode: Playlist.Loop
-            PlaylistItem { source: config.VideoBackground }
+        
+        MediaPlayer {
+            id: mediaPlayer
+            source: config.VideoBackground
+            loops: MediaPlayer.Infinite
+            videoOutput: videoOutput
         }
-    }
-
-    VideoOutput {
-        id: videoOutput
-        anchors.fill: parent
-        opacity: mediaPlayer.hasVideo ? 1 : 0
+    
+        VideoOutput {
+            id: videoOutput
+            anchors.fill: parent
+            opacity: mediaPlayer.hasVideo ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
-        fillMode: VideoOutput.PreserveAspectCrop
-        source: mediaPlayer
-        visible: mediaPlayer.hasVideo
-    }
+            fillMode: VideoOutput.PreserveAspectCrop
+            visible: mediaPlayer.hasVideo
+        }
+    
 
     Item {
         id: contentPanel

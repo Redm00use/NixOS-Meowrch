@@ -3,29 +3,12 @@
 let
   meowrch-sddm-theme = pkgs.stdenv.mkDerivation {
     name = "meowrch-sddm-theme";
-    src = if builtins.pathExists ../../dotfiles/sddm_theme then ../../dotfiles/sddm_theme else null;
-    dontUnpack = if builtins.pathExists ../../dotfiles/sddm_theme then false else true;
+    src = ./../../dotfiles/sddm_theme;
     
     installPhase = ''
       mkdir -p $out/share/sddm/themes/meowrch
-      
-      # Copy everything from src if it exists
-      if [ -n "$src" ] && [ -d "$src" ]; then
-        cp -r $src/* $out/share/sddm/themes/meowrch/
-        chmod -R +w $out/share/sddm/themes/meowrch/
-      fi
-      
-      # Only generate theme.conf if it doesn't exist in src
-      if [ ! -f "$out/share/sddm/themes/meowrch/theme.conf" ]; then
-        cat > $out/share/sddm/themes/meowrch/theme.conf <<EOF
-[General]
-background=#1e1e2e
-type=color
-color=#1e1e2e
-fontSize=10
-autoFocusPassword=true
-EOF
-      fi
+      cp -r ./* $out/share/sddm/themes/meowrch/
+      chmod -R +w $out/share/sddm/themes/meowrch/
     '';
   };
 in {
@@ -33,6 +16,9 @@ in {
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
+    
+    # Use the Qt6 version of SDDM
+    package = pkgs.kdePackages.sddm;
 
     # SDDM theme configuration
     theme = "meowrch";
@@ -64,16 +50,14 @@ in {
     };
   };
 
-  # Install required Qt packages for SDDM and the theme itself
+  # Install required Qt6 packages for SDDM and the theme itself
   environment.systemPackages = with pkgs; [
-    libsForQt5.qt5.qtquickcontrols
-    libsForQt5.qt5.qtquickcontrols2
-    libsForQt5.qt5.qtgraphicaleffects
-    libsForQt5.qt5.qtmultimedia
-    libsForQt5.qt5.qtsvg
-    libsForQt5.qt5.qtwayland
-    libsForQt5.qt5.qtbase
+    kdePackages.qt5compat
+    kdePackages.qtmultimedia
+    kdePackages.qtsvg
+    kdePackages.qtwayland
     meowrch-sddm-theme
+    bibata-cursors
   ];
 
   # Create user avatars directory
@@ -81,13 +65,17 @@ in {
     "d /var/lib/AccountsService/icons 0755 root root - -"
   ];
 
-  # Copy default avatar if it exists (temporarily disabled)
-  # system.activationScripts.userAvatar = ''
-  #   if [ -f "${./../../misc/.face.icon}" ]; then
-  #     mkdir -p /var/lib/AccountsService/icons
-  #     cp -f ${./../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
-  #   fi
-  # '';
+  # Copy default avatar if it exists
+  system.activationScripts.userAvatar = {
+    supportsDryRun = true;
+    text = ''
+      if [ -f "${./../../misc/.face.icon}" ]; then
+        mkdir -p /var/lib/AccountsService/icons
+        cp -f ${./../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
+        chmod 644 /var/lib/AccountsService/icons/meowrch
+      fi
+    '';
+  };
 
   # SDDM default session
   services.displayManager.defaultSession = "hyprland-uwsm";
