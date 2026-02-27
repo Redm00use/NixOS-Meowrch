@@ -52,7 +52,7 @@ def generate_theme(template_name: str, oomox_colors: Path) -> Optional[str]:
 
 	try:
 		theme = subprocess.run(
-			["python", str(THEME_GEN_SCRIPT), str(template), str(oomox_colors)], 
+			["python3", str(THEME_GEN_SCRIPT), str(template), str(oomox_colors)], 
 			stdout=subprocess.PIPE,
 			check=True
 		).stdout.decode().strip()

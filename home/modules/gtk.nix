@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # GTK Configuration
@@ -6,8 +6,8 @@
     enable = true;
     
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
     };
     
     iconTheme = {
@@ -295,7 +295,6 @@
   # GNOME dconf settings for GTK
   dconf.settings = {
     "org/gnome/desktop/interface" = {
-      gtk-theme = "Adwaita-dark";
       icon-theme = "Papirus-Dark";
       cursor-theme = "Bibata-Modern-Classic";
       cursor-size = 24;
@@ -314,7 +313,6 @@
     };
     
     "org/gnome/desktop/wm/preferences" = {
-      theme = "Adwaita-dark";
       titlebar-font = "Noto Sans Bold 11";
       button-layout = "appmenu:minimize,maximize,close";
     };
@@ -336,42 +334,6 @@
       edge-tiling = true;
       workspaces-only-on-primary = true;
     };
-  };
-
-  # Home files for GTK configuration
-  home.file = {
-    ".gtkrc-2.0".text = ''
-      gtk-theme-name="Adwaita-dark"
-      gtk-icon-theme-name="Papirus-Dark"
-      gtk-cursor-theme-name="Bibata-Modern-Classic"
-      gtk-cursor-theme-size=24
-      gtk-font-name="Noto Sans 11"
-      gtk-application-prefer-dark-theme=1
-      gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
-      gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
-      gtk-button-images=1
-      gtk-menu-images=1
-      gtk-enable-event-sounds=0
-      gtk-enable-input-feedback-sounds=0
-      gtk-xft-antialias=1
-      gtk-xft-hinting=1
-      gtk-xft-hintstyle="hintfull"
-      gtk-xft-rgba="rgb"
-    '';
-
-    ".config/gtk-4.0/settings.ini".text = ''
-      [Settings]
-      gtk-application-prefer-dark-theme=true
-      gtk-theme-name=Adwaita-dark
-      gtk-icon-theme-name=Papirus-Dark
-      gtk-cursor-theme-name=Bibata-Modern-Classic
-      gtk-cursor-theme-size=24
-      gtk-font-name=Noto Sans 11
-      gtk-decoration-layout=appmenu:minimize,maximize,close
-      gtk-enable-primary-paste=false
-      gtk-recent-files-max-age=30
-      gtk-recent-files-enabled=true
-    '';
   };
 
   # Additional packages for GTK theming
@@ -396,10 +358,9 @@
 
   # Environment variables for GTK
   home.sessionVariables = {
-    # GTK theme variables
-    GTK_THEME = "Adwaita:dark";
+    # ADW_DEBUG_COLOR_SCHEME is still useful for libadwaita apps
     ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
-    GTK2_RC_FILES = "$HOME/.gtkrc-2.0";
+    GTK2_RC_FILES = lib.mkForce "$HOME/.gtkrc-2.0";
     
     # Cursor theme
     XCURSOR_THEME = "Bibata-Modern-Classic";

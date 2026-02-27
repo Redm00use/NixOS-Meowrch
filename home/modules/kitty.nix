@@ -61,9 +61,6 @@
       cursor = "#f5e0dc";
       cursor_text_color = "#1e1e2e";
       
-      # URL underline color when hovering with mouse
-      url_color = "#89b4fa";
-      
       # Kitty window border colors
       active_border_color = "#b4befe";
       inactive_border_color = "#6c7086";

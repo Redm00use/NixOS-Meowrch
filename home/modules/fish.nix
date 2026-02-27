@@ -108,7 +108,7 @@
       
       # Make directory and cd into it
       mkcd = {
-        argumentNames = "dir";
+        argumentNames = [ "dir" ];
         body = ''
           mkdir -p $dir && cd $dir
         '';
@@ -116,7 +116,7 @@
       
       # Extract archives
       extract = {
-        argumentNames = "file";
+        argumentNames = [ "file" ];
         body = ''
           if test -f $file
             switch $file
@@ -153,7 +153,7 @@
       
       # Git clone and cd
       gclone = {
-        argumentNames = "repo";
+        argumentNames = [ "repo" ];
         body = ''
           git clone $repo
           set repo_name (basename $repo .git)
@@ -163,7 +163,7 @@
       
       # Find and kill process
       killp = {
-        argumentNames = "name";
+        argumentNames = [ "name" ];
         body = ''
           set pids (ps aux | grep $name | grep -v grep | awk '{print $2}')
           if test -n "$pids"
@@ -177,7 +177,7 @@
       
       # Quick edit config files
       config = {
-        argumentNames = "file";
+        argumentNames = [ "file" ];
         body = ''
           switch $file
             case "fish"
@@ -221,7 +221,7 @@
       
       # Weather information
       weather = {
-        argumentNames = "city";
+        argumentNames = [ "city" ];
         body = ''
           if test -n "$city"
             curl -s "wttr.in/$city?format=3"
@@ -233,7 +233,7 @@
       
       # Backup function
       backup = {
-        argumentNames = "source" "destination";
+        argumentNames = [ "source" "destination" ];
         body = ''
           if test -z "$source" -o -z "$destination"
             echo "Usage: backup <source> <destination>"
@@ -256,24 +256,8 @@
     
     # Fish plugins and completions
     plugins = [
-      {
-        name = "z";
-        src = pkgs.fetchFromGitHub {
-          owner = "jethrokuan";
-          repo = "z";
-          rev = "85f863f20f24faf675827fb00f3a4e15c7838d76";
-          sha256 = "sha256-+FUBM7CodtZrYKqU542fQD+ZDGrd2438trKM0tIESs0=";
-        };
-      }
-      {
-        name = "bass";
-        src = pkgs.fetchFromGitHub {
-          owner = "edc";
-          repo = "bass";
-          rev = "50eba266b0746681fad7bc6b252f9b29c0e1b5b7";
-          sha256 = "sha256-Zqcm6jhSrf5xbzzguw5pGR2GGApcfNzU6c5ofPbEA2g=";
-        };
-      }
+      { name = "z"; src = pkgs.fishPlugins.z.src; }
+      { name = "bass"; src = pkgs.fishPlugins.bass.src; }
     ];
     
     # Fish shell init

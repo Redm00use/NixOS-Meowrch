@@ -367,31 +367,56 @@ class GTKOption(BaseOption):
 		return True
 
 	def apply_gtk_themes(self, gtk_configs: List[Path], theme_name: str):
-		for gtk_cfg in gtk_configs:
 			if not gtk_cfg.parent.exists():
 				logging.warning(f"The theme cannot be applied to the \"{gtk_cfg.name}\" file, because the path \"{str(gtk_cfg)}\" does not exist")
+				continue
 
 			if not gtk_cfg.exists():
 				gtk_cfg.touch()
 
-			with open(gtk_cfg, "r") as file:
-				content = file.read()
-			
-			if f"gtk-theme-name={theme_name}" in content:
-				continue
-			elif "gtk-theme-name=" in content:
-				new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={theme_name}", content)
-				with open(gtk_cfg, "w") as file:
-					file.write(new_content)
-			else:
-				with open(gtk_cfg, "a") as file:
-					file.write(f"gtk-theme-name={theme_name}\n")
+			try:
+				with open(gtk_cfg, "r") as file:
+					content = file.read()
+				
+				if f"gtk-theme-name={theme_name}" in content:
+					pass
+				elif "gtk-theme-name=" in content:
+					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={theme_name}", content)
+					try:
+						with open(gtk_cfg, "w") as file:
+							file.write(new_content)
+					except PermissionError:
+						# If it's a symlink to Nix store, try to replace it
+						if gtk_cfg.is_symlink():
+							gtk_cfg.unlink()
+							with open(gtk_cfg, "w") as file:
+								file.write(new_content)
+						else:
+							raise
+				else:
+					try:
+						with open(gtk_cfg, "a") as file:
+							file.write(f"gtk-theme-name={theme_name}\n")
+					except PermissionError:
+						if gtk_cfg.is_symlink():
+							content += f"gtk-theme-name={theme_name}\n"
+							gtk_cfg.unlink()
+							with open(gtk_cfg, "w") as file:
+								file.write(content)
+						else:
+							raise
+			except Exception as e:
+				logging.warning(f"Failed to update {gtk_cfg}: {e}")
 
 		##==> Установка темы в реальном времени
 		############################################
 		if SESSION_TYPE == "wayland":
 			try:
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", theme_name], check=True)
+				# Add Cinnamon-specific key as Nemo is a Cinnamon app
+				subprocess.run(["gsettings", "set", "org.cinnamon.desktop.interface", "gtk-theme", theme_name], check=True)
+				# Also enforce dark mode via gsettings
+				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"], check=True)
 			except Exception:
 				logging.warning("Failed to set theme with gsettings")
 		elif SESSION_TYPE == "x11":

@@ -168,5 +168,11 @@
         meowrch-settings           # Системные оптимизации Meowrch
         hotkeyhub                  # Шпаргалка по хоткеям
         meowrch-tools              # Утилиты Meowrch
+
+        # Theme generation dependencies
+        themix-gui                 # Генератор тем (oomox-cli / themix)
+        sassc                      # Компилятор SASS (для генерации тем)
+        gtk-engine-murrine         # GTK2 движок (для совместимости)
+        dconf-editor               # Редактор dconf (для отладки)
   ];
 }

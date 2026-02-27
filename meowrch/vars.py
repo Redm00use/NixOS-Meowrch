@@ -21,6 +21,17 @@ THEMES_CACHE_DIR: Path = HOME / ".cache" / "meowrch" / "themes_thumbnails"
 OOMOX_COLORS: Path = lambda theme_name: MEOWRCH_THEMES / theme_name / "oomox-colors"  # noqa: E731
 
 THEME_GEN_SCRIPT: Path = Path("/opt/oomox/plugins/base16/cli.py")
+if not THEME_GEN_SCRIPT.exists():
+    # Attempt to find it in NixOS or other standard locations
+    potential_paths = [
+        Path("/run/current-system/sw/share/oomox/plugins/base16/cli.py"),
+        Path("/usr/share/oomox/plugins/base16/cli.py"),
+        Path("/usr/local/share/oomox/plugins/base16/cli.py")
+    ]
+    for p in potential_paths:
+        if p.exists():
+            THEME_GEN_SCRIPT = p
+            break
 
 SESSION_TYPE: Optional[str] = (lambda s: s if s != "$XDG_SESSION_TYPE" else None)(expandvars("$XDG_SESSION_TYPE"))
 
