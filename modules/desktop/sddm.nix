@@ -17,11 +17,19 @@ in {
     enable = true;
     wayland.enable = true;
     
-    # Use the Qt6 version of SDDM
+    # Use Qt6-based SDDM package for better compatibility with Qt6 themes
     package = pkgs.kdePackages.sddm;
 
     # SDDM theme configuration
     theme = "meowrch";
+
+    extraPackages = with pkgs.kdePackages; [
+      qt5compat
+      qtmultimedia
+      qtsvg
+      qtwayland
+      qtdeclarative
+    ];
 
     # General settings
     settings = {
@@ -56,6 +64,7 @@ in {
     kdePackages.qtmultimedia
     kdePackages.qtsvg
     kdePackages.qtwayland
+    kdePackages.qtdeclarative
     meowrch-sddm-theme
     bibata-cursors
   ];
@@ -66,16 +75,13 @@ in {
   ];
 
   # Copy default avatar if it exists
-  system.activationScripts.userAvatar = {
-    supportsDryRun = true;
-    text = ''
-      if [ -f "${./../../misc/.face.icon}" ]; then
-        mkdir -p /var/lib/AccountsService/icons
-        cp -f ${./../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
-        chmod 644 /var/lib/AccountsService/icons/meowrch
-      fi
-    '';
-  };
+  system.activationScripts.userAvatar.text = ''
+    if [ -f "${./../../misc/.face.icon}" ]; then
+      mkdir -p /var/lib/AccountsService/icons
+      cp -f ${./../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
+      chmod 644 /var/lib/AccountsService/icons/meowrch
+    fi
+  '';
 
   # SDDM default session
   services.displayManager.defaultSession = "hyprland-uwsm";
