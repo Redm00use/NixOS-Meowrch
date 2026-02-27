@@ -726,6 +726,7 @@
   home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; };
   home.file.".config/btop" = { source = ../btop; recursive = true; };
   home.file.".config/meowrch" = { source = ../meowrch; recursive = true; };
+  home.file.".config/meowrch/bin" = { source = ../bin; recursive = true; };
 
   # Автоматический запуск Home Manager
   programs.home-manager.enable = true;
