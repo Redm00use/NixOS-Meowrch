@@ -14,7 +14,7 @@
     ./modules/fish.nix
     ./modules/starship.nix
     ./modules/kitty.nix
-    ./modules/dunst.nix
+    # ./modules/dunst.nix  # Disabled to let Mewline handle notifications
     ./modules/waybar.nix
   ];
 
