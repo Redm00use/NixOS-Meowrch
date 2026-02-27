@@ -30,11 +30,15 @@ python3.pkgs.buildPythonApplication rec {
     substituteInPlace src/pawlette/constants.py \
       --replace 'SYS_THEMES_FOLDER = Path(f"/usr/share/{APPLICATION_NAME}")' 'SYS_THEMES_FOLDER = Path("/run/current-system/sw/share/pawlette")'
 
-    # Fix symlink source path in manager to use the actual theme path found
-    # This ensures that when applying a theme, the symlink points to Nix Store instead of local share.
+    # Prioritize system themes in get_theme and get_all_themes
     substituteInPlace src/pawlette/core/manager.py \
-      --replace 'path = cnst.THEMES_FOLDER / theme_name' 'path = cnst.THEMES_FOLDER / theme_name; sys_path = cnst.SYS_THEMES_FOLDER / theme_name' \
+      --replace 'for i in [cnst.SYS_THEMES_FOLDER, cnst.THEMES_FOLDER]:' 'for i in [cnst.SYS_THEMES_FOLDER, cnst.THEMES_FOLDER]:' \
       --replace 'for p in [sys_path, path]:' 'for p in [sys_path, path]:'
+
+    # Ensure dark theme preference is set in system_theme_appliers.py
+    substituteInPlace src/pawlette/core/system_theme_appliers.py \
+      --replace "self._update_gtk_config(config, theme_name)" "self._update_gtk_config(config, theme_name); self._update_gtk_config(config, 'gtk-application-prefer-dark-theme=1', key_only=True)" \
+      --replace 'self.gsettings_key, theme_name' 'self.gsettings_key, theme_name]; subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"]) #'
   '';
 
   nativeBuildInputs = [

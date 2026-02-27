@@ -90,11 +90,8 @@ mewline = ["styles/**/*.scss", "styles/**/*.css"]
 EOF
 
     # Redirect writable style paths from read-only Nix store to XDG cache
-    # THEME_STYLE must be writable — mewline writes the active theme here
-    # MAIN_STYLE must also be readable from a location where sass can @import siblings
     substituteInPlace src/mewline/constants.py \
-      --replace-fail 'THEME_STYLE = STYLES_FOLDER / "theme.scss"' \
-        'THEME_STYLE = APP_CACHE_DIRECTORY / "theme.scss"'
+      --replace 'THEME_STYLE = STYLES_FOLDER / "theme.scss"' 'THEME_STYLE = APP_CACHE_DIRECTORY / "theme.scss"'
 
     # Fix upstream bug: screen_brightness getter crashes with AttributeError
     # when no backlight device is found (screen_backlight_path is never set).
