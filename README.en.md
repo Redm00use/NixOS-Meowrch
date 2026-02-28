@@ -20,7 +20,7 @@
         <a href="#-installation">
             <img src="https://img.shields.io/badge/Install-Meowrch_NixOS-success?style=for-the-badge&logo=nixos&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
-        <a href="#-package-management-guide">
+        <a href="#-beginner-guide-installing-apps">
             <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="./docs/ALIASES.md">
@@ -29,66 +29,53 @@
     </p>
 </div>
 
-> [!NOTE]
-> A port of the original **[Meowrch](https://github.com/meowrch/meowrch)** (Arch Linux) to **NixOS**.
-> Full compatibility with the Nix ecosystem, declarativity, reproducibility, and stability.
+> [!IMPORTANT]
+> **Welcome to NixOS!** If you are coming from Windows, Ubuntu, or Arch — forget almost everything you know. In NixOS, your system is built from code. You don't "install" apps; you "declare" them in your configuration files.
 
 ## 📑 Table of Contents
 - [✨ Features](#-features)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Installation](#-installation)
 - [🔧 Usage & Updates](#-usage--updates)
-- [📦 Package Management Guide](#-package-management-guide)
-- [📖 Meowrch Wiki](#-meowrch-wiki)
+- [📦 Beginner Guide: Installing Apps](#-beginner-guide-installing-apps)
+- [📖 Meowrch Wiki: Customization](#-meowrch-wiki-customization)
 - [⌨️ Keybindings & Commands](#️-keybindings--commands)
-- [🎨 Theming](#-theming)
+- [🛠️ Help! I broke something!](#-help-i-broke-something)
 
 ## ✨ Features
 
 | Feature | Implementation |
 |---------|---------------|
-| **Window Manager** | Hyprland (Wayland) with animations and blur |
-| **Status Bar** | Mewline (Dynamic Island) |
-| **Launcher** | Rofi with custom menus |
-| **Terminal** | Kitty with Catppuccin Mocha |
-| **Shell** | Fish + Starship prompt |
-| **Notifications** | Mewline (Systemd service) |
-| **Lock Screen** | Swaylock / Hyprlock |
-| **Theme** | Catppuccin Mocha (GTK + Qt + terminal) |
-| **Icons** | Papirus Dark / Adwaita |
-| **Cursor** | Bibata Modern Classic |
-| **GPU** | AMD / Nvidia / Intel (auto-detection) |
-| **Audio** | PipeWire |
-| **Gaming** | Steam + Gamemode + MangoHud |
+| **Window Manager** | Hyprland (Wayland) with UWSM for stability |
+| **Status Bar** | Mewline (Dynamic Island) — systemd service |
+| **Launcher** | Rofi with custom theme/wallpaper menus |
+| **Terminal** | Kitty (0.8 opacity) + Fish shell |
+| **Shell** | Fish + Starship (minimalist prompt) |
+| **Theming** | Catppuccin Mocha (GTK4 forced dark) |
+| **GPU** | Intelligent AMD / Nvidia / Intel support |
 
 ## 📁 Project Structure
 
 ```text
 NixOS-Meowrch/
-├── hosts/meowrch/                         # Machine-specific configurations
-├── modules/                               # Nix modules (NixOS & Home Manager)
-├── config/                                # Raw application configurations (symlinks)
-├── assets/                                # Static resources (SDDM, themes, wallpapers)
+├── hosts/meowrch/                         # Machine-specific settings
+├── modules/                               # Nix modules (System & User)
+├── config/                                # Raw app configs (Hypr, Kitty, Fish...)
+├── assets/                                # Static files (SDDM, themes, wallpapers)
 ├── scripts/                               # Consolidated system scripts
 ├── pkgs/                                  # Custom package definitions
-└── flake.nix                              # Flake entry point
+└── flake.nix                              # Main entry point
 ```
 
 ## 🚀 Installation
 
-### 1. Preparation (Important!)
-Before you begin, ensure you have NixOS installed.
-
-You will need **Git** to clone this repository:
+### 1. Preparation
+Ensure you have NixOS installed. You will need **Git**:
 ```bash
 nix-shell -p git
 ```
 
-> [!CAUTION]
-> **IMPORTANT:** Do NOT delete or move the repository folder (`~/NixOS-Meowrch`) after installation! 
-
 ### 2. Installation
-
 ```bash
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
@@ -96,73 +83,78 @@ chmod +x install.sh
 ./install.sh
 ```
 
+---
+
 ## 🔧 Usage & Updates
 
-### Main Commands (Aliases)
-Convenient short commands are available (aliases):
+We created "Super Aliases" to make your life easier:
 
-| Command | Desc | Description |
-|---------|------|-------------|
-| `u`     | Update | **Full Update**: git pull + update hashes + flake update + rebuild |
-| `b`     | Build  | **Fast Rebuild**: apply current config changes |
-| `clean` | Cleanup| **Cleanup**: remove old generations and collect garbage |
-| `rollback`| Rollback| **Rollback**: return to previous successful state |
+| Alias | Description |
+|-------|-------------|
+| `u` (or `г`) | **Full Update**. Git pull + update hashes + flake update + rebuild. |
+| `b` (or `и`) | **Apply Settings**. Run this after editing any config file. |
+| `clean` | **Cleanup**. Removes old system versions and frees disk space. |
+| `rollback` | **Rollback**. Return to the previous working state. |
 
-## ⌨️ Keybindings & Commands
+---
+
+## 📦 Beginner Guide: Installing Apps
+
+In NixOS, you don't install packages via `apt install`. You declare them in lists.
+
+### 1. Personal Apps (Browsers, Players, Games)
+Open `hosts/meowrch/home.nix` (command `zed ~/NixOS-Meowrch/hosts/meowrch/home.nix`).
+Find the `home.packages` section and add the app name:
+```nix
+home.packages = with pkgs; [
+  telegram-desktop
+  vlc
+];
+```
+
+### 2. System Tools (Drivers, Utilities)
+Open `modules/nixos/packages/packages.nix` and add packages to `environment.systemPackages`.
+
+**How to find the package name?**
+Search at **[search.nixos.org](https://search.nixos.org/packages)**. Use the "Attribute name".
+
+**How to apply?**
+Just type in the terminal: `b`
+
+---
+
+## 📖 Meowrch Wiki: Customization
+
+Main Hyprland configuration files are located in `modules/home/hypr-configs/`:
+
+*   `keybindings.conf` — **Hotkeys**. Want to change `Super+Q`? Look here.
+*   `windowrules.conf` — **Window Rules**. Opacity, floating windows, etc.
+*   `monitors.conf` — **Screens**. Resolution and refresh rate.
+*   `autostart.conf` — **Startup**. Apps that launch on login.
+
+---
+
+## 🛠️ Help! I broke something!
+
+In NixOS, it is **impossible** to permanently "kill" your system via software!
+
+1.  **If it won't boot**: Reboot and select a previous "Generation" from the boot menu.
+2.  **If it's buggy**: Run the command `rollback`. The system will revert to the state before the last build.
+
+---
+
+## ⌨️ Keybindings (Cheat Sheet)
 
 | Key | Action |
 |-----|--------|
 | `Super + Return` | Terminal (Kitty) |
 | `Super + Q` | Close window |
-| `Super + D` | App Launcher (Rofi) |
 | `Super + E` | File Manager (Nemo) |
-| `Super + V` | Clipboard Manager |
-| `Super + W` | Wallpaper Selector |
-| `Super + Shift + T` | Theme Selector (Pawlette) |
-| `Super + X` | Power Menu |
+| `Super + D` | App Launcher (Rofi) |
+| `Super + W` | Select Wallpaper |
+| `Super + Shift + T` | Select Theme |
 | `Super + L` | Lock Screen |
-| `Super + Shift + B` | Toggle Status Bar (Mewline) |
-
-## 📦 Package Management Guide
-
-In NixOS, packages are not installed via `apt`. They are declared in configuration files.
-
-### 1. Where to find packages?
-Use the official search: **[search.nixos.org](https://search.nixos.org/packages)**.
-
-### 2. Where to add them?
-Edit files using **Zed IDE** (command `zed`).
-
-Main configuration files:
-*   **User Applications** (Recommended):
-    File: `hosts/meowrch/home.nix` → `home.packages` section.
-*   **System Tools & Drivers**:
-    File: `modules/nixos/packages/packages.nix` → `environment.systemPackages` section.
-
-### 3. How to apply?
-Run the command:
-`b`
-
-## 📖 Meowrch Wiki
-
-Welcome to the knowledge base!
-
-### 1. Configuration Files
-Main Hyprland settings are now located at:
-`modules/home/hypr-configs/`
-
-*   `keybindings.conf` — hotkeys.
-*   `windowrules.conf` — window rules.
-*   `monitors.conf` — monitor settings.
-*   `autostart.conf` — autostart apps.
-
-### 2. Adding Hotkeys
-Open `modules/home/hypr-configs/keybindings.conf` in Zed.
-Syntax: `bind = MODIFIER, KEY, ACTION, COMMAND`
-
-## 🎨 Theming
-
-The entire system uses **Catppuccin Mocha** with a **Blue** accent.
+| `Super + Shift + B` | Toggle Status Bar |
 
 ---
 <div align="center">
