@@ -29,8 +29,9 @@
     </p>
 </div>
 
-> [!IMPORTANT]
-> **Welcome to NixOS!** If you are coming from Windows, Ubuntu, or Arch — forget almost everything you know. In NixOS, your system is built from code. You don't "install" apps; you "declare" them in your configuration files.
+> [!NOTE]
+> A port of the original **[Meowrch](https://github.com/meowrch/meowrch)** (Arch Linux) to **NixOS**.
+> Full compatibility with the Nix ecosystem, declarativity, reproducibility, and stability.
 
 ## 📑 Table of Contents
 - [✨ Features](#-features)
@@ -44,92 +45,14 @@
 
 ---
 
-## ✨ Features
-
-| Feature | Implementation |
-|---------|---------------|
-| **Window Manager** | Hyprland (Wayland) with UWSM for superior stability |
-| **Status Bar** | Mewline (Dynamic Island) — runs as a systemd service |
-| **Launcher** | Rofi with custom theme and wallpaper selectors |
-| **Display Manager** | SDDM with **Qt6** Meowrch theme |
-| **Terminal** | Kitty (0.8 opacity) + Fish shell |
-| **Shell** | Fish + Starship (minimalist prompt) |
-| **Memory** | ZRAM enabled by default |
-| **Theming** | Catppuccin Mocha (GTK4/Libadwaita forced dark) |
-| **GPU** | Intelligent AMD / Nvidia / Intel support |
-
-## 📁 Project Structure
-
-```text
-NixOS-Meowrch/
-├── flake.nix                       # Main entry point (Flake)
-├── flake.lock                      # Fixed dependency versions
-├── hosts/                          # Machine-specific configurations
-│   └── meowrch/                    # Host 'meowrch'
-│       ├── configuration.nix       # System settings
-│       ├── hardware-configuration.nix # Hardware scan result
-│       └── home.nix                # User settings (Home Manager)
-├── modules/                        # Modular Nix logic
-│   ├── nixos/                      # NixOS system modules
-│   │   ├── desktop/                # Environment (Hyprland, SDDM, Theming)
-│   │   ├── system/                 # Core (Audio, Fonts, Security, Networking)
-│   │   └── packages/               # Global packages & Flatpak
-│   └── home/                       # Home Manager modules
-│       ├── fish.nix                # Shell config
-│       ├── starship.nix            # Prompt config
-│       ├── hypr-configs/           # Raw Hyprland configs (Binds, Rules)
-│       └── ...                     # Rofi, GTK
-├── config/                         # Raw application configurations (symlinks)
-│   ├── hypr/                       # Hyprland settings
-│   ├── kitty/                      # Kitty settings
-│   └── ...                         # Fish, Fastfetch, Btop
-├── assets/                         # Static system resources
-│   ├── sddm/                       # Login screen theme (Qt6)
-│   ├── themes/                     # UI Themes (Catppuccin)
-│   └── misc/                       # Misc (.face.icon, logos)
-├── scripts/                        # Consolidated system scripts
-│   ├── rofi-menus/                 # Rofi scripts (Power, VPN, Wallpaper)
-│   └── ...                         # Utilities (volume, backlight, update)
-├── pkgs/                           # Custom package definitions (Derivations)
-├── packages/                       # Nix derivations for local folders
-├── overlays/                       # System patches (GBM fix, etc.)
-├── docs/                           # Documentation and log archives
-└── install.sh                      # System installer
-```
-
-## 🚀 Installation
-
-### 1. Preparation (Important!)
-Before you begin, ensure you have NixOS installed. You will need **Git** to clone this repository:
-```bash
-# Temporarily install git
-nix-shell -p git
-```
-
-> [!CAUTION]
-> **IMPORTANT:** Do NOT delete or move the repository folder (`~/NixOS-Meowrch`) after installation! In NixOS, this folder is the source code of your system.
-
-### 2. Installation
-
-```bash
-git clone https://github.com/Redm00use/NixOS-Meowrch.git
-cd NixOS-Meowrch
-chmod +x install.sh
-./install.sh
-```
-
----
-
 ## 🔧 Usage & Updates
-
-Convenient aliases are available for system management:
 
 | Alias | Desc | Description |
 |-------|------|-------------|
 | `u`     | `г`  | **Full Update**: git pull + update hashes + flake update + rebuild |
 | `b`     | `и`  | **Fast Rebuild**: apply current config changes |
 | `clean` | -    | **Cleanup**: remove old generations and collect garbage |
-| `rollback`| -  | **Rollback**: return to the previous successful state |
+| `rollback`| -  | **Rollback**: return to previous successful state |
 
 ---
 
@@ -144,7 +67,6 @@ Find the `home.packages` section and add the app name:
 home.packages = with pkgs; [
   telegram-desktop
   vlc
-  discord
 ];
 ```
 
@@ -152,7 +74,7 @@ home.packages = with pkgs; [
 Open `modules/nixos/packages/packages.nix` and add packages to `environment.systemPackages`.
 
 **How to find the package name?**
-Search at **[search.nixos.org](https://search.nixos.org/packages)**. Use the "Attribute name".
+Search at **[search.nixos.org](https://search.nixos.org/packages)**. 
 
 **How to apply?**
 Just type in the terminal: `b`
@@ -161,12 +83,30 @@ Just type in the terminal: `b`
 
 ## 📖 Meowrch Wiki: Customization
 
-Main Hyprland configuration files are located in `modules/home/hypr-configs/`:
+Learn how to tweak the look and feel of your Meowrch system.
 
-*   `keybindings.conf` — **Hotkeys**. Want to change `Super+Q`? Look here.
-*   `windowrules.conf` — **Window Rules**. Opacity, floating windows, etc.
-*   `monitors.conf` — **Screens**. Resolution and refresh rate.
-*   `autostart.conf` — **Startup**. Apps that launch on login.
+### 🖼️ UI Management (Hyprland)
+Main configuration files are located in `modules/home/hypr-configs/`.
+
+*   **Keybindings**: Edit `keybindings.conf`. Change defaults or add your own shortcuts.
+*   **Window Rules**: In `windowrules.conf`, you can force apps to open on specific workspaces or set their opacity.
+*   **Animations**: The `appearance.conf` file contains `animations` settings. Make your system lightning fast or buttery smooth.
+*   **Monitors**: Configure resolution, refresh rates, and position in `monitors.conf`.
+
+### 🎨 Themes, Wallpapers & Fonts
+*   **Wallpapers**: To add your own images to the wallpaper menu (`Super + W`), drop them into `assets/wallpapers/`.
+*   **Theming**: The system uses **Catppuccin Mocha**. To tweak terminal or bar colors, look into `assets/themes/`.
+*   **Fonts**: Change the primary system font in `modules/nixos/system/fonts.nix`.
+
+### ⚙️ Scripts & Autostart
+*   **Scripts**: All "system brains" (volume control, theme switchers) live in the `scripts/` folder. Use them in your custom keybindings.
+*   **Autostart**: To launch an app automatically on login, add it to `modules/home/hypr-configs/autostart.conf`.
+
+### 📝 Zed Editor (Your Main Tool)
+**Zed IDE** comes pre-configured for the best experience:
+*   Full Nix support (syntax highlighting, auto-formatting).
+*   Built-in Git integration: see your changes in real-time.
+*   Handy shortcuts like `Ctrl + /` for comments.
 
 ---
 
@@ -175,23 +115,21 @@ Main Hyprland configuration files are located in `modules/home/hypr-configs/`:
 In NixOS, it is **impossible** to permanently "kill" your system via software!
 
 1.  **If it won't boot**: Reboot and select a previous "Generation" from the boot menu.
-2.  **If it's buggy**: Run the command `rollback`. The system will revert to the state before the last build.
+2.  **If it's buggy**: Run the command `rollback` in your terminal.
+3.  **Build Error (`b`)**: Read the error message carefully. Nix usually tells you exactly which file and line caused the issue.
 
 ---
 
-## ⌨️ Keybindings & Commands
+## ⌨️ Keybindings (Cheat Sheet)
 
 | Key | Action |
 |-----|--------|
-| `Super + Return` | Terminal (Kitty + Fish) |
+| `Super + Return` | Terminal |
 | `Super + Q` | Close window |
-| `Super + E` | File Manager (Nemo) |
-| `Super + D` | App Launcher (Rofi) |
-| `Super + Z` | Browser (Firefox) |
-| `Super + T` | Telegram (Materialgram) |
-| `Super + W` | Select Wallpaper |
-| `Super + Shift + T` | Select Theme |
-| `Super + X` | Power Menu |
+| `Super + E` | File Manager |
+| `Super + D` | App Launcher |
+| `Super + Z` | Browser |
+| `Super + T` | Telegram |
 | `Super + L` | Lock Screen |
 | `Super + Shift + B` | Toggle Status Bar |
 
