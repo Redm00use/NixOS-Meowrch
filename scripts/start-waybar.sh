@@ -1,13 +1,12 @@
-#!/usr/bin/env fish
-# Активируем виртуальное окружение
-source /home/redm00us/myenv/bin/activate.fish
+#!/usr/bin/env bash
+# Универсальный скрипт запуска/перезапуска Waybar для NixOS
 
-# Проверяем, что окружение активировано
-if not test -n "$VIRTUAL_ENV"
-    echo "Virtual environment not activated!"
-    exit 1
-end
+# Завершаем текущие процессы
+killall -q waybar
+
+# Ожидаем завершения
+while pgrep -x waybar >/dev/null; do sleep 1; done
 
 # Запускаем Waybar
 echo "Starting Waybar..."
-waybar -l debug
+waybar &
