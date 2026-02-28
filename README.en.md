@@ -230,7 +230,7 @@ rebuild
 Welcome to the knowledge base for configuring your system!
 
 ### 1. Configuration File Locations
-`home/modules/hypr-configs/`
+`modules/home/hypr-configs/`
 
 *   `keybindings.conf` — Manage keyboard shortcuts.
 *   `windowrules.conf` — Define window behaviors.
@@ -238,11 +238,11 @@ Welcome to the knowledge base for configuring your system!
 *   `autostart.conf` — Auto-launch apps.
 
 ### 2. How to add a Custom Keybinding
-Open `home/modules/hypr-configs/keybindings.conf` in **Zed IDE**.
+Open `modules/home/hypr-configs/keybindings.conf` in **Zed IDE**.
 Syntax: `bind = MODIFIER, KEY, ACTION, COMMAND`
 
 ### 3. How to set Window Rules
-Edit `home/modules/hypr-configs/windowrules.conf`.
+Edit `modules/home/hypr-configs/windowrules.conf`.
 Example: `windowrule = float, ^(telegram-desktop)$`
 
 ### 4. Applying Changes

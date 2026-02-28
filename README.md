@@ -233,7 +233,7 @@ rebuild
 
 ### 1. Где лежат настройки?
 Все основные файлы находятся здесь:
-`home/modules/hypr-configs/`
+`modules/home/hypr-configs/`
 
 *   `keybindings.conf` — горячие клавиши (хоткеи).
 *   `windowrules.conf` — правила для окон (плавающие окна, размеры).
@@ -241,11 +241,11 @@ rebuild
 *   `autostart.conf` — приложения, которые запускаются сами при входе.
 
 ### 2. Как добавить свой хоткей?
-Откройте `home/modules/hypr-configs/keybindings.conf` в **Zed IDE**.
+Откройте `modules/home/hypr-configs/keybindings.conf` в **Zed IDE**.
 Синтаксис: `bind = МОДИФИКАТОР, КЛАВИША, ДЕЙСТВИЕ, КОМАНДА`
 
 ### 3. Как настроить правила окон?
-Правьте `home/modules/hypr-configs/windowrules.conf`.
+Правьте `modules/home/hypr-configs/windowrules.conf`.
 Пример: `windowrule = float, ^(telegram-desktop)$`
 
 ### 4. Как применить изменения?
