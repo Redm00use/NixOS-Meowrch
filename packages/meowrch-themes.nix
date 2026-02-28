@@ -1,18 +1,19 @@
 { lib, stdenv, fetchFromGitHub }:
 
 let
-  mocha-src = fetchFromGitHub {
+  # Original Meowrch Wallpapers from the main Arch repo
+  meowrch-src = fetchFromGitHub {
+    owner = "meowrch";
+    repo = "meowrch";
+    rev = "main"; # We pull from main to get the latest wallpapers
+    sha256 = "sha256-2CqwzWT9ijdVMIfog/aoUGf59b7blS2CtDPQzvbxLrM="; # Placeholder, will be updated by script
+  };
+
+  mocha-theme = fetchFromGitHub {
     owner = "meowrch";
     repo = "pawlette-catppuccin-mocha-theme";
     rev = "v1.7.4";
     sha256 = "0isjkhi3ghgpgg02hd612m5gz2g51kl038nl2v803pl7jdlja0dg";
-  };
-  
-  latte-src = fetchFromGitHub {
-    owner = "meowrch";
-    repo = "pawlette-catppuccin-latte-theme";
-    rev = "v1.7.4";
-    sha256 = "17c8sz2jr1a04gh9cvznwbgm7y6rz55snp6lnscsmgbc5hm337xw";
   };
 in
 stdenv.mkDerivation rec {
@@ -22,7 +23,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "Meowrch";
     repo = "meowrch-themes";
-    rev = "6a720a4fb5c44f6b6a3be48c828526392ab1e8b1";
+    rev = "main";
     hash = "sha256-KAXoEP18KbFQLuXh1QYOKrsEdOe6zlNJpQCjrpp5mi8=";
   };
 
@@ -32,20 +33,28 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/share/pawlette
+    mkdir -p $out/share/wallpapers/meowrch
     
-    # Copy themes from their sources
-    cp -r ${mocha-src} $out/share/pawlette/catppuccin-mocha
-    cp -r ${latte-src} $out/share/pawlette/catppuccin-latte
+    # Copy themes
+    cp -r ${mocha-theme} $out/share/pawlette/catppuccin-mocha
     
-    # Ensure they are readable
+    # Copy ORIGINAL wallpapers from Meowrch repo
+    # In the original repo they are in home/.local/share/wallpapers
+    if [ -d "${meowrch-src}/home/.local/share/wallpapers" ]; then
+      cp -r ${meowrch-src}/home/.local/share/wallpapers/* $out/share/wallpapers/meowrch/
+    fi
+    
+    # Link wallpapers for pawlette themes
+    mkdir -p $out/share/pawlette/catppuccin-mocha/wallpapers
+    ln -sf $out/share/wallpapers/meowrch/* $out/share/pawlette/catppuccin-mocha/wallpapers/
+    
     chmod -R u+w $out/share/pawlette
     runHook postInstall
   '';
 
   meta = with lib; {
-    description = "Official themes for Pawlette and Meowrch";
-    homepage = "https://github.com/Meowrch/meowrch-themes";
+    description = "Official Meowrch (Arch) wallpapers and themes for NixOS";
+    homepage = "https://github.com/meowrch/meowrch";
     license = licenses.mit;
-    maintainers = [ ];
   };
 }
