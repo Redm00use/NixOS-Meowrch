@@ -1,0 +1,49 @@
+🚀 **Обновление NixOS-Meowrch: Патчи за 27-28 Февраля!** 🚀
+
+Привет всем! 👋 Мы хорошенько поработали в эти дни и выкатили пачку важных исправлений и улучшений. Вот что мы починили и добавили:
+
+🎨 **Темы и Внешний вид (Theming & UI):**
+• Полностью переработана логика тем! Исправлены проблемы со светлой темой в файловом менеджере Nemo и генерация GTK.
+• Приоритизированы системные темы и принудительно включен тёмный режим. Убраны жестко заданные курсоры и иконки.
+• Утилита `pawlette` теперь имеет доступ к `gsettings` для корректного переключения тем и использует абсолютные пути Nix Store.
+• Обои теперь автоматически подтягиваются из пакета тем в пользовательский конфиг.
+
+🐚 **Оболочки (Shell & Terminal):**
+• **Fish:** Исправлены синтаксические ошибки, конфликты конфигурации и починен запуск `fastfetch`.
+• **Starship:** Устранена ошибка 'unknown key' (убраны модули load и fill).
+
+💻 **Система и Компоненты:**
+• **Mewline:** Добавлено определение яркости, поддержка ноутбуков/ПК. Исправлены уведомления, горячие клавиши громкости и правила окон. Также включен `power-profiles-daemon`.
+• **Экран блокировки (Swaylock):** Добавлены эффекты темы meowrch, исправлены пути скриптов блокировки в конфиге Hyprland.
+• **Буфер обмена (Rofi):** Повышена надежность работы с буфером обмена для предотвращения потери данных.
+• **Сеть:** Исправлен ложный статус "лимитного подключения" (metered connection) в NetworkManager.
+• **Оптимизация:** Очищены логи загрузки (удален лишний таймер обслуживания).
+• **Home Manager:** Модуляризирована структура, синхронизированы скрипты в `bin`.
+
+🚧 **Важно:** Тема **SDDM** всё ещё находится в активной разработке! Мы переносим её на Qt6 и чиним конфигурацию.
+
+---
+
+🚀 **NixOS-Meowrch Update: Feb 27-28 Patches!** 🚀
+
+Hey everyone! 👋 We've been working hard over the last couple of days to bring you a solid batch of fixes and improvements. Here is what we've fixed and added:
+
+🎨 **Theming & UI:**
+• Completely overhauled theming logic! Fixed issues with the white theme in Nemo file manager and GTK generation.
+• Prioritized system themes and forced dark mode preference. Removed hardcoded cursors and icons from Hyprland config.
+• Our tool `pawlette` now has `gsettings` access for proper theme switching and uses absolute Nix Store paths for reliability.
+• Wallpapers are now automatically linked from the themes package to the user config.
+
+🐚 **Shell & Terminal:**
+• **Fish:** Fixed syntax errors, resolved configuration conflicts, and fixed `fastfetch` startup.
+• **Starship:** Eliminated the 'unknown key' error by removing unsupported modules.
+
+💻 **System & Components:**
+• **Mewline:** Added brightness detection, laptop/desktop support. Fixed notifications, volume keybindings, and window rules. Enabled `power-profiles-daemon`.
+• **Screen Lock (Swaylock):** Implemented meowrch theme effects, corrected lock script paths in Hyprland config.
+• **Clipboard (Rofi):** More robust clipboard handling to prevent data loss; removed incompatible rofi flags.
+• **Networking:** Fixed false metered connection status in NetworkManager.
+• **Optimization:** Cleaned up boot logs by removing a redundant maintenance timer.
+• **Home Manager:** Modularized the structure and properly synced the `bin` scripts directory.
+
+🚧 **Note:** The **SDDM theme** is still actively in development! We are porting it to Qt6 and polishing the configuration.

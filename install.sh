@@ -287,7 +287,7 @@ if [ "$MODE" -eq 1 ]; then
 else
     echo -e "${BLUE}[INFO] Starting 'nixos-rebuild boot'...${NC}"
     echo "This may take a while."
-    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#$CONF_HOSTNAME"
+    sudo env NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#$CONF_HOSTNAME"
 
     echo -e "\n${GREEN}Update Complete!${NC}"
     echo -e "${BLUE}Detailed logs are saved to: $LOG_FILE${NC}"

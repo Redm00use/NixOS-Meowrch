@@ -36,4 +36,10 @@
     radeontop
     amdgpu_top
   ];
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "radeonsi";
+    VDPAU_DRIVER = "radeonsi";
+    AMD_VULKAN_ICD = "RADV";
+  };
 }

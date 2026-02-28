@@ -73,4 +73,8 @@
   hardware.graphics.extraPackages = with pkgs; [
     nvidia-vaapi-driver
   ];
+
+  hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
+    nvidia-vaapi-driver
+  ];
 }

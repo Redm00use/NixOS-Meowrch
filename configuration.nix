@@ -69,6 +69,7 @@
   nixpkgs.config = {
     allowUnfree = true;
     allowUnfreePredicate = pkg: true;
+    nvidia.acceptLicense = true;
   };
 
   ############################################
@@ -147,11 +148,6 @@
       QT_QPA_PLATFORMTHEME = "qt6ct";
       QT_AUTO_SCREEN_SCALE_FACTOR = "1";
       GDK_SCALE = "1";
-
-      # AMD GPU
-      LIBVA_DRIVER_NAME = "radeonsi";
-      VDPAU_DRIVER = "radeonsi";
-      AMD_VULKAN_ICD = "RADV";
 
       # Java
       _JAVA_AWT_WM_NONREPARENTING = "1";
