@@ -5,8 +5,8 @@ let
   meowrch-src = fetchFromGitHub {
     owner = "meowrch";
     repo = "meowrch";
-    rev = "main"; # We pull from main to get the latest wallpapers
-    sha256 = "sha256-2CqwzWT9ijdVMIfog/aoUGf59b7blS2CtDPQzvbxLrM="; # Placeholder, will be updated by script
+    rev = "main";
+    sha256 = "sha256-2CqwzWT9ijdVMIfog/aoUGf59b7blS2CtDPQzvbxLrM="; 
   };
 
   mocha-theme = fetchFromGitHub {
@@ -32,23 +32,28 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/share/pawlette
+    
+    # 1. Create directory structure in $out
+    mkdir -p $out/share/pawlette/catppuccin-mocha
     mkdir -p $out/share/wallpapers/meowrch
     
-    # Copy themes
-    cp -r ${mocha-theme} $out/share/pawlette/catppuccin-mocha
+    # 2. Copy the theme contents to our writable output directory
+    cp -r ${mocha-theme}/* $out/share/pawlette/catppuccin-mocha/
     
-    # Copy ORIGINAL wallpapers from Meowrch repo
-    # In the original repo they are in home/.local/share/wallpapers
+    # 3. Copy ORIGINAL wallpapers from Meowrch repo
     if [ -d "${meowrch-src}/home/.local/share/wallpapers" ]; then
       cp -r ${meowrch-src}/home/.local/share/wallpapers/* $out/share/wallpapers/meowrch/
     fi
     
-    # Link wallpapers for pawlette themes
+    # 4. Create and populate the wallpapers directory within the theme
     mkdir -p $out/share/pawlette/catppuccin-mocha/wallpapers
-    ln -sf $out/share/wallpapers/meowrch/* $out/share/pawlette/catppuccin-mocha/wallpapers/
     
+    # Use find to safely link all wallpapers to the theme folder
+    find $out/share/wallpapers/meowrch -type f -exec ln -sf {} $out/share/pawlette/catppuccin-mocha/wallpapers/ \;
+    
+    # 5. Fix permissions to ensure everything is readable
     chmod -R u+w $out/share/pawlette
+    
     runHook postInstall
   '';
 
