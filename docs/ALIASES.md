@@ -2,8 +2,8 @@
 
 <div align="center">
 
-[![⬅️ Назад к README](https://img.shields.io/badge/⬅️_Назад_к-README-blue?color=cba6f7&labelColor=1C2325&style=for-the-badge)](./README.md)
-[![🇺🇸 English README](https://img.shields.io/badge/🇺🇸_English-README-blue?color=C9CBFF&labelColor=1C2325&style=for-the-badge)](./README.en.md)
+[![⬅️ Назад к README](https://img.shields.io/badge/⬅️_Назад_к-README-blue?color=cba6f7&labelColor=1C2325&style=for-the-badge)](../README.md)
+[![🇺🇸 English README](https://img.shields.io/badge/🇺🇸_English-README-blue?color=C9CBFF&labelColor=1C2325&style=for-the-badge)](../README.en.md)
 
 </div>
 
@@ -55,9 +55,9 @@
 ### Обновление и валидация
 | Алиас | Команда | Описание |
 |-------|---------|----------|
-| `update` | `cd ~/meowrch-nixos && nix flake update && rebuild` | Обновить inputs и пересобрать |
+| `update` | `cd ~/NixOS-Meowrch && nix flake update && rebuild` | Обновить inputs и пересобрать |
 | `u` | `update` | Короткий алиас для update |
-| `validate` | `cd ~/meowrch-nixos && ./validate-config.sh` | Проверить конфигурацию на ошибки |
+| `validate` | `cd ~/NixOS-Meowrch && ./script./scripts/validate-config.sh` | Проверить конфигурацию на ошибки |
 
 ### Работа с поколениями
 | Алиас | Команда | Описание |
@@ -100,22 +100,22 @@
 ### Общие команды
 | Алиас | Команда | Описание |
 |-------|---------|----------|
-| `config` | `cd ~/meowrch-nixos && zed .` | Открыть проект в Zed |
+| `config` | `cd ~/NixOS-Meowrch && zed .` | Открыть проект в Zed |
 | `c` | `config` | Короткий алиас |
 
 ### Быстрое редактирование файлов
 | Алиас | Команда | Описание |
 |-------|---------|----------|
-| `edit-config` | `zed ~/meowrch-nixos/configuration.nix` | Редактировать основной конфиг |
-| `edit-home` | `zed ~/meowrch-nixos/home/home.nix` | Редактировать Home Manager |
-| `edit-flake` | `zed ~/meowrch-nixos/flake.nix` | Редактировать flake.nix |
+| `edit-config` | `zed ~/NixOS-Meowrch/hosts/meowrch/configuration.nix` | Редактировать основной конфиг |
+| `edit-home` | `zed ~/NixOS-Meowrch/hosts/meowrch/home.nix` | Редактировать Home Manager |
+| `edit-flake` | `zed ~/NixOS-Meowrch/flake.nix` | Редактировать flake.nix |
 
 ### Навигация по проекту
 | Алиас | Команда | Описание |
 |-------|---------|----------|
-| `cd-config` | `cd ~/meowrch-nixos` | Перейти в корень конфигурации |
-| `cd-home` | `cd ~/meowrch-nixos/home` | Перейти в папку home |
-| `cd-modules` | `cd ~/meowrch-nixos/modules` | Перейти в папку modules |
+| `cd-config` | `cd ~/NixOS-Meowrch` | Перейти в корень конфигурации |
+| `cd-home` | `cd ~/NixOS-Meowrch/hosts/meowrch` | Перейти в папку home |
+| `cd-modules` | `cd ~/NixOS-Meowrch/modules/nixos/nixos` | Перейти в папку modules |
 
 ---
 
@@ -291,7 +291,7 @@
 | `./install.sh` | Запустить интерактивный установщик |
 | `./install.sh --full` | Полная автоматическая установка |
 | `./install.sh --user-config` | Только настройка пользователя |
-| `./install.sh --hardware-config` | Генерация hardware-configuration.nix |
+| `./install.sh --hardware-config` | Генерация hardware-hosts/meowrch/configuration.nix |
 | `./install.sh --validate` | Проверка конфигурации |
 | `./install.sh --build` | Сборка системы |
 | `./install.sh --home-manager` | Настройка Home Manager |
@@ -396,7 +396,7 @@ generation-size
 
 ## 🔧 Настройка
 
-Все алиасы находятся в файле `home/home.nix` в разделе `programs.fish.shellAliases`.
+Все алиасы находятся в файле `hosts/meowrch/home.nix` в разделе `programs.fish.shellAliases`.
 
 Функции находятся в разделе `programs.fish.functions`.
 
@@ -428,7 +428,7 @@ home
 <div align="center">
 
 [![⬅️ Назад к README](https://img.shields.io/badge/⬅️_Назад_к-README-blue?color=cba6f7&labelColor=1C2325&style=for-the-badge)](./README.md)
-[![🏠 Главная страница](https://img.shields.io/badge/🏠_Главная-страница-green?color=fab387&labelColor=1C2325&style=for-the-badge)](https://github.com/Redm00us/meowrch-nixos)
+[![🏠 Главная страница](https://img.shields.io/badge/🏠_Главная-страница-green?color=fab387&labelColor=1C2325&style=for-the-badge)](https://github.com/Redm00us/NixOS-Meowrch)
 
 *Создано с 💜 для сообщества Meowrch NixOS*
 

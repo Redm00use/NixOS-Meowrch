@@ -91,7 +91,7 @@
     QT_QPA_PLATFORM = "wayland";
 
     # XDG directories (critical for scripts)
-    XDG_BIN_HOME = "$HOME/.local/bin";
+    XDG_BIN_HOME = "$HOME/.config/meowrch/bin";
 
     # Default applications
     EDITOR = "zed";

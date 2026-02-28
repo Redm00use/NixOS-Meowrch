@@ -115,7 +115,7 @@ if [ "$MODE" -eq 1 ]; then
     echo -e "${BLUE}[INFO] Installing to /mnt...${NC}"
 else
     # Update Mode
-    TARGET_DIR="$HOME/meowrch-nixos"
+    TARGET_DIR="$HOME/NixOS-Meowrch"
     echo -e "${BLUE}[INFO] Updating current system...${NC}"
 fi
 
@@ -172,82 +172,65 @@ cd "$TARGET_DIR"
 
 # Apply Configuration (Patching files)
 
-# 1. Hostname — patched in modules/system/networking.nix (where hostName actually lives)
-# Note: configuration.nix does NOT contain networking.hostName; it's in the networking module.
+# 1. Hostname — patched in modules/nixos/system/networking.nix
 echo -e "${BLUE}[INFO] Setting hostname to $CONF_HOSTNAME...${NC}"
-NETWORKING_NIX="modules/system/networking.nix"
+NETWORKING_NIX="modules/nixos/system/networking.nix"
+CONF_NIX="hosts/meowrch/configuration.nix"
+HOME_NIX="hosts/meowrch/home.nix"
+
 if grep -q "hostName" "$NETWORKING_NIX"; then
-    # Patch the networking module — this is the correct location
     sed -i "s/hostName = \".*\";/hostName = \"$CONF_HOSTNAME\";/" "$NETWORKING_NIX"
-elif grep -q "networking.hostName" configuration.nix; then
-    # Fallback: patch configuration.nix if it has a top-level networking.hostName
-    sed -i "s/networking.hostName = \".*\";/networking.hostName = \"$CONF_HOSTNAME\";/" configuration.nix
+elif grep -q "networking.hostName" "$CONF_NIX"; then
+    sed -i "s/networking.hostName = \".*\";/networking.hostName = \"$CONF_HOSTNAME\";/" "$CONF_NIX"
 else
-    # Last resort: append a top-level option BEFORE the closing brace of configuration.nix
-    # (NOT inside the imports block — that would break Nix syntax)
-    sed -i "s/^}$/  networking.hostName = \"$CONF_HOSTNAME\";\n}/" configuration.nix
+    sed -i "s/^}$/  networking.hostName = \"$CONF_HOSTNAME\";\n}/" "$CONF_NIX"
 fi
 
 # 2. Username
 echo -e "${BLUE}[INFO] Setting username to $CONF_USER...${NC}"
 if [ "$CONF_USER" != "meowrch" ]; then
-    # Patch configuration.nix — user declaration, group, description, and groups
-    # NOTE: inside `users = { ... }` block, the text is `users.meowrch`, NOT `users.users.meowrch`
-    sed -i "s/users\.meowrch/users.$CONF_USER/g" configuration.nix
-    sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" configuration.nix
-    sed -i "s/groups\.meowrch/groups.$CONF_USER/g" configuration.nix
-    sed -i "s/description = \"Meowrch User\"/description = \"$CONF_USER\"/" configuration.nix
+    # Patch configuration.nix
+    sed -i "s/users\.meowrch/users.$CONF_USER/g" "$CONF_NIX"
+    sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" "$CONF_NIX"
+    sed -i "s/groups\.meowrch/groups.$CONF_USER/g" "$CONF_NIX"
+    sed -i "s/description = \"Meowrch User\"/description = \"$CONF_USER\"/" "$CONF_NIX"
 
-    # Patch home/home.nix — username, homeDirectory, and all hardcoded /home/meowrch paths
-    sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" home/home.nix
-    sed -i "s|home.homeDirectory = lib.mkForce \"/home/meowrch\"|home.homeDirectory = lib.mkForce \"/home/$CONF_USER\"|g" home/home.nix
-    sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" home/home.nix
+    # Patch home.nix
+    sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" "$HOME_NIX"
+    sed -i "s|home.homeDirectory = lib.mkForce \"/home/meowrch\"|home.homeDirectory = lib.mkForce \"/home/$CONF_USER\"|g" "$HOME_NIX"
+    sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" "$HOME_NIX"
 
-    # Patch flake.nix (users.meowrch -> users.$CONF_USER)
+    # Patch flake.nix
     sed -i "s/home-manager.users.meowrch/home-manager.users.$CONF_USER/g" flake.nix
     sed -i "s/homeConfigurations.meowrch/homeConfigurations.$CONF_USER/g" flake.nix
 fi
 
 # 3. Rename Configuration to match Hostname
-# This ensures 'nixos-rebuild switch' works without arguments later
 if [ "$CONF_HOSTNAME" != "meowrch" ]; then
     echo -e "${BLUE}[INFO] Renaming configuration to $CONF_HOSTNAME...${NC}"
     sed -i "s/nixosConfigurations.meowrch/nixosConfigurations.$CONF_HOSTNAME/g" flake.nix
-    # Update flake references in aliases (e.g. --flake .#meowrch) in BOTH config files
-    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" home/home.nix
-    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" configuration.nix
+    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" "$HOME_NIX"
+    sed -i "s|\.#meowrch|.#$CONF_HOSTNAME|g" "$CONF_NIX"
 fi
 
 # 4. GPU — swap the GPU-specific module in configuration.nix
 echo -e "${BLUE}[INFO] Configuring GPU driver...${NC}"
 case "$GPU_CHOICE" in
     0)
-        # AMD (default)
-        echo -e "${GREEN}[INFO] Using AMD GPU module (default).${NC}"
-        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-amd.nix # GPU_MODULE_LINE|' configuration.nix
-        # Remove nvidia license if present
-        sed -i '/nvidia\.acceptLicense/d' configuration.nix
+        sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-amd.nix # GPU_MODULE_LINE|' "$CONF_NIX"
+        sed -i '/nvidia\.acceptLicense/d' "$CONF_NIX"
         sed -i '/nvidia\.acceptLicense/d' flake.nix
         ;;
     1)
-        # Intel
-        echo -e "${BLUE}[INFO] Switching to Intel GPU module...${NC}"
-        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-intel.nix # GPU_MODULE_LINE|' configuration.nix
-        # Remove nvidia license if present
-        sed -i '/nvidia\.acceptLicense/d' configuration.nix
+        sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-intel.nix # GPU_MODULE_LINE|' "$CONF_NIX"
+        sed -i '/nvidia\.acceptLicense/d' "$CONF_NIX"
         sed -i '/nvidia\.acceptLicense/d' flake.nix
         ;;
     2)
-        # Nvidia
-        echo -e "${BLUE}[INFO] Switching to Nvidia GPU module...${NC}"
-        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-nvidia.nix # GPU_MODULE_LINE|' configuration.nix
-        
-        # Add nvidia license acceptance to configuration.nix if not present
-        if ! grep -q "nvidia.acceptLicense" configuration.nix; then
-            sed -i '/allowUnfreePredicate/a \    nvidia.acceptLicense = true;' configuration.nix
+        sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-nvidia.nix # GPU_MODULE_LINE|' "$CONF_NIX"
+        if ! grep -q "nvidia.acceptLicense" "$CONF_NIX"; then
+            sed -i '/allowUnfreePredicate/a \    nvidia.acceptLicense = true;' "$CONF_NIX"
         fi
-        
-        # Add nvidia license acceptance to flake.nix (for both pkgs and pkgs-unstable)
         if ! grep -q "nvidia.acceptLicense" flake.nix; then
             sed -i '/config\.allowUnfree = true;/a \      config.nvidia.acceptLicense = true;' flake.nix
         fi
@@ -257,19 +240,15 @@ esac
 # --- Phase 3: Hardware Config ---
 
 echo -e "\n${YELLOW}==> Generating Hardware Configuration${NC}"
+HW_CONF_PATH="hosts/meowrch/hardware-configuration.nix"
 
 if [ "$MODE" -eq 1 ]; then
-    # Bootstrap: Generate to /mnt and copy
-    echo -e "${BLUE}[INFO] Generating hardware-configuration.nix from /mnt...${NC}"
-    # We use a temp dir because nixos-generate-config creates configuration.nix too
     TMP_CONFIG=$(mktemp -d)
     nixos-generate-config --root /mnt --dir "$TMP_CONFIG"
-    cp "$TMP_CONFIG/hardware-configuration.nix" "$TARGET_DIR/"
+    cp "$TMP_CONFIG/hardware-configuration.nix" "$HW_CONF_PATH"
     rm -rf "$TMP_CONFIG"
 else
-    # Update: Generate based on current system
-    echo -e "${BLUE}[INFO] Regenerating hardware-configuration.nix...${NC}"
-    nixos-generate-config --show-hardware-config > "$TARGET_DIR/hardware-configuration.nix"
+    nixos-generate-config --show-hardware-config > "$HW_CONF_PATH"
 fi
 
 # Add hardware-config to git (needed for flake)
@@ -277,7 +256,7 @@ if [ ! -d .git ]; then
     git init >/dev/null
     git add --all >/dev/null
 else
-    git add --force hardware-configuration.nix >/dev/null
+    git add --force "$HW_CONF_PATH" >/dev/null
 fi
 
 # --- Phase 4: Hash Updates ---

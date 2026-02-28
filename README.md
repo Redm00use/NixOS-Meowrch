@@ -269,7 +269,7 @@ rebuild
 | `rollback` | `sudo nixos-rebuild switch --rollback` | Откат к предыдущему удачному состоянию |
 | `cls` | `clear` | Очистить экран |
 | `ll` | `ls -la` | Список файлов с деталями |
-| `validate` | `./validate-config.sh` | Проверка синтаксиса конфигурации |
+| `validate` | `./scripts/validate-config.sh` | Проверка синтаксиса конфигурации |
 
 ## 🎨 Theming
 
