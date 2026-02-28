@@ -21,7 +21,7 @@
             <img src="https://img.shields.io/badge/Install-Meowrch_NixOS-success?style=for-the-badge&logo=nixos&color=a6e3a1&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="#-гайд-для-новичка-установка-программ">
-            <img src="https://img.shields.io/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
+            <img src="https://img.shields.ok/badge/Guide-Install_Apps-orange?style=for-the-badge&logo=nixos&color=fab387&logoColor=1e1e2e&labelColor=313244">
         </a>
         <a href="./docs/ALIASES.md">
             <img src="https://img.shields.io/badge/Wiki-Config_System-blue?style=for-the-badge&logo=bookstack&color=89b4fa&logoColor=1e1e2e&labelColor=313244">
@@ -29,8 +29,9 @@
     </p>
 </div>
 
-> [!IMPORTANT]
-> **Добро пожаловать в NixOS!** Если вы привыкли к Windows, Ubuntu или Arch — забудьте почти всё, что знали. В NixOS система строится из кода. Вы не «устанавливаете» программы, вы «описываете» их в конфиге.
+> [!NOTE]
+> Порт оригинального **[Meowrch](https://github.com/meowrch/meowrch)** (Arch Linux) на **NixOS**.
+> Полная совместимость с экосистемой Nix, декларативность, воспроизводимость и стабильность.
 
 ## 📑 Содержание
 - [✨ Особенности](#-особенности)
@@ -44,38 +45,74 @@
 
 ## ✨ Особенности
 
-| Feature | Implementation |
+| Особенность | Реализация |
 |---------|---------------|
-| **Window Manager** | Hyprland (Wayland) с UWSM для стабильности |
-| **Status Bar** | Mewline (Dynamic Island) — системный сервис |
-| **Launcher** | Rofi с кастомными меню выбора тем/обоев |
+| **Window Manager** | Hyprland (Wayland) с UWSM для максимальной стабильности |
+| **Status Bar** | Mewline (Dynamic Island) — работает как системный сервис |
+| **Launcher** | Rofi с кастомными меню выбора тем и обоев |
+| **Display Manager** | SDDM с темой Meowrch на базе **Qt6** |
 | **Terminal** | Kitty (0.8 opacity) + Fish shell |
 | **Shell** | Fish + Starship (minimalist prompt) |
-| **Theming** | Catppuccin Mocha (GTK4 forced dark) |
+| **Theming** | Catppuccin Mocha (GTK4/Libadwaita forced dark) |
+| **Memory** | ZRAM включен по умолчанию |
 | **GPU** | Умная поддержка AMD / Nvidia / Intel |
 
 ## 📁 Структура проекта
 
 ```text
 NixOS-Meowrch/
-├── hosts/meowrch/                         # Специфичные настройки для этой машины
-├── modules/                               # Nix-модули (Система и Пользователь)
-├── config/                                # "Сырые" конфиги (Hypr, Kitty, Fish...)
-├── assets/                                # Статика (темы SDDM, обои, иконки)
-├── scripts/                               # Все системные скрипты
-├── pkgs/                                  # Описания кастомных пакетов
-└── flake.nix                              # Точка входа в конфигурацию
+├── flake.nix                       # Главная точка входа (Flake)
+├── flake.lock                      # Зафиксированные версии зависимостей
+├── hosts/                          # Конфигурации конкретных машин
+│   └── meowrch/                    # Хост 'meowrch'
+│       ├── configuration.nix       # Системные настройки хоста
+│       ├── hardware-configuration.nix # Настройки железа (авто-ген)
+│       └── home.nix                # Пользовательские настройки (Home Manager)
+├── modules/                        # Модульная логика Nix
+│   ├── nixos/                      # Системные модули NixOS
+│   │   ├── desktop/                # Окружение (Hyprland, SDDM, Theming)
+│   │   ├── system/                 # Ядро (Audio, Fonts, Security, Networking)
+│   │   └── packages/               # Глобальные пакеты и Flatpak
+│   └── home/                       # Модули Home Manager
+│       ├── fish.nix                # Shell-конфигурация
+│       ├── starship.nix            # Prompt-конфигурация
+│       ├── hypr-configs/           # Конфиги Hyprland (Binds, Rules)
+│       └── ...                     # Rofi, GTK
+├── config/                         # "Сырые" конфигурации приложений (symlinks)
+│   ├── hypr/                       # Настройки Hyprland
+│   ├── kitty/                      # Настройки Kitty
+│   └── ...                         # Fish, Fastfetch, Btop
+├── assets/                         # Статические ресурсы системы
+│   ├── sddm/                       # Тема экрана входа (Qt6)
+│   ├── themes/                     # Темы оформления (Catppuccin)
+│   └── misc/                       # Прочее (.face.icon, лого)
+├── scripts/                        # Консолидированные системные скрипты
+│   ├── rofi-menus/                 # Скрипты Rofi (Power, VPN, Wallpaper)
+│   └── ...                         # Утилиты управления (volume, backlight)
+├── pkgs/                           # Определения кастомных пакетов (Derivations)
+├── packages/                       # Nix-деривации для локальных папок
+├── overlays/                       # Системные патчи (GBM fix, etc.)
+├── docs/                           # Документация и архивы логов
+└── install.sh                      # Инсталлятор системы
 ```
 
-## 🚀 Installation
+## 🚀 Установка
 
-### 1. Подготовка
-Перед началом убедитесь, что у вас установлена NixOS. Вам понадобится **Git**:
+### 1. Подготовка (Важно!)
+Перед началом убедитесь, что у вас установлена NixOS (версия не важна: это может быть Minimal ISO, GNOME или KDE).
+
+Для работы установщика вам понадобится **Git**. Если его еще нет, выполните:
 ```bash
+# Временная установка git для клонирования
 nix-shell -p git
 ```
 
+> [!CAUTION]
+> **ВАЖНО:** Не удаляйте и не перемещайте папку с репозиторием (`~/NixOS-Meowrch`) после установки! 
+> В NixOS на Flakes эта папка является «сердцем» вашей системы. Без неё вы не сможете обновляться или менять настройки.
+
 ### 2. Установка
+
 ```bash
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
@@ -87,14 +124,14 @@ chmod +x install.sh
 
 ## 🔧 Использование и Обновление
 
-Мы создали супер-команды (алиасы), чтобы вам было проще:
+Мы создали супер-команды (алиасы), чтобы вам не нужно было учить сложные заклинания:
 
-| Команда | Описание |
-|---------|----------|
-| `u` (или `г`) | **Полный апдейт**. Git pull + update hashes + flake update + rebuild. |
-| `b` (или `и`) | **Применить настройки**. Запускайте после любых правок в конфигах. |
-| `clean` | **Уборка**. Удаляет старые версии системы и чистит диск. |
-| `rollback` | **Откат**. Вернуться к прошлому рабочему состоянию. |
+| Алиас | Рус. | Описание |
+|-------|------|----------|
+| `u`     | `г`  | **Полный апдейт**: git pull + update hashes + flake update + rebuild |
+| `b`     | `и`  | **Быстрый ребилд**: применить текущие изменения в конфиге |
+| `clean` | -    | **Уборка**: удалить старые поколения и собрать мусор |
+| `rollback`| -  | **Откат**: вернуться к предыдущему удачному состоянию |
 
 ---
 
@@ -109,6 +146,7 @@ chmod +x install.sh
 home.packages = with pkgs; [
   telegram-desktop
   vlc
+  discord
 ];
 ```
 
@@ -119,7 +157,7 @@ home.packages = with pkgs; [
 Ищите на **[search.nixos.org](https://search.nixos.org/packages)**. Используйте "Attribute name".
 
 **Как применить?**
-Просто напишите в терминале: `b`
+Просто напишите в терминале: `b` (или `и`).
 
 ---
 
@@ -136,25 +174,29 @@ home.packages = with pkgs; [
 
 ## 🛠️ Что делать, если всё сломалось?
 
-В NixOS невозможно окончательно «убить» систему программно!
+Это NixOS, здесь **невозможно** окончательно «убить» систему программно!
 
-1.  **Если не грузится**: Перезагрузитесь и выберите предыдущий пункт (Generation) в меню загрузки.
-2.  **Если глючит**: Введите команду `rollback`. Система вернется в состояние до последней сборки.
+1.  **Если система не загружается**: Перезагрузитесь. В меню загрузки (GRUB/Systemd-boot) выберите предыдущий пункт (Generation). Вы окажетесь в системе, которая работала до ваших правок.
+2.  **Если вы в системе, но всё глючит**: Введите команду `rollback` (или `sudo nixos-rebuild switch --rollback`).
 
 ---
 
-## ⌨️ Хоткеи (Шпаргалка)
+## ⌨️ Хоткеи и Команды
 
 | Клавиша | Действие |
 |---------|----------|
-| `Super + Return` | Терминал (Kitty) |
+| `Super + Return` | Терминал (Kitty + Fish) |
 | `Super + Q` | Закрыть окно |
 | `Super + E` | Файловый менеджер (Nemo) |
 | `Super + D` | Меню приложений (Rofi) |
+| `Super + Z` | Браузер (Firefox) |
+| `Super + T` | Telegram (Materialgram) |
 | `Super + W` | Выбор обоев |
-| `Super + Shift + T` | Выбор темы |
+| `Super + Shift + T` | Выбор темы (Pawlette) |
+| `Super + X` | Меню питания (Powermenu) |
 | `Super + L` | Заблокировать экран |
-| `Super + Shift + B` | Переключить статус-бар |
+| `Super + Shift + B` | Переключить статус-бар (Mewline) |
+| `Print` | Скриншот (область) |
 
 ---
 <div align="center">

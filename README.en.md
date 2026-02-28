@@ -42,40 +42,75 @@
 - [⌨️ Keybindings & Commands](#️-keybindings--commands)
 - [🛠️ Help! I broke something!](#-help-i-broke-something)
 
+---
+
 ## ✨ Features
 
 | Feature | Implementation |
 |---------|---------------|
-| **Window Manager** | Hyprland (Wayland) with UWSM for stability |
-| **Status Bar** | Mewline (Dynamic Island) — systemd service |
-| **Launcher** | Rofi with custom theme/wallpaper menus |
+| **Window Manager** | Hyprland (Wayland) with UWSM for superior stability |
+| **Status Bar** | Mewline (Dynamic Island) — runs as a systemd service |
+| **Launcher** | Rofi with custom theme and wallpaper selectors |
+| **Display Manager** | SDDM with **Qt6** Meowrch theme |
 | **Terminal** | Kitty (0.8 opacity) + Fish shell |
 | **Shell** | Fish + Starship (minimalist prompt) |
-| **Theming** | Catppuccin Mocha (GTK4 forced dark) |
+| **Memory** | ZRAM enabled by default |
+| **Theming** | Catppuccin Mocha (GTK4/Libadwaita forced dark) |
 | **GPU** | Intelligent AMD / Nvidia / Intel support |
 
 ## 📁 Project Structure
 
 ```text
 NixOS-Meowrch/
-├── hosts/meowrch/                         # Machine-specific settings
-├── modules/                               # Nix modules (System & User)
-├── config/                                # Raw app configs (Hypr, Kitty, Fish...)
-├── assets/                                # Static files (SDDM, themes, wallpapers)
-├── scripts/                               # Consolidated system scripts
-├── pkgs/                                  # Custom package definitions
-└── flake.nix                              # Main entry point
+├── flake.nix                       # Main entry point (Flake)
+├── flake.lock                      # Fixed dependency versions
+├── hosts/                          # Machine-specific configurations
+│   └── meowrch/                    # Host 'meowrch'
+│       ├── configuration.nix       # System settings
+│       ├── hardware-configuration.nix # Hardware scan result
+│       └── home.nix                # User settings (Home Manager)
+├── modules/                        # Modular Nix logic
+│   ├── nixos/                      # NixOS system modules
+│   │   ├── desktop/                # Environment (Hyprland, SDDM, Theming)
+│   │   ├── system/                 # Core (Audio, Fonts, Security, Networking)
+│   │   └── packages/               # Global packages & Flatpak
+│   └── home/                       # Home Manager modules
+│       ├── fish.nix                # Shell config
+│       ├── starship.nix            # Prompt config
+│       ├── hypr-configs/           # Raw Hyprland configs (Binds, Rules)
+│       └── ...                     # Rofi, GTK
+├── config/                         # Raw application configurations (symlinks)
+│   ├── hypr/                       # Hyprland settings
+│   ├── kitty/                      # Kitty settings
+│   └── ...                         # Fish, Fastfetch, Btop
+├── assets/                         # Static system resources
+│   ├── sddm/                       # Login screen theme (Qt6)
+│   ├── themes/                     # UI Themes (Catppuccin)
+│   └── misc/                       # Misc (.face.icon, logos)
+├── scripts/                        # Consolidated system scripts
+│   ├── rofi-menus/                 # Rofi scripts (Power, VPN, Wallpaper)
+│   └── ...                         # Utilities (volume, backlight, update)
+├── pkgs/                           # Custom package definitions (Derivations)
+├── packages/                       # Nix derivations for local folders
+├── overlays/                       # System patches (GBM fix, etc.)
+├── docs/                           # Documentation and log archives
+└── install.sh                      # System installer
 ```
 
 ## 🚀 Installation
 
-### 1. Preparation
-Ensure you have NixOS installed. You will need **Git**:
+### 1. Preparation (Important!)
+Before you begin, ensure you have NixOS installed. You will need **Git** to clone this repository:
 ```bash
+# Temporarily install git
 nix-shell -p git
 ```
 
+> [!CAUTION]
+> **IMPORTANT:** Do NOT delete or move the repository folder (`~/NixOS-Meowrch`) after installation! In NixOS, this folder is the source code of your system.
+
 ### 2. Installation
+
 ```bash
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
@@ -87,14 +122,14 @@ chmod +x install.sh
 
 ## 🔧 Usage & Updates
 
-We created "Super Aliases" to make your life easier:
+Convenient aliases are available for system management:
 
-| Alias | Description |
-|-------|-------------|
-| `u` (or `г`) | **Full Update**. Git pull + update hashes + flake update + rebuild. |
-| `b` (or `и`) | **Apply Settings**. Run this after editing any config file. |
-| `clean` | **Cleanup**. Removes old system versions and frees disk space. |
-| `rollback` | **Rollback**. Return to the previous working state. |
+| Alias | Desc | Description |
+|-------|------|-------------|
+| `u`     | `г`  | **Full Update**: git pull + update hashes + flake update + rebuild |
+| `b`     | `и`  | **Fast Rebuild**: apply current config changes |
+| `clean` | -    | **Cleanup**: remove old generations and collect garbage |
+| `rollback`| -  | **Rollback**: return to the previous successful state |
 
 ---
 
@@ -109,6 +144,7 @@ Find the `home.packages` section and add the app name:
 home.packages = with pkgs; [
   telegram-desktop
   vlc
+  discord
 ];
 ```
 
@@ -143,16 +179,19 @@ In NixOS, it is **impossible** to permanently "kill" your system via software!
 
 ---
 
-## ⌨️ Keybindings (Cheat Sheet)
+## ⌨️ Keybindings & Commands
 
 | Key | Action |
 |-----|--------|
-| `Super + Return` | Terminal (Kitty) |
+| `Super + Return` | Terminal (Kitty + Fish) |
 | `Super + Q` | Close window |
 | `Super + E` | File Manager (Nemo) |
 | `Super + D` | App Launcher (Rofi) |
+| `Super + Z` | Browser (Firefox) |
+| `Super + T` | Telegram (Materialgram) |
 | `Super + W` | Select Wallpaper |
 | `Super + Shift + T` | Select Theme |
+| `Super + X` | Power Menu |
 | `Super + L` | Lock Screen |
 | `Super + Shift + B` | Toggle Status Bar |
 
