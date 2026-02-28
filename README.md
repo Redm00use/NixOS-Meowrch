@@ -63,16 +63,52 @@
 
 ## 📁 Project Structure
 
-```
+```text
 NixOS-Meowrch/
-├── hosts/meowrch/                         # Специфичные настройки для этой машины
-├── modules/                               # Nix-модули (NixOS и Home Manager)
-├── config/                                # "Сырые" конфиги (Hypr, Kitty, Fish...)
-├── assets/                                # Статика (темы SDDM, обои, иконки)
-├── scripts/                               # Все системные скрипты
-├── pkgs/                                  # Описания кастомных пакетов
-├── packages/                              # Nix-деривации для пакетов
-└── flake.nix                              # Точка входа в конфигурацию
+├── flake.nix                       # Главная точка входа (Flake)
+├── flake.lock                      # Зафиксированные версии зависимостей
+├── hosts/                          # Конфигурации конкретных машин
+│   └── meowrch/                    # Хост 'meowrch'
+│       ├── configuration.nix       # Системные настройки хоста
+│       ├── hardware-configuration.nix # Настройки железа (авто-ген)
+│       └── home.nix                # Пользовательские настройки (Home Manager)
+├── modules/                        # Модульная логика Nix
+│   ├── nixos/                      # Системные модули NixOS
+│   │   ├── desktop/                # Окружение (Hyprland, SDDM, Theming)
+│   │   ├── system/                 # Ядро (Audio, Fonts, Security, Networking)
+│   │   └── packages/               # Глобальные пакеты и Flatpak
+│   └── home/                       # Модули Home Manager
+│       ├── fish.nix                # Shell-конфигурация
+│       ├── starship.nix            # Prompt-конфигурация
+│       ├── kitty.nix               # Настройки терминала
+│       └── ...                     # Rofi, GTK, Waybar
+├── config/                         # "Сырые" конфигурации приложений (symlinks)
+│   ├── hypr/                       # Настройки Hyprland
+│   ├── kitty/                      # Настройки Kitty
+│   ├── fish/                       # Настройки Fish
+│   ├── fastfetch/                  # Настройки Fastfetch
+│   ├── btop/                       # Настройки Btop
+│   ├── meowrch/                    # Конфиги Python-инструментов Meowrch
+│   └── dconf/                      # Дампы GSettings
+├── assets/                         # Статические ресурсы системы
+│   ├── sddm/                       # Тема экрана входа (Qt6)
+│   ├── themes/                     # Темы оформления (Catppuccin)
+│   └── misc/                       # Прочее (.face.icon, лого)
+├── scripts/                        # Консолидированные системные скрипты
+│   ├── rofi-menus/                 # Скрипты Rofi (Power, VPN, Wallpaper)
+│   ├── color-scripts/              # Коллекция ASCII-арта
+│   ├── system-update.sh            # Скрипт обновления системы
+│   └── ...                         # Утилиты управления (volume, backlight)
+├── pkgs/                           # Определения кастомных пакетов (Derivations)
+│   ├── mewline/                    # Статус-бар Mewline
+│   ├── pawlette/                   # Theme switcher
+│   ├── hotkeyhub/                  # Утилита горячих клавиш
+│   └── ...                         # Fabric, libcvc, libgray
+├── packages/                       # Nix-деривации для сборки из локальных папок
+├── overlays/                       # Системные патчи (GBM fix, etc.)
+├── docs/                           # Документация и архивы логов
+├── install.sh                      # Инсталлятор системы
+└── rebuild-me.sh                   # Скрипт быстрой пересборки
 ```
 
 ## 🚀 Installation

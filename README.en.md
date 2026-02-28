@@ -63,14 +63,52 @@
 
 ## 📁 Project Structure
 
-```
+```text
 NixOS-Meowrch/
-├── flake.nix                              # Entry point (flake)
-├── configuration.nix                      # System configuration
-├── home/                                  # Home Manager settings
-├── pkgs/                                  # Custom packages (Mewline, HotkeyHub...)
-├── dotfiles/                              # App configurations
-└── scripts/                               # Maintenance scripts
+├── flake.nix                       # Main entry point (Flake)
+├── flake.lock                      # Fixed dependency versions
+├── hosts/                          # Machine-specific configurations
+│   └── meowrch/                    # Host 'meowrch'
+│       ├── configuration.nix       # System settings
+│       ├── hardware-configuration.nix # Hardware scan result
+│       └── home.nix                # User settings (Home Manager)
+├── modules/                        # Modular Nix logic
+│   ├── nixos/                      # NixOS system modules
+│   │   ├── desktop/                # Environment (Hyprland, SDDM, Theming)
+│   │   ├── system/                 # Core (Audio, Fonts, Security, Networking)
+│   │   └── packages/               # Global packages & Flatpak
+│   └── home/                       # Home Manager modules
+│       ├── fish.nix                # Shell config
+│       ├── starship.nix            # Prompt config
+│       ├── kitty.nix               # Terminal settings
+│       └── ...                     # Rofi, GTK, Waybar
+├── config/                         # Raw application configurations (symlinks)
+│   ├── hypr/                       # Hyprland settings
+│   ├── kitty/                      # Kitty settings
+│   ├── fish/                       # Fish settings
+│   ├── fastfetch/                  # Fastfetch settings
+│   ├── btop/                       # Btop settings
+│   ├── meowrch/                    # Meowrch Python tool configs
+│   └── dconf/                      # GSettings dumps
+├── assets/                         # Static system resources
+│   ├── sddm/                       # Login screen theme (Qt6)
+│   ├── themes/                     # UI Themes (Catppuccin)
+│   └── misc/                       # Misc (.face.icon, logos)
+├── scripts/                        # Consolidated system scripts
+│   ├── rofi-menus/                 # Rofi scripts (Power, VPN, Wallpaper)
+│   ├── color-scripts/              # ASCII art collection
+│   ├── system-update.sh            # System update script
+│   └── ...                         # Utilities (volume, backlight)
+├── pkgs/                           # Custom package definitions (Derivations)
+│   ├── mewline/                    # Mewline Status Bar
+│   ├── pawlette/                   # Theme switcher
+│   ├── hotkeyhub/                  # Hotkey utility
+│   └── ...                         # Fabric, libcvc, libgray
+├── packages/                       # Nix derivations for local folders
+├── overlays/                       # System patches (GBM fix, etc.)
+├── docs/                           # Documentation and log archives
+├── install.sh                      # System installer
+└── rebuild-me.sh                   # Fast rebuild script
 ```
 
 ## 🚀 Installation
