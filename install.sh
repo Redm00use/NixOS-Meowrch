@@ -200,6 +200,10 @@ if [ "$CONF_USER" != "meowrch" ]; then
     sed -i "s|home.homeDirectory = lib.mkForce \"/home/meowrch\"|home.homeDirectory = lib.mkForce \"/home/$CONF_USER\"|g" "$HOME_NIX"
     sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" "$HOME_NIX"
 
+    # Patch sddm.nix
+    sed -i "s|/home/meowrch/|/home/$CONF_USER/|g" "modules/nixos/desktop/sddm.nix"
+    sed -i "s|meowrch users|${CONF_USER} users|g" "modules/nixos/desktop/sddm.nix"
+
     # Patch flake.nix
     sed -i "s/home-manager.users.meowrch/home-manager.users.$CONF_USER/g" flake.nix
     sed -i "s/homeConfigurations.meowrch/homeConfigurations.$CONF_USER/g" flake.nix
