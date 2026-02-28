@@ -8,6 +8,9 @@ let
     installPhase = ''
       mkdir -p $out/share/sddm/themes/meowrch
       cp -r ./* $out/share/sddm/themes/meowrch/
+      
+      # Use a symlink for theme.conf so it can be updated dynamically
+      ln -sf /home/meowrch/.cache/meowrch/sddm-theme.conf $out/share/sddm/themes/meowrch/theme.conf
       chmod -R +w $out/share/sddm/themes/meowrch/
     '';
   };
@@ -69,9 +72,10 @@ in {
     bibata-cursors
   ];
 
-  # Create user avatars directory
+  # Create user avatars directory and cache directory for theme
   systemd.tmpfiles.rules = [
     "d /var/lib/AccountsService/icons 0755 root root - -"
+    "d /home/meowrch/.cache/meowrch 0755 meowrch users - -"
   ];
 
   # Copy default avatar if it exists

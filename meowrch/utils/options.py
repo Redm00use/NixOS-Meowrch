@@ -51,11 +51,13 @@ class CopyOrGenOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
+			if not self.path_to.parent.exists():
+				logging.error(
+					f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
+					f"The config cannot be copied to the path \"{self.path_to}\""
+				)
+				return
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -367,6 +369,7 @@ class GTKOption(BaseOption):
 		return True
 
 	def apply_gtk_themes(self, gtk_configs: List[Path], theme_name: str):
+		for gtk_cfg in gtk_configs:
 			if not gtk_cfg.parent.exists():
 				logging.warning(f"The theme cannot be applied to the \"{gtk_cfg.name}\" file, because the path \"{str(gtk_cfg)}\" does not exist")
 				continue

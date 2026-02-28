@@ -46,16 +46,38 @@ def overcopy(src: Path, dst: Path) -> None:
 		shutil.copy(src, dst)
 
 def generate_theme(template_name: str, oomox_colors: Path) -> Optional[str]:
-	template = OOMOX_TEMPLATES / template_name
-	if not template.exists():
+	template_path = OOMOX_TEMPLATES / template_name
+	if not template_path.exists():
 		return None
 
+	if THEME_GEN_SCRIPT.exists():
+		try:
+			theme = subprocess.run(
+				["python3", str(THEME_GEN_SCRIPT), str(template_path), str(oomox_colors)], 
+				stdout=subprocess.PIPE,
+				check=True
+			).stdout.decode().strip()
+			return theme
+		except subprocess.CalledProcessError:
+			pass
+
+	# Fallback: simple replacement of {{themix_VARIABLE-hex}}
 	try:
-		theme = subprocess.run(
-			["python3", str(THEME_GEN_SCRIPT), str(template), str(oomox_colors)], 
-			stdout=subprocess.PIPE,
-			check=True
-		).stdout.decode().strip()
-		return theme
-	except subprocess.CalledProcessError:
+		with open(template_path, "r") as f:
+			content = f.read()
+		
+		colors = {}
+		with open(oomox_colors, "r") as f:
+			for line in f:
+				if "=" in line:
+					k, v = line.strip().split("=", 1)
+					colors[k] = v
+		
+		import re
+		def replace_match(match):
+			var_name = match.group(1)
+			return colors.get(var_name, match.group(0))
+
+		return re.sub(r"{{themix_(.*?)-hex}}", replace_match, content)
+	except Exception:
 		return None

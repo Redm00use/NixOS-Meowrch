@@ -47,6 +47,12 @@ theme_options: List[BaseOption] = [
 		path_to=HOME / ".config" / "qt6ct" / "colors" / "meowrch.conf",
 		template_name="qt6ct-colors.mustache"
 	),
+	CopyOrGenOption(
+		_id="sddm",
+		name="sddm-theme.conf",
+		path_to=HOME / ".cache" / "meowrch" / "sddm-theme.conf",
+		template_name="sddm.mustache"
+	),
 
 	##==> Кастомные действия 
 	###############################################
