@@ -10,6 +10,7 @@ let
       cp -r ./* $out/share/sddm/themes/meowrch/
       
       # Use a symlink for theme.conf so it can be updated dynamically
+      # Path patched by installer if username is not meowrch
       ln -sf /home/meowrch/.cache/meowrch/sddm-theme.conf $out/share/sddm/themes/meowrch/theme.conf
       chmod -R +w $out/share/sddm/themes/meowrch/
     '';
@@ -73,6 +74,7 @@ in {
   ];
 
   # Create user avatars directory and cache directory for theme
+  # Path patched by installer if username is not meowrch
   systemd.tmpfiles.rules = [
     "d /var/lib/AccountsService/icons 0755 root root - -"
     "d /home/meowrch/.cache/meowrch 0755 meowrch users - -"
