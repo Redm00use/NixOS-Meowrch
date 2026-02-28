@@ -298,11 +298,8 @@ class WaybarCfgOption(BaseOption):
 
 			if self.reload:
 				try:
-					wb_exists = subprocess.run(['pgrep', '-x', 'waybar'], capture_output=True, text=True).stdout
 					if wb_exists:
-						subprocess.run(['pkill', '-SIGUSR2', 'waybar'], check=True)
 				except Exception:
-					logging.warning("Failed to reload waybar.")
 
 			return
 

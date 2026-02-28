@@ -15,7 +15,6 @@
     ../../modules/home/starship.nix
     # ../../modules/home/kitty.nix
     # ../../modules/home/dunst.nix  # Disabled to let Mewline handle notifications
-    ../../modules/home/waybar.nix
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

@@ -24,7 +24,6 @@ theme_options: List[BaseOption] = [
 	CopyOption(_id="btop", name="btop.theme", path_to=HOME / ".config" / "btop" / "themes" / "meowrch.theme"),
 	CopyOption(_id="micro", name="theme.micro", path_to=HOME / ".config" / "micro" / "colorschemes" / "meowrch.micro"),
 	CopyOption(_id="hyprland", name="hyprland-custom-prefs.conf", path_to=HOME / ".config" / "hypr" / "custom-prefs.conf", xorg_needed=False),
-	CopyOption(_id="waybar_css", name="waybar.css", path_to=HOME / ".config" / "waybar" / "style.css", xorg_needed=False),
 
 
 	##==> Копирование / Генерация конфигов
@@ -82,9 +81,6 @@ theme_options: List[BaseOption] = [
 		apply_theme=True
 	),
 	WaybarCfgOption(
-		_id="waybar_cfg", 
-		name="waybar.jsonc", 
-		path_to=HOME / ".config" / "waybar" / "config.jsonc",
 		reload=True
 	),
 	TmuxCfgOption(

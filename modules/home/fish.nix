@@ -182,8 +182,6 @@
               $EDITOR ~/.config/fish/config.fish
             case "hypr" or "hyprland"
               $EDITOR ~/.config/hypr/hyprland.conf
-            case "waybar"
-              $EDITOR ~/.config/waybar/config.jsonc
             case "kitty"
               $EDITOR ~/.config/kitty/kitty.conf
             case "rofi"
@@ -192,7 +190,7 @@
               $EDITOR ~/.config/starship.toml
             case "*"
               echo "Unknown config file: $file"
-              echo "Available: fish, hypr, waybar, kitty, rofi, starship"
+              echo "Available: fish, hypr, kitty, rofi, starship"
           end
         '';
       };

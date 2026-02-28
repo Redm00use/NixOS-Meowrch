@@ -1,6 +1,6 @@
 { lib, stdenv, python3, bash, coreutils, findutils, gawk, gnugrep, gnused,
   procps, systemd, brightnessctl, pamixer, playerctl, hyprland, swww, rofi,
-  wl-clipboard, cliphist, networkmanager, bluez, upower, dunst, waybar,
+  wl-clipboard, cliphist, networkmanager, bluez, upower, dunst,
   util-linux, jq, imagemagick, curl, zenity, libnotify, bc, hyprpicker,
   hyprlock, wlr-randr, makeWrapper }:
 
@@ -44,7 +44,6 @@ stdenv.mkDerivation rec {
     bluez
     upower
     dunst
-    waybar
     util-linux          # flock, lsblk
     jq                  # JSON parsing (wallpaper-selector, kb-layout, etc.)
     imagemagick         # magick / convert — wallpaper thumbnails

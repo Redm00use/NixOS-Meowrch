@@ -41,7 +41,6 @@
   environment.systemPackages = with pkgs; [
     # Core dependencies
     hyprland
-    waybar
     uwsm
 
     # Screen management tools
