@@ -9,13 +9,13 @@
 
 {
   imports = [
-    ./modules/rofi.nix
-    ./modules/gtk.nix
-    ./modules/fish.nix
-    ./modules/starship.nix
-    # ./modules/kitty.nix
-    # ./modules/dunst.nix  # Disabled to let Mewline handle notifications
-    ./modules/waybar.nix
+    ../../modules/home/rofi.nix
+    ../../modules/home/gtk.nix
+    ../../modules/home/fish.nix
+    ../../modules/home/starship.nix
+    # ../../modules/home/kitty.nix
+    # ../../modules/home/dunst.nix  # Disabled to let Mewline handle notifications
+    ../../modules/home/waybar.nix
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -312,12 +312,12 @@
   home.file.".config/.keep".text = "";
 
   # Подключение конфигураций из репозитория
-  home.file.".config/hypr" = { source = ../hypr; recursive = true; force = true; };
-  home.file.".config/kitty" = { source = ../kitty; recursive = true; force = true; };
-  home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; force = true; };
-  home.file.".config/btop" = { source = ../btop; recursive = true; force = true; };
-  home.file.".config/meowrch" = { source = ../meowrch; recursive = true; force = true; };
-  home.file.".config/meowrch/bin" = { source = ../dotfiles/bin; recursive = true; force = true; };
+  home.file.".config/hypr" = { source = ../../hypr; recursive = true; force = true; };
+  home.file.".config/kitty" = { source = ../../kitty; recursive = true; force = true; };
+  home.file.".config/fastfetch" = { source = ../../fastfetch; recursive = true; force = true; };
+  home.file.".config/btop" = { source = ../../btop; recursive = true; force = true; };
+  home.file.".config/meowrch" = { source = ../../meowrch; recursive = true; force = true; };
+  home.file.".config/meowrch/bin" = { source = ../../dotfiles/bin; recursive = true; force = true; };
   home.file.".config/meowrch/wallpapers" = {
     source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
     recursive = true;

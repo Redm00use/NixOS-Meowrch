@@ -3,7 +3,7 @@
 let
   meowrch-sddm-theme = pkgs.stdenv.mkDerivation {
     name = "meowrch-sddm-theme";
-    src = ./../../dotfiles/sddm_theme;
+    src = ./../../../dotfiles/sddm_theme;
     
     installPhase = ''
       mkdir -p $out/share/sddm/themes/meowrch
@@ -80,9 +80,9 @@ in {
 
   # Copy default avatar if it exists
   system.activationScripts.userAvatar.text = ''
-    if [ -f "${./../../misc/.face.icon}" ]; then
+    if [ -f "${./../../../misc/.face.icon}" ]; then
       mkdir -p /var/lib/AccountsService/icons
-      cp -f ${./../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
+      cp -f ${./../../../misc/.face.icon} /var/lib/AccountsService/icons/meowrch
       chmod 644 /var/lib/AccountsService/icons/meowrch
     fi
   '';

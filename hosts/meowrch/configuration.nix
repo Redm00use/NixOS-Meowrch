@@ -16,22 +16,22 @@
     in
     ([
       # System / hardware related modules
-      ./modules/system/audio.nix
-      ./modules/system/bluetooth.nix
-      ./modules/system/graphics.nix
-      ./modules/system/graphics-amd.nix # GPU_MODULE_LINE
-      ./modules/system/networking.nix
-      ./modules/system/security.nix
-      ./modules/system/services.nix
-      ./modules/system/fonts.nix
+      ../../modules/nixos/system/audio.nix
+      ../../modules/nixos/system/bluetooth.nix
+      ../../modules/nixos/system/graphics.nix
+      ../../modules/nixos/system/graphics-amd.nix # GPU_MODULE_LINE
+      ../../modules/nixos/system/networking.nix
+      ../../modules/nixos/system/security.nix
+      ../../modules/nixos/system/services.nix
+      ../../modules/nixos/system/fonts.nix
 
       # Desktop / theming
-      ./modules/desktop/sddm.nix
-      ./modules/desktop/theming.nix
+      ../../modules/nixos/desktop/sddm.nix
+      ../../modules/nixos/desktop/theming.nix
 
       # Packages (centralized)
-      ./modules/packages/packages.nix
-      ./modules/packages/flatpak.nix
+      ../../modules/nixos/packages/packages.nix
+      ../../modules/nixos/packages/flatpak.nix
     ]
     ++ lib.optional (hardwareConfigPath != null) hardwareConfigPath
     ++ lib.optional (hardwareConfigPath == null) {

@@ -82,7 +82,7 @@
           ];
         })
 
-        ./configuration.nix
+        ./hosts/meowrch/configuration.nix
         catppuccin-nix.nixosModules.catppuccin
 
         home-manager.nixosModules.home-manager
@@ -99,14 +99,14 @@
             imports = [
               inputs.spicetify-nix.homeManagerModules.default
               inputs.catppuccin-nix.homeModules.catppuccin
-              ./home/home.nix
+              ./hosts/meowrch/home.nix
             ];
           };
 
           home-manager.backupFileExtension = "backup";
         }
 
-        ./modules/desktop/hyprland.nix
+        ./modules/nixos/desktop/hyprland.nix
       ];
     };
 
@@ -118,7 +118,7 @@
       };
       modules = [
         inputs.catppuccin-nix.homeModules.catppuccin
-        ./home/home.nix
+        ./hosts/meowrch/home.nix
       ];
     };
 
