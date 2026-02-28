@@ -322,6 +322,11 @@
     recursive = true;
     force = true;
   };
+  home.file.".local/share/wallpapers" = {
+    source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
+    recursive = true;
+    force = true;
+  };
 
   # Автоматический запуск Home Manager
   programs.home-manager.enable = true;

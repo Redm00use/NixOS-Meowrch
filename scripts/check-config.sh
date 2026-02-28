@@ -24,9 +24,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
-error() { echo -e "${RED}[ERROR]${NC} $1"; ((ERRORS++)); }
-warn() { echo -e "${YELLOW}[WARN]${NC} $1"; ((WARNINGS++)); }
-ok() { echo -e "${GREEN}[OK]${NC} $1"; ((SUCCESS++)); }
+error() { echo -e "${RED}[ERROR]${NC} $1"; ((ERRORS++)) || true; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; ((WARNINGS++)) || true; }
+ok() { echo -e "${GREEN}[OK]${NC} $1"; ((SUCCESS++)) || true; }
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 
 # Check for required files
