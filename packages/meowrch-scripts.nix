@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   pname = "meowrch-scripts";
   version = "1.0.0";
 
-  src = ../dotfiles/bin;
+  src = ../scripts;
 
   nativeBuildInputs = [ makeWrapper ];
 

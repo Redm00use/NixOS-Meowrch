@@ -37,8 +37,9 @@ Thumbs.db
 .local/
 
 # User-specific files that shouldn't be in version control
-dotfiles/wallpapers/personal/
-dotfiles/themes/personal/
+assets/wallpapers/personal/
+assets/themes/personal/
+config/meowrch/personal/
 
 # SSH keys and certificates
 *.key

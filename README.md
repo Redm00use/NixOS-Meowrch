@@ -65,12 +65,14 @@
 
 ```
 NixOS-Meowrch/
-├── flake.nix                              # Точка входа (flake)
-├── configuration.nix                      # Системная конфигурация
-├── home/                                  # Настройки Home Manager
-├── pkgs/                                  # Кастомные пакеты (Mewline, HotkeyHub...)
-├── dotfiles/                              # Конфиги приложений
-└── scripts/                               # Скрипты обслуживания
+├── hosts/meowrch/                         # Специфичные настройки для этой машины
+├── modules/                               # Nix-модули (NixOS и Home Manager)
+├── config/                                # "Сырые" конфиги (Hypr, Kitty, Fish...)
+├── assets/                                # Статика (темы SDDM, обои, иконки)
+├── scripts/                               # Все системные скрипты
+├── pkgs/                                  # Описания кастомных пакетов
+├── packages/                              # Nix-деривации для пакетов
+└── flake.nix                              # Точка входа в конфигурацию
 ```
 
 ## 🚀 Installation

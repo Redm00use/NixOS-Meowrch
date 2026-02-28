@@ -322,7 +322,7 @@
 
   # Create custom Rofi scripts directory
   home.file."bin/rofi-menus" = {
-    source = ../../dotfiles/bin/rofi-menus;
+    source = ../../scripts/rofi-menus;
     recursive = true;
     executable = true;
   };

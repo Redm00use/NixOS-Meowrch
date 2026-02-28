@@ -312,12 +312,12 @@
   home.file.".config/.keep".text = "";
 
   # Подключение конфигураций из репозитория
-  home.file.".config/hypr" = { source = ../../hypr; recursive = true; force = true; };
-  home.file.".config/kitty" = { source = ../../kitty; recursive = true; force = true; };
-  home.file.".config/fastfetch" = { source = ../../fastfetch; recursive = true; force = true; };
-  home.file.".config/btop" = { source = ../../btop; recursive = true; force = true; };
-  home.file.".config/meowrch" = { source = ../../meowrch; recursive = true; force = true; };
-  home.file.".config/meowrch/bin" = { source = ../../dotfiles/bin; recursive = true; force = true; };
+  home.file.".config/hypr" = { source = ../../config/hypr; recursive = true; force = true; };
+  home.file.".config/kitty" = { source = ../../config/kitty; recursive = true; force = true; };
+  home.file.".config/fastfetch" = { source = ../../config/fastfetch; recursive = true; force = true; };
+  home.file.".config/btop" = { source = ../../config/btop; recursive = true; force = true; };
+  home.file.".config/meowrch" = { source = ../../config/meowrch; recursive = true; force = true; };
+  home.file.".config/meowrch/bin" = { source = ../../scripts; recursive = true; force = true; };
   home.file.".config/meowrch/wallpapers" = {
     source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
     recursive = true;
