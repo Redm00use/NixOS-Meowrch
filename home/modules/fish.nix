@@ -73,15 +73,9 @@
         '';
       };
       
-      # Fish greeting with Pokemon
+      # Fish greeting
       fish_greeting = {
-        body = ''
-          if command -q pokemon-colorscripts
-            pokemon-colorscripts --no-title -s -r 1,3,6
-          else
-            echo "🐱 Welcome to Meowrch! ≽ܫ≼"
-          end
-        '';
+        body = '''';
       };
       
       # Enhanced ls function
@@ -263,7 +257,6 @@
     # Fish shell init
     interactiveShellInit = ''
       # Set custom variables
-      set -g fish_greeting
       
       # Fastfetch at startup
       if status is-interactive

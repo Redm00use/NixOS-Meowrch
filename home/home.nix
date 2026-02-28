@@ -313,6 +313,7 @@
 
   # Подключение конфигураций из репозитория
   home.file.".config/hypr" = { source = ../hypr; recursive = true; force = true; };
+  home.file.".config/kitty" = { source = ../kitty; recursive = true; force = true; };
   home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; force = true; };
   home.file.".config/btop" = { source = ../btop; recursive = true; force = true; };
   home.file.".config/meowrch" = { source = ../meowrch; recursive = true; force = true; };
