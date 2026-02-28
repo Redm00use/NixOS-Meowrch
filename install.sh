@@ -69,9 +69,9 @@ ask() {
     fi
     read -r input
     if [ -z "$input" ] && [ -n "$default" ]; then
-        export "$var_name"="$default"
+        eval "$var_name=\"$default\""
     else
-        export "$var_name"="$input"
+        eval "$var_name=\"$input\""
     fi
 }
 
@@ -222,18 +222,35 @@ fi
 echo -e "${BLUE}[INFO] Configuring GPU driver...${NC}"
 case "$GPU_CHOICE" in
     0)
-        # AMD (default) — already set in configuration.nix
+        # AMD (default)
         echo -e "${GREEN}[INFO] Using AMD GPU module (default).${NC}"
+        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-amd.nix # GPU_MODULE_LINE|' configuration.nix
+        # Remove nvidia license if present
+        sed -i '/nvidia\.acceptLicense/d' configuration.nix
+        sed -i '/nvidia\.acceptLicense/d' flake.nix
         ;;
     1)
         # Intel
         echo -e "${BLUE}[INFO] Switching to Intel GPU module...${NC}"
-        sed -i 's|graphics-amd\.nix.*# GPU_MODULE_LINE|graphics-intel.nix  # GPU_MODULE_LINE|' configuration.nix
+        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-intel.nix # GPU_MODULE_LINE|' configuration.nix
+        # Remove nvidia license if present
+        sed -i '/nvidia\.acceptLicense/d' configuration.nix
+        sed -i '/nvidia\.acceptLicense/d' flake.nix
         ;;
     2)
         # Nvidia
         echo -e "${BLUE}[INFO] Switching to Nvidia GPU module...${NC}"
-        sed -i 's|graphics-amd\.nix.*# GPU_MODULE_LINE|graphics-nvidia.nix  # GPU_MODULE_LINE|' configuration.nix
+        sed -i 's|.*# GPU_MODULE_LINE|      ./modules/system/graphics-nvidia.nix # GPU_MODULE_LINE|' configuration.nix
+        
+        # Add nvidia license acceptance to configuration.nix if not present
+        if ! grep -q "nvidia.acceptLicense" configuration.nix; then
+            sed -i '/allowUnfreePredicate/a \    nvidia.acceptLicense = true;' configuration.nix
+        fi
+        
+        # Add nvidia license acceptance to flake.nix (for both pkgs and pkgs-unstable)
+        if ! grep -q "nvidia.acceptLicense" flake.nix; then
+            sed -i '/config\.allowUnfree = true;/a \      config.nvidia.acceptLicense = true;' flake.nix
+        fi
         ;;
 esac
 

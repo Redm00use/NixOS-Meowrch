@@ -312,14 +312,15 @@
   home.file.".config/.keep".text = "";
 
   # Подключение конфигураций из репозитория
-  home.file.".config/hypr" = { source = ../hypr; recursive = true; };
-  home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; };
-  home.file.".config/btop" = { source = ../btop; recursive = true; };
-  home.file.".config/meowrch" = { source = ../meowrch; recursive = true; };
-  home.file.".config/meowrch/bin" = { source = ../dotfiles/bin; recursive = true; };
+  home.file.".config/hypr" = { source = ../hypr; recursive = true; force = true; };
+  home.file.".config/fastfetch" = { source = ../fastfetch; recursive = true; force = true; };
+  home.file.".config/btop" = { source = ../btop; recursive = true; force = true; };
+  home.file.".config/meowrch" = { source = ../meowrch; recursive = true; force = true; };
+  home.file.".config/meowrch/bin" = { source = ../dotfiles/bin; recursive = true; force = true; };
   home.file.".config/meowrch/wallpapers" = {
     source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
     recursive = true;
+    force = true;
   };
 
   # Автоматический запуск Home Manager

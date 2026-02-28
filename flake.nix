@@ -56,13 +56,11 @@
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
-      config.nvidia.acceptLicense = true;
     };
 
     pkgs-unstable = import nixpkgs-unstable {
       inherit system;
       config.allowUnfree = true;
-      config.nvidia.acceptLicense = true;
     };
 
     # Overlay с кастомными пакетами (mewline, pawlette, hotkeyhub и т.д.)
