@@ -45,7 +45,90 @@
 
 ---
 
+## ✨ Features
+
+| Feature | Implementation |
+|---------|---------------|
+| **Window Manager** | Hyprland (Wayland) with UWSM for superior stability |
+| **Status Bar** | Mewline (Dynamic Island) — runs as a systemd service |
+| **Launcher** | Rofi with custom theme and wallpaper selectors |
+| **Session Manager** | UWSM (Universal Wayland Session Manager) |
+| **Display Manager** | SDDM with **Qt6** Meowrch theme |
+| **Terminal** | Kitty (0.8 opacity) + Fish shell |
+| **Shell** | Fish + Starship (minimalist prompt) |
+| **Memory** | ZRAM enabled by default |
+| **Theming** | Catppuccin Mocha (GTK4 forced dark) |
+| **GPU** | Intelligent AMD / Nvidia / Intel support |
+| **Editor** | Zed IDE with pre-configured Nix and AI support |
+
+---
+
+## 📁 Project Structure
+
+```text
+NixOS-Meowrch/
+├── flake.nix                       # Main entry point (Flake)
+├── flake.lock                      # Fixed dependency versions
+├── hosts/                          # Machine-specific configurations
+│   └── meowrch/                    # Host 'meowrch'
+│       ├── configuration.nix       # System settings
+│       ├── hardware-configuration.nix # Hardware scan result
+│       └── home.nix                # User settings (Home Manager)
+├── modules/                        # Modular Nix logic
+│   ├── nixos/                      # NixOS system modules
+│   │   ├── desktop/                # Environment (Hyprland, SDDM, Theming)
+│   │   ├── system/                 # Core (Audio, Fonts, Security, Networking)
+│   │   └── packages/               # Global packages & Flatpak
+│   └── home/                       # Home Manager modules
+│       ├── fish.nix                # Shell config
+│       ├── starship.nix            # Prompt config
+│       ├── hypr-configs/           # Raw Hyprland configs (Binds, Rules)
+│       └── ...                     # Rofi, GTK
+├── config/                         # Raw application configurations (symlinks)
+│   ├── hypr/                       # Hyprland settings
+│   ├── kitty/                      # Kitty settings
+│   └── ...                         # Fish, Fastfetch, Btop
+├── assets/                         # Static system resources
+│   ├── sddm/                       # Login screen theme (Qt6)
+│   ├── themes/                     # UI Themes (Catppuccin)
+│   └── misc/                       # Misc (.face.icon, logos)
+├── scripts/                        # Consolidated system scripts
+│   ├── rofi-menus/                 # Rofi scripts (Power, VPN, Wallpaper)
+│   └── ...                         # Utilities (volume, backlight, update)
+├── pkgs/                           # Custom package definitions (Derivations)
+├── packages/                       # Nix derivations for local folders
+├── overlays/                       # System patches (GBM fix, etc.)
+└── docs/                           # Documentation and log archives
+```
+
+---
+
+## 🚀 Installation
+
+### 1. Preparation (Important!)
+Before you begin, ensure you have NixOS installed. You will need **Git** to clone this repository:
+```bash
+# Temporarily install git
+nix-shell -p git
+```
+
+> [!CAUTION]
+> **IMPORTANT:** Do NOT delete or move the repository folder (`~/NixOS-Meowrch`) after installation! In NixOS, this folder is the source code of your system.
+
+### 2. Installation
+
+```bash
+git clone https://github.com/Redm00use/NixOS-Meowrch.git
+cd NixOS-Meowrch
+chmod +x install.sh
+./install.sh
+```
+
+---
+
 ## 🔧 Usage & Updates
+
+Convenient short commands are available (aliases):
 
 | Alias | Desc | Description |
 |-------|------|-------------|
@@ -67,6 +150,7 @@ Find the `home.packages` section and add the app name:
 home.packages = with pkgs; [
   telegram-desktop
   vlc
+  discord
 ];
 ```
 
@@ -74,7 +158,7 @@ home.packages = with pkgs; [
 Open `modules/nixos/packages/packages.nix` and add packages to `environment.systemPackages`.
 
 **How to find the package name?**
-Search at **[search.nixos.org](https://search.nixos.org/packages)**. 
+Visit **[search.nixos.org](https://search.nixos.org/packages)**. 
 
 **How to apply?**
 Just type in the terminal: `b`
@@ -98,10 +182,6 @@ Main configuration files are located in `modules/home/hypr-configs/`.
 *   **Theming**: The system uses **Catppuccin Mocha**. To tweak terminal or bar colors, look into `assets/themes/`.
 *   **Fonts**: Change the primary system font in `modules/nixos/system/fonts.nix`.
 
-### ⚙️ Scripts & Autostart
-*   **Scripts**: All "system brains" (volume control, theme switchers) live in the `scripts/` folder. Use them in your custom keybindings.
-*   **Autostart**: To launch an app automatically on login, add it to `modules/home/hypr-configs/autostart.conf`.
-
 ### 📝 Zed Editor (Your Main Tool)
 **Zed IDE** comes pre-configured for the best experience:
 *   Full Nix support (syntax highlighting, auto-formatting).
@@ -120,16 +200,19 @@ In NixOS, it is **impossible** to permanently "kill" your system via software!
 
 ---
 
-## ⌨️ Keybindings (Cheat Sheet)
+## ⌨️ Keybindings & Commands
 
 | Key | Action |
 |-----|--------|
-| `Super + Return` | Terminal |
+| `Super + Return` | Terminal (Kitty + Fish) |
 | `Super + Q` | Close window |
-| `Super + E` | File Manager |
-| `Super + D` | App Launcher |
-| `Super + Z` | Browser |
-| `Super + T` | Telegram |
+| `Super + E` | File Manager (Nemo) |
+| `Super + D` | App Launcher (Rofi) |
+| `Super + Z` | Browser (Firefox) |
+| `Super + T` | Telegram (Materialgram) |
+| `Super + W` | Select Wallpaper |
+| `Super + Shift + T` | Select Theme |
+| `Super + X` | Power Menu |
 | `Super + L` | Lock Screen |
 | `Super + Shift + B` | Toggle Status Bar |
 
