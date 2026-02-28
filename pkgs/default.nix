@@ -13,6 +13,8 @@ rec {
     inherit fabric libcvc libgray; 
     libdbusmenuGtk3 = pkgs.libdbusmenu-gtk3;
     brightnessctl = pkgs.brightnessctl;
+    adwaita-icon-theme = pkgs.adwaita-icon-theme;
+    hicolor-icon-theme = pkgs.hicolor-icon-theme;
   };
   pawlette         = pkgs.callPackage ./pawlette { inherit meowrch-themes; inherit (pkgs) glib makeWrapper; };
   meowrch-scripts  = pkgs.callPackage ../packages/meowrch-scripts.nix { hyprland = pkgs.hyprland; };

@@ -19,6 +19,8 @@
 , libgray
 , libdbusmenuGtk3
 , brightnessctl
+, adwaita-icon-theme
+, hicolor-icon-theme
 }:
 
 python3Packages.buildPythonApplication rec {
@@ -40,9 +42,11 @@ python3Packages.buildPythonApplication rec {
     pkg-config
   ];
 
-  # Ensure dart-sass and brightnessctl are available in PATH at runtime
+  # Ensure icons, dart-sass and brightnessctl are available in PATH/XDG at runtime
   makeWrapperArgs = [
     "--prefix" "PATH" ":" "${lib.makeBinPath [ dart-sass brightnessctl ]}"
+    "--prefix" "XDG_DATA_DIRS" ":" "${adwaita-icon-theme}/share"
+    "--prefix" "XDG_DATA_DIRS" ":" "${hicolor-icon-theme}/share"
   ];
 
   propagatedBuildInputs = with python3Packages; [
@@ -59,6 +63,8 @@ python3Packages.buildPythonApplication rec {
     systemd-python
     pytesseract
     emoji
+    adwaita-icon-theme
+    hicolor-icon-theme
   ];
 
   buildInputs = [
@@ -75,6 +81,8 @@ python3Packages.buildPythonApplication rec {
     libcvc
     libgray
     libdbusmenuGtk3
+    adwaita-icon-theme
+    hicolor-icon-theme
   ];
 
   # Remove deps not available in nixpkgs
