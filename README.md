@@ -107,8 +107,7 @@ NixOS-Meowrch/
 ├── packages/                       # Nix-деривации для сборки из локальных папок
 ├── overlays/                       # Системные патчи (GBM fix, etc.)
 ├── docs/                           # Документация и архивы логов
-├── install.sh                      # Инсталлятор системы
-└── rebuild-me.sh                   # Скрипт быстрой пересборки
+└── install.sh                      # Инсталлятор системы
 ```
 
 ## 🚀 Installation

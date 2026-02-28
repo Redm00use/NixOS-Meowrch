@@ -107,8 +107,7 @@ NixOS-Meowrch/
 ├── packages/                       # Nix derivations for local folders
 ├── overlays/                       # System patches (GBM fix, etc.)
 ├── docs/                           # Documentation and log archives
-├── install.sh                      # System installer
-└── rebuild-me.sh                   # Fast rebuild script
+└── install.sh                      # System installer
 ```
 
 ## 🚀 Installation
