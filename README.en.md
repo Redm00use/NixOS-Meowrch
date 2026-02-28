@@ -1,7 +1,7 @@
 <div align="center">
     <img src=".meta/logo.png" width="300px">
     <h1>🐱 Meowrch NixOS</h1>
-    <p><i>Beautiful, declarative, and reproducible NixOS configuration based on <a href="https://github.com/meowrch/meowrch">Meowrch</a></i></p>
+    <p><i>A beautiful, declarative, and reproducible NixOS configuration based on <a href="https://github.com/meowrch/meowrch">Meowrch</a></i></p>
     <p>
         <a href="https://github.com/Redm00use/NixOS-Meowrch/stargazers">
             <img src="https://img.shields.io/github/stars/Redm00use/NixOS-Meowrch?style=for-the-badge&logo=star&color=cba6f7&logoColor=1e1e2e&labelColor=313244">
@@ -18,116 +18,116 @@
     </p>
 </div>
 
-> [!NOTE]
-> A port of the original **[Meowrch](https://github.com/meowrch/meowrch)** (Arch Linux) to **NixOS**.
-> Full compatibility with the Nix ecosystem, declarativity, reproducibility, and stability.
+> [!IMPORTANT]
+> **Welcome to NixOS!** If you are coming from Windows, Ubuntu, or Arch — forget almost everything you know. In NixOS, your system is built from code. You don't "install" apps; you "declare" them in your configuration files.
 
 ## 📑 Table of Contents
 - [✨ Features](#-features)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Installation](#-installation)
 - [🔧 Usage & Updates](#-usage--updates)
-- [📦 Package Management](#-package-management)
-- [📖 Meowrch Wiki (Configuration)](#-meowrch-wiki-configuration)
-- [⌨️ Keybindings & Commands](#️-keybindings--commands)
+- [📦 Beginner Guide: Installing Apps](#-beginner-guide-installing-apps)
+- [📖 Meowrch Wiki: Customization](#-meowrch-wiki-customization)
+- [⌨️ Keybindings (Cheat Sheet)](#️-keybindings-cheat-sheet)
+- [🛠️ Help! I broke something!](#-help-i-broke-something)
+
+---
 
 ## ✨ Features
-
-| Feature | Implementation |
-|---------|---------------|
-| **Window Manager** | Hyprland (Wayland) with UWSM for superior stability |
-| **Status Bar** | Mewline (Dynamic Island) — runs as a systemd service |
-| **Launcher** | Rofi with custom theme and wallpaper selectors |
-| **Session Manager** | UWSM (Universal Wayland Session Manager) |
-| **Display Manager** | SDDM with **Qt6** Meowrch theme |
-| **Terminal** | Kitty (0.8 opacity) + Fish shell |
-| **Shell** | Fish + Starship (minimalist prompt) |
-| **Memory** | ZRAM enabled by default |
-| **Theming** | Catppuccin Mocha (GTK4/Libadwaita forced dark) |
-| **GPU** | Intelligent AMD / Nvidia / Intel support |
+*   **Hyprland + UWSM**: Modern Wayland environment with maximum smoothness and session stability.
+*   **Mewline**: Unique status bar in the style of Dynamic Island.
+*   **Declarative**: Your system is always the same, reproducible on any hardware.
+*   **Safety**: Roll back to previous versions directly from the boot menu.
 
 ## 📁 Project Structure
+*   `hosts/meowrch/` — **The heart of your system**. Main files: `configuration.nix` (system) and `home.nix` (user).
+*   `modules/` — Advanced settings (drivers, themes, services).
+*   `config/` — App configurations (the files you usually look for in `~/.config`).
+*   `scripts/` — A set of useful scripts for system management.
 
-```text
-NixOS-Meowrch/
-├── flake.nix                       # Main entry point (Flake)
-├── hosts/                          # Machine-specific configurations
-│   └── meowrch/                    # Host 'meowrch' (System + Home Manager)
-├── modules/                        # Modular Nix logic
-│   ├── nixos/                      # NixOS system modules (drivers, services)
-│   └── home/                       # Home Manager modules (apps, configs)
-├── config/                         # Raw application configurations (symlinks)
-│   ├── hypr/                       # Hyprland settings
-│   ├── kitty/                      # Kitty settings
-│   └── ...                         # Fish, Fastfetch, Btop
-├── assets/                         # Static resources (SDDM, themes, wallpapers)
-├── scripts/                        # Consolidated system scripts
-└── pkgs/                           # Custom package definitions
-```
-
-## 🚀 Installation
-
-```bash
-git clone https://github.com/Redm00use/NixOS-Meowrch.git
-cd NixOS-Meowrch
-chmod +x install.sh
-./install.sh
-```
+---
 
 ## 🔧 Usage & Updates
 
-Convenient aliases are available for system management:
+We created "Super Aliases" so you don't have to memorize complex commands:
 
-| Alias | Desc | Description |
-|-------|------|-------------|
-| `u`     | Update | **Full Update**: git pull + update hashes + flake update + rebuild |
-| `b`     | Build  | **Fast Rebuild**: apply current configuration changes |
-| `clean` | Cleanup| **Cleanup**: remove old generations and collect garbage |
-| `rollback`| Rollback| **Rollback**: return to the previous successful state |
+| Alias | Description |
+|-------|-------------|
+| `u`     | **Full Update**. Pulls the latest code from GitHub and rebuilds the system. |
+| `b`     | **Apply Settings**. Run this every time you change something in your config files. |
+| `clean` | **Cleanup**. Removes old system versions and frees up disk space. |
 
-## 📦 Package Management
+---
 
-In NixOS, packages are not installed via `apt` or `pacman`. They are declared in configuration files.
+## 📦 Beginner Guide: Installing Apps
 
-1.  **User Applications** (Firefox, Telegram, etc.):
-    File: `hosts/meowrch/home.nix` → `home.packages` section.
-2.  **System Utilities & Drivers**:
-    File: `modules/nixos/packages/packages.nix` → `environment.systemPackages` section.
+In NixOS, you add packages to lists. There are two main ones:
 
-After editing, run `b` to apply changes.
+### 1. Personal Apps (Browsers, Players, Games)
+Open the file `hosts/meowrch/home.nix` in your editor (command: `zed ~/NixOS-Meowrch/hosts/meowrch/home.nix`).
+Look for the `home.packages` section and add the app name:
+```nix
+home.packages = with pkgs; [
+  telegram-desktop
+  vlc
+  discord
+];
+```
 
-## 📖 Meowrch Wiki (Configuration)
+### 2. System Tools (Drivers, Low-level utilities)
+Open `modules/nixos/packages/packages.nix`. Add packages to `environment.systemPackages`.
 
-Main Hyprland configuration files are now located here:
-`modules/home/hypr-configs/`
+**How to find the package name?**
+Visit **[search.nixos.org](https://search.nixos.org/packages)** and type the name. Use the "Attribute name" (e.g., `firefox`, not `Firefox Browser`).
 
-*   `keybindings.conf` — edit hotkeys.
-*   `windowrules.conf` — window rules (floating, opacity).
-*   `monitors.conf` — monitor and resolution settings.
-*   `autostart.conf` — startup applications.
+**How to apply?**
+After saving the file, just type in the terminal:
+`b`
 
-## ⌨️ Keybindings & Commands
+---
+
+## 📖 Meowrch Wiki: Customization
+
+Meowrch is very flexible. Here is where to change the appearance:
+
+### 1. Keybindings (Hotkeys)
+File: `modules/home/hypr-configs/keybindings.conf`
+Want to change `Super+D` to something else? Go here.
+
+### 2. Autostart
+File: `modules/home/hypr-configs/autostart.conf`
+Add a line like `exec-once = app_name`.
+
+### 3. Wallpapers & Themes
+Use the built-in menus:
+*   `Super + W` — Change Wallpaper.
+*   `Super + Shift + T` — Change Color Theme.
+
+---
+
+## 🛠️ Help! I broke something!
+
+This is NixOS; it is **impossible** to permanently "kill" your system via software!
+
+1.  **If the system won't boot**: Reboot. In the boot menu (GRUB/Systemd-boot), select a previous entry (Generation). You will boot into the version that worked before your changes.
+2.  **If you are in the system but it's buggy**: Run the command `rollback` (or `sudo nixos-rebuild switch --rollback`).
+
+---
+
+## ⌨️ Keybindings Cheat Sheet
 
 | Key | Action |
 |-----|--------|
-| `Super + Return` | Terminal (Kitty + Fish) |
+| `Super + Return` | Terminal |
 | `Super + Q` | Close window |
 | `Super + E` | File Manager (Nemo) |
-| `Super + D` | App Launcher (Rofi) |
-| `Super + Z` | Browser (Firefox) |
-| `Super + T` | Telegram (Materialgram) |
-| `Super + W` | Wallpaper Selector |
-| `Super + Shift + T` | Theme Selector (Pawlette) |
-| `Super + X` | Power Menu (Powermenu) |
+| `Super + D` | App Launcher |
+| `Super + Z` | Browser |
+| `Super + Shift + B` | Toggle Status Bar |
 | `Super + L` | Lock Screen |
-| `Super + Shift + B` | Toggle Status Bar (Mewline) |
-| `Super + C` | Color Picker |
-| `Super + Shift + H` | Hotkeys Cheat Sheet |
-| `Ctrl + Shift + R` | Reload Hyprland |
-| `Super + Delete` | Logout |
 
 ---
 <div align="center">
-    <p><i>Made with ❤️ for the NixOS and Meowrch community</i></p>
+    <p><i>Made with ❤️ for those who are not afraid of something new. Welcome to the Meowrch family!</i></p>
     <p><sub>≽ܫ≼</sub></p>
 </div>
