@@ -4,14 +4,10 @@ let
   meowrch-sddm-theme = pkgs.stdenv.mkDerivation {
     name = "meowrch-sddm-theme";
     src = ./../../../assets/sddm;
-    
+
     installPhase = ''
       mkdir -p $out/share/sddm/themes/meowrch
       cp -r ./* $out/share/sddm/themes/meowrch/
-      
-      # Use a symlink for theme.conf so it can be updated dynamically
-      ln -sf /home/meowrch/.cache/meowrch/sddm-theme.conf $out/share/sddm/themes/meowrch/theme.conf
-      chmod -R +w $out/share/sddm/themes/meowrch/
     '';
   };
 in {
@@ -19,8 +15,8 @@ in {
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    
-    # Use Qt6-based SDDM package for better compatibility with Qt6 themes
+
+    # Use Qt6-based SDDM package
     package = pkgs.kdePackages.sddm;
 
     # SDDM theme configuration
@@ -48,7 +44,7 @@ in {
         CursorSize = 24;
         EnableAvatars = true;
         FacesDir = "/var/lib/AccountsService/icons/";
-        ThemeDir = "${meowrch-sddm-theme}/share/sddm/themes";
+        ThemeDir = "/var/lib/sddm-theme";
       };
 
       Users = {
@@ -72,21 +68,50 @@ in {
     bibata-cursors
   ];
 
-  # Create user avatars directory and cache directory for theme
+  # Create required directories
   systemd.tmpfiles.rules = [
     "d /var/lib/AccountsService/icons 0755 root root - -"
-    "d /home/meowrch/.cache/meowrch 0755 meowrch users - -"
+    "d /var/lib/sddm-theme 0755 root root - -"
+    "d /var/lib/sddm-theme/meowrch 0755 root root - -"
+    "d /home/kotlin/.cache/meowrch 0755 kotlin users - -"
   ];
 
-  # Copy default avatar if it exists
-  system.activationScripts.userAvatar.text = ''
+  # Activation script: copy theme to writable location and apply overrides
+  system.activationScripts.sddmTheme.text = ''
+    THEME_SRC="${meowrch-sddm-theme}/share/sddm/themes/meowrch"
+    THEME_DST="/var/lib/sddm-theme/meowrch"
+
+    echo "Deploying SDDM meowrch theme to $THEME_DST..."
+    mkdir -p "$THEME_DST"
+
+    # Copy all theme files from the Nix store
+    cp -rf "$THEME_SRC"/. "$THEME_DST"/
+
+    # Make the destination writable
+    chmod -R u+w "$THEME_DST"
+
+    # If the user has a generated theme.conf (from the meowrch theme manager),
+    # apply it on top of the default one so dynamic color updates take effect.
+    USER_CONF="/home/kotlin/.cache/meowrch/sddm-theme.conf"
+    if [ -f "$USER_CONF" ]; then
+      echo "Applying user theme.conf from $USER_CONF"
+      cp -f "$USER_CONF" "$THEME_DST/theme.conf"
+    fi
+
+    # Ensure SDDM user can read the theme directory
+    chmod -R a+rX "$THEME_DST"
+
+    ${lib.optionalString (config ? "users.users.sddm") ''
+      chown -R sddm:sddm "$THEME_DST" 2>/dev/null || true
+    ''}
+
+    echo "SDDM theme deployed successfully."
+
+    # Copy default user avatar if it exists
     if [ -f "${./../../../assets/misc/.face.icon}" ]; then
       mkdir -p /var/lib/AccountsService/icons
-      cp -f ${./../../../assets/misc/.face.icon} /var/lib/AccountsService/icons/meowrch
-      chmod 644 /var/lib/AccountsService/icons/meowrch
+      cp -f "${./../../../assets/misc/.face.icon}" /var/lib/AccountsService/icons/kotlin
+      chmod 644 /var/lib/AccountsService/icons/kotlin
     fi
   '';
-
-  # SDDM default session
-  services.displayManager.defaultSession = "hyprland-uwsm";
 }

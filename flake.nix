@@ -37,6 +37,11 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self
@@ -48,6 +53,7 @@
     , spicetify-nix
     , catppuccin-nix
     , firefox-addons
+    , antigravity-nix
     , ...
   }@inputs:
   let
@@ -95,7 +101,7 @@
             inherit inputs firefox-addons pkgs-unstable;
           };
 
-          home-manager.users.meowrch = {
+          home-manager.users.kotlin = {
             imports = [
               inputs.spicetify-nix.homeManagerModules.default
               inputs.catppuccin-nix.homeModules.catppuccin

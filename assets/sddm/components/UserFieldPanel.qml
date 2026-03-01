@@ -52,7 +52,7 @@ TextField {
             name: "error"
             when: false
             PropertyChanges {
-                target: passFieldBg
+                target: userFieldBackground
                 border.color: Qt.darker(config.TextFieldErrorColor, 1.2)
                 border.width: 3
             }
@@ -66,4 +66,3 @@ TextField {
         }
     }
 }
-

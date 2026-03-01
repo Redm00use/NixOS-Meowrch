@@ -15,38 +15,43 @@ Item {
     height: Screen.height
     width: Screen.width
 
-        Image {
-            id: background
-            anchors.fill: parent
-            height: parent.height
-            width: parent.width
-            fillMode: Image.PreserveAspectCrop
-    
-            source: config.Background
-    
-            asynchronous: false
-            cache: true
-            mipmap: true
-            clip: true
-            visible: true
-        }
+    Image {
+        id: background
         
-        MediaPlayer {
-            id: mediaPlayer
-            source: config.VideoBackground
-            loops: MediaPlayer.Infinite
-            videoOutput: videoOutput
-        }
+        anchors.fill: parent
+        height: parent.height
+        width: parent.width
+        fillMode: Image.PreserveAspectCrop
+
+        source: config.Background
+
+        asynchronous: false
+        cache: true
+        mipmap: true
+        clip: true
+        visible: true
+    }
     
-        VideoOutput {
-            id: videoOutput
-            anchors.fill: parent
-            opacity: mediaPlayer.hasVideo ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            fillMode: VideoOutput.PreserveAspectCrop
-            visible: mediaPlayer.hasVideo
+    MediaPlayer {
+        id: mediaPlayer
+        source: config.VideoBackground
+        loops: MediaPlayer.Infinite
+        videoOutput: videoOutput
+        audioOutput: AudioOutput { muted: true }
+
+        Component.onCompleted: {
+            play()
         }
-    
+    }
+
+    VideoOutput {
+        id: videoOutput
+        anchors.fill: parent
+        opacity: mediaPlayer.hasVideo ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+        fillMode: VideoOutput.PreserveAspectCrop
+        visible: mediaPlayer.hasVideo
+    }
 
     Item {
         id: contentPanel

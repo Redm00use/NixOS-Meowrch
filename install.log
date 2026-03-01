@@ -1,0 +1,82 @@
+--- Meowrch NixOS Installation Log: Sun Mar  1 13:02:00 MSK 2026 ---
+[H[2J[3J[0;35m
+                          ▄▀▄     ▄▀▄           ▄▄▄▄▄
+                         ▄█░░▀▀▀▀▀░░█▄         █░▄▄░░█
+                     ▄▄  █░░░░░░░░░░░█  ▄▄    █░█  █▄█
+                    █▄▄█ █░░▀░░┬░░▀░░█ █▄▄█  █░█
+███╗░░░███╗███████╗░█████╗░░██╗░░░░░░░██╗██████╗░░█████╗░██╗░░██╗
+████╗░████║██╔════╝██╔══██╗░██║░░██╗░░██║██╔══██╗██╔══██╗██║░░██║
+██╔████╔██║█████╗░░██║░░██║░╚██╗████╗██╔╝██████╔╝██║░░╚═╝███████║
+██║╚██╔╝██║██╔══╝░░██║░░██║░░████╔═████║░██╔══██╗██║░░██╗██╔══██║
+██║░╚═╝░██║███████╗╚█████╔╝░░╚██╔╝░╚██╔╝░██║░░██║╚█████╔╝██║░░██║
+╚═╝░░░░░╚═╝╚══════╝░╚════╝░░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝
+                                 By Redm00use
+[0m
+[0;36mWelcome to Meowrch NixOS Installer v3.5.1[0m
+[0;34mStarting pre-install checks...[0m
+
+[1;33m==> Configuration Survey[0m
+[0;32m? [0mChoose installation mode:
+  [[0;36m1[0m] Apply to current system (Update)
+  [[0;36m2[0m] Install to new disk (Bootstrap /mnt)
+[0;32m> [0m[0;32m? [0mEnter Hostname [[0;36mmeowrch-machine[0m]: [0;32m? [0mEnter Username [[0;36mkotlin[0m]: [0;32m? [0mSelect GPU Driver:
+  [[0;36m1[0m] AMD (Recommended)
+  [[0;36m2[0m] Intel
+  [[0;36m3[0m] Nvidia (Beta)
+[0;32m> [0m
+[1;33m==> Summary[0m
+  Mode:     Apply to current system (Update)
+  Target:   /home/kotlin/NixOS-Meowrch
+  Hostname: meowrch-machine
+  User:     kotlin
+  GPU:      AMD (Recommended)
+
+[0;32m? [0mProceed with installation? [[0;36my[0m]: 
+[1;33m==> Preparing Files[0m
+[0;34m[INFO] Source: /home/kotlin/NixOS-Meowrch[0m
+[0;34m[INFO] Target: /home/kotlin/NixOS-Meowrch[0m
+[0;34m[INFO] Already in target directory. Skipping clean and copy.[0m
+[0;34m[INFO] Patching configuration files...[0m
+
+[1;33m==> Generating Hardware Configuration[0m
+[0;34m[INFO] Regenerating...[0m
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = "",
+	LC_ALL = (unset),
+	LC_CTYPE = (unset),
+	LC_NUMERIC = "uk_UA.UTF-8",
+	LC_COLLATE = (unset),
+	LC_TIME = "uk_UA.UTF-8",
+	LC_MESSAGES = (unset),
+	LC_MONETARY = "uk_UA.UTF-8",
+	LC_ADDRESS = "uk_UA.UTF-8",
+	LC_IDENTIFICATION = "uk_UA.UTF-8",
+	LC_MEASUREMENT = "uk_UA.UTF-8",
+	LC_PAPER = "uk_UA.UTF-8",
+	LC_TELEPHONE = "uk_UA.UTF-8",
+	LC_NAME = "uk_UA.UTF-8",
+	LANG = "ru_UA.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+
+[1;33m==> Installing System[0m
+[0;34m[INFO] Staging files in Git...[0m
+[0;34m[INFO] Verification of critical files:[0m
+-rw-r--r-- 1 kotlin users  3809 Mar  1 13:02 flake.nix
+-rw-r--r-- 1 kotlin users  7594 Mar  1 13:02 hosts/meowrch/configuration.nix
+-rw-r--r-- 1 kotlin users  1061 Mar  1 13:02 hosts/meowrch/hardware-configuration.nix
+-rw-r--r-- 1 kotlin users 18658 Mar  1 13:02 hosts/meowrch/home.nix
+[0;34m[INFO] Starting 'nixos-rebuild boot' with --impure...[0m
+warning: Git tree '/home/kotlin/NixOS-Meowrch' is dirty
+building the system configuration...
+warning: Git tree '/home/kotlin/NixOS-Meowrch' is dirty
+evaluation warning: buildRustPackage: `useFetchCargoVendor` is non‐optional and enabled by default as of 25.05, remove it
+evaluation warning: buildRustPackage: `useFetchCargoVendor` is non‐optional and enabled by default as of 25.05, remove it
+evaluation warning: buildRustPackage: `useFetchCargoVendor` is non‐optional and enabled by default as of 25.05, remove it
+evaluation warning: buildRustPackage: `useFetchCargoVendor` is non‐optional and enabled by default as of 25.05, remove it
+Done. The new configuration is /nix/store/a71hq60phwdl1wb5g58lp7mngnkjnh78-nixos-system-meowrch-machine-25.11.20260224.e764fc9
+
+[0;32mUpdate Complete![0m
+[0;34mDetailed logs are saved to: /home/kotlin/NixOS-Meowrch/install.log[0m
+Changes will be applied on next boot. Please reboot your system.

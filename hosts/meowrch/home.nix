@@ -20,8 +20,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = lib.mkForce "meowrch";
-  home.homeDirectory = lib.mkForce "/home/meowrch";
+  home.username = lib.mkForce "kotlin";
+  home.homeDirectory = lib.mkForce "/home/kotlin";
   home.stateVersion = "25.11";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -51,6 +51,7 @@
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
     pkgs-unstable.gemini-cli
+    inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

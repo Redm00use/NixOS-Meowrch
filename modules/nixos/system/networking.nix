@@ -3,7 +3,7 @@
 {
   # Networking Configuration
   networking = {
-    hostName = "meowrch";
+    hostName = "meowrch-machine";
 
     # Enable NetworkManager
     networkmanager = {
