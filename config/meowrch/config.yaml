@@ -1,72 +1,72 @@
 current-wtheme: catppuccin-mocha
-current-wwallpaper: /home/kotlin/.config/meowrch/wallpapers/26.png
+current-wwallpaper: $HOME/.config/meowrch/wallpapers/26.png
 current-xtheme: catppuccin-mocha
-current-xwallpaper: /home/kotlin/.config/meowrch/wallpapers/42.png
+current-xwallpaper: $HOME/.config/meowrch/wallpapers/42.png
 custom-wallpapers:
-- /home/kotlin/.config/meowrch/wallpapers/4.png
-- /home/kotlin/.config/meowrch/wallpapers/5.png
-- /home/kotlin/.config/meowrch/wallpapers/7.png
-- /home/kotlin/.config/meowrch/wallpapers/8.png
-- /home/kotlin/.config/meowrch/wallpapers/10.png
-- /home/kotlin/.config/meowrch/wallpapers/11.png
-- /home/kotlin/.config/meowrch/wallpapers/13.png
-- /home/kotlin/.config/meowrch/wallpapers/18.png
-- /home/kotlin/.config/meowrch/wallpapers/20.png
-- /home/kotlin/.config/meowrch/wallpapers/46.png
+- $HOME/.config/meowrch/wallpapers/4.png
+- $HOME/.config/meowrch/wallpapers/5.png
+- $HOME/.config/meowrch/wallpapers/7.png
+- $HOME/.config/meowrch/wallpapers/8.png
+- $HOME/.config/meowrch/wallpapers/10.png
+- $HOME/.config/meowrch/wallpapers/11.png
+- $HOME/.config/meowrch/wallpapers/13.png
+- $HOME/.config/meowrch/wallpapers/18.png
+- $HOME/.config/meowrch/wallpapers/20.png
+- $HOME/.config/meowrch/wallpapers/46.png
 themes:
   catppuccin-latte:
     available_wallpapers:
-    - /home/kotlin/.config/meowrch/wallpapers/1.png
-    - /home/kotlin/.config/meowrch/wallpapers/2.png
-    - /home/kotlin/.config/meowrch/wallpapers/3.png
-    - /home/kotlin/.config/meowrch/wallpapers/16.png
-    - /home/kotlin/.config/meowrch/wallpapers/17.png
-    - /home/kotlin/.config/meowrch/wallpapers/19.png
-    - /home/kotlin/.config/meowrch/wallpapers/21.png
-    - /home/kotlin/.config/meowrch/wallpapers/27.png
-    - /home/kotlin/.config/meowrch/wallpapers/28.png
-    - /home/kotlin/.config/meowrch/wallpapers/29.png
-    - /home/kotlin/.config/meowrch/wallpapers/30.png
-    - /home/kotlin/.config/meowrch/wallpapers/31.png
-    - /home/kotlin/.config/meowrch/wallpapers/32.png
-    - /home/kotlin/.config/meowrch/wallpapers/33.png
-    - /home/kotlin/.config/meowrch/wallpapers/34.png
+    - $HOME/.config/meowrch/wallpapers/1.png
+    - $HOME/.config/meowrch/wallpapers/2.png
+    - $HOME/.config/meowrch/wallpapers/3.png
+    - $HOME/.config/meowrch/wallpapers/16.png
+    - $HOME/.config/meowrch/wallpapers/17.png
+    - $HOME/.config/meowrch/wallpapers/19.png
+    - $HOME/.config/meowrch/wallpapers/21.png
+    - $HOME/.config/meowrch/wallpapers/27.png
+    - $HOME/.config/meowrch/wallpapers/28.png
+    - $HOME/.config/meowrch/wallpapers/29.png
+    - $HOME/.config/meowrch/wallpapers/30.png
+    - $HOME/.config/meowrch/wallpapers/31.png
+    - $HOME/.config/meowrch/wallpapers/32.png
+    - $HOME/.config/meowrch/wallpapers/33.png
+    - $HOME/.config/meowrch/wallpapers/34.png
   catppuccin-mocha:
     available_wallpapers:
-    - /home/kotlin/.config/meowrch/wallpapers/6.png
-    - /home/kotlin/.config/meowrch/wallpapers/9.png
-    - /home/kotlin/.config/meowrch/wallpapers/12.png
-    - /home/kotlin/.config/meowrch/wallpapers/14.png
-    - /home/kotlin/.config/meowrch/wallpapers/15.png
-    - /home/kotlin/.config/meowrch/wallpapers/22.png
-    - /home/kotlin/.config/meowrch/wallpapers/23.png
-    - /home/kotlin/.config/meowrch/wallpapers/24.png
-    - /home/kotlin/.config/meowrch/wallpapers/25.png
-    - /home/kotlin/.config/meowrch/wallpapers/26.png
-    - /home/kotlin/.config/meowrch/wallpapers/35.png
-    - /home/kotlin/.config/meowrch/wallpapers/36.png
-    - /home/kotlin/.config/meowrch/wallpapers/37.png
-    - /home/kotlin/.config/meowrch/wallpapers/38.png
-    - /home/kotlin/.config/meowrch/wallpapers/39.png
-    - /home/kotlin/.config/meowrch/wallpapers/40.png
-    - /home/kotlin/.config/meowrch/wallpapers/41.png
-    - /home/kotlin/.config/meowrch/wallpapers/42.png
-    - /home/kotlin/.config/meowrch/wallpapers/43.png
-    - /home/kotlin/.config/meowrch/wallpapers/44.png
-    - /home/kotlin/.config/meowrch/wallpapers/45.png
-    - /home/kotlin/.config/meowrch/wallpapers/47.png
-    - /home/kotlin/.config/meowrch/wallpapers/48.png
-    - /home/kotlin/.config/meowrch/wallpapers/49.png
-    - /home/kotlin/.config/meowrch/wallpapers/50.png
-    - /home/kotlin/.config/meowrch/wallpapers/51.png
-    - /home/kotlin/.config/meowrch/wallpapers/52.png
-    - /home/kotlin/.config/meowrch/wallpapers/53.png
-    - /home/kotlin/.config/meowrch/wallpapers/54.png
-    - /home/kotlin/.config/meowrch/wallpapers/55.png
-    - /home/kotlin/.config/meowrch/wallpapers/56.png
-    - /home/kotlin/.config/meowrch/wallpapers/57.png
-    - /home/kotlin/.config/meowrch/wallpapers/58.png
-    - /home/kotlin/.config/meowrch/wallpapers/59.png
-    - /home/kotlin/.config/meowrch/wallpapers/60.png
-    - /home/kotlin/.config/meowrch/wallpapers/61.png
-    - /home/kotlin/.config/meowrch/wallpapers/62.png
+    - $HOME/.config/meowrch/wallpapers/6.png
+    - $HOME/.config/meowrch/wallpapers/9.png
+    - $HOME/.config/meowrch/wallpapers/12.png
+    - $HOME/.config/meowrch/wallpapers/14.png
+    - $HOME/.config/meowrch/wallpapers/15.png
+    - $HOME/.config/meowrch/wallpapers/22.png
+    - $HOME/.config/meowrch/wallpapers/23.png
+    - $HOME/.config/meowrch/wallpapers/24.png
+    - $HOME/.config/meowrch/wallpapers/25.png
+    - $HOME/.config/meowrch/wallpapers/26.png
+    - $HOME/.config/meowrch/wallpapers/35.png
+    - $HOME/.config/meowrch/wallpapers/36.png
+    - $HOME/.config/meowrch/wallpapers/37.png
+    - $HOME/.config/meowrch/wallpapers/38.png
+    - $HOME/.config/meowrch/wallpapers/39.png
+    - $HOME/.config/meowrch/wallpapers/40.png
+    - $HOME/.config/meowrch/wallpapers/41.png
+    - $HOME/.config/meowrch/wallpapers/42.png
+    - $HOME/.config/meowrch/wallpapers/43.png
+    - $HOME/.config/meowrch/wallpapers/44.png
+    - $HOME/.config/meowrch/wallpapers/45.png
+    - $HOME/.config/meowrch/wallpapers/47.png
+    - $HOME/.config/meowrch/wallpapers/48.png
+    - $HOME/.config/meowrch/wallpapers/49.png
+    - $HOME/.config/meowrch/wallpapers/50.png
+    - $HOME/.config/meowrch/wallpapers/51.png
+    - $HOME/.config/meowrch/wallpapers/52.png
+    - $HOME/.config/meowrch/wallpapers/53.png
+    - $HOME/.config/meowrch/wallpapers/54.png
+    - $HOME/.config/meowrch/wallpapers/55.png
+    - $HOME/.config/meowrch/wallpapers/56.png
+    - $HOME/.config/meowrch/wallpapers/57.png
+    - $HOME/.config/meowrch/wallpapers/58.png
+    - $HOME/.config/meowrch/wallpapers/59.png
+    - $HOME/.config/meowrch/wallpapers/60.png
+    - $HOME/.config/meowrch/wallpapers/61.png
+    - $HOME/.config/meowrch/wallpapers/62.png
