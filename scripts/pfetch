@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # pfetch - Simple POSIX sh fetch script.
 

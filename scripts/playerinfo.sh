@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 THUMB=/tmp/meowrch-mpris
 STATUS=$(playerctl status 2>/dev/null)

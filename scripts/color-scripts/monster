@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # Author: gutterslob
 # Source: http://crunchbang.org/forums/viewtopic.php?pid=130590#p130590

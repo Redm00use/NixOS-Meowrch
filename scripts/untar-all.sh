@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for i in *.tar*; do tar -xvf "$i"; done
