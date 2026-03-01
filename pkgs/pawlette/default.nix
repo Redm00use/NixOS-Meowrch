@@ -42,10 +42,10 @@ python3.pkgs.buildPythonApplication rec {
       --replace 'path = cnst.THEMES_FOLDER / theme_name' 'path = cnst.SYS_THEMES_FOLDER / theme_name' \
       --replace 'for p in [sys_path, path]:' 'for p in [cnst.SYS_THEMES_FOLDER / theme_name]:'
 
-    # Force dark mode preference
+    # Force dark/light mode preference based on theme name
     substituteInPlace src/pawlette/core/system_theme_appliers.py \
-      --replace 'self.gsettings_key, theme_name' 'self.gsettings_key, theme_name]; subprocess.run(["${glib}/bin/gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"], check=False) #' \
-      --replace 'self._update_gtk_config(config, theme_name)' 'self._update_gtk_config(config, theme_name); self._update_gtk_config(config, "gtk-application-prefer-dark-theme=1", key_only=True) if hasattr(self, "_update_gtk_config") else None'
+      --replace 'self.gsettings_key, theme_name' 'self.gsettings_key, theme_name]; mode = "prefer-light" if "latte" in theme_name else "prefer-dark"; subprocess.run(["${glib}/bin/gsettings", "set", "org.gnome.desktop.interface", "color-scheme", mode], check=False) #' \
+      --replace 'self._update_gtk_config(config, theme_name)' 'self._update_gtk_config(config, theme_name); mode = "gtk-application-prefer-dark-theme=0" if "latte" in theme_name else "gtk-application-prefer-dark-theme=1"; self._update_gtk_config(config, mode, key_only=True) if hasattr(self, "_update_gtk_config") else None'
   '';
 
   nativeBuildInputs = [
