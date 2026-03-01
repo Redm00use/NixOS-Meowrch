@@ -5,7 +5,15 @@
   gtk = {
     enable = true;
     
-    theme = {
+    # Force overwrite existing config files to prevent activation errors
+    gtk2.configLocation = lib.mkForce "${config.xdg.configHome}/gtk-2.0/gtkrc";
+    gtk3.bookmarks = let home = config.home.homeDirectory; in [ 
+      "file://${home}/Documents" 
+      "file://${home}/Downloads" 
+      "file://${home}/Music" 
+      "file://${home}/Pictures" 
+      "file://${home}/Videos" 
+    ];
       name = lib.mkForce "adw-gtk3-dark";
       package = lib.mkForce pkgs.adw-gtk3;
     };
@@ -291,6 +299,12 @@
       }
     '';
   };
+
+  # Force overwrite GTK config files to prevent activation failures
+  xdg.configFile."gtk-4.0/gtk.css".force = true;
+  xdg.configFile."gtk-4.0/settings.ini".force = true;
+  xdg.configFile."gtk-3.0/gtk.css".force = true;
+  xdg.configFile."gtk-3.0/settings.ini".force = true;
 
   # GNOME dconf settings for GTK
   dconf.settings = {

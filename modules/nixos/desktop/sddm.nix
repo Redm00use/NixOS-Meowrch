@@ -77,14 +77,19 @@ in {
   ];
 
   # Activation script to apply user theme overrides and avatar
-  system.activationScripts.sddmTheme.text = ''
+  system.activationScripts.sddmTheme.text = let
+    # Находим первого обычного пользователя (UID >= 1000), чтобы не хардкодить 'kotlin'
+    # В идеале это должен быть основной пользователь системы
+    normalUser = lib.findFirst (u: config.users.users.${u}.isNormalUser) "root" (builtins.attrNames config.users.users);
+    homeDir = config.users.users.${normalUser}.home;
+  in ''
     # If the user has a generated theme.conf (from the meowrch theme manager),
     # apply it by copying to a writable location
     THEME_SRC="${meowrch-sddm-theme}/share/sddm/themes/meowrch"
-    USER_CONF="/home/kotlin/.cache/meowrch/sddm-theme.conf"
+    USER_CONF="${homeDir}/.cache/meowrch/sddm-theme.conf"
 
     if [ -f "$USER_CONF" ]; then
-      echo "Applying user SDDM theme.conf override..."
+      echo "Applying user SDDM theme.conf override for user ${normalUser}..."
       # Create writable copy of theme for user overrides
       THEME_DST="/var/lib/sddm-theme/meowrch"
       mkdir -p "$THEME_DST"
@@ -98,8 +103,8 @@ in {
     # Copy default user avatar if it exists
     if [ -f "${./../../../assets/misc/.face.icon}" ]; then
       mkdir -p /var/lib/AccountsService/icons
-      cp -f "${./../../../assets/misc/.face.icon}" /var/lib/AccountsService/icons/kotlin
-      chmod 644 /var/lib/AccountsService/icons/kotlin
+      cp -f "${./../../../assets/misc/.face.icon}" /var/lib/AccountsService/icons/${normalUser}
+      chmod 644 /var/lib/AccountsService/icons/${normalUser}
     fi
   '';
 }
