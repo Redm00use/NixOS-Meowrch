@@ -51,7 +51,7 @@
     # --- Дополнительные пакеты пользователя ---
     # Добавьте здесь свои пакеты
     pkgs-unstable.gemini-cli
-    inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -146,6 +146,7 @@
       isDefault = true;
 
       extensions = {
+        force = true;
         packages = with firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
           ublock-origin
           bitwarden

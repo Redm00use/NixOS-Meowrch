@@ -37,11 +37,6 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    antigravity-nix = {
-      url = "github:jacopone/antigravity-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = { self
@@ -53,7 +48,6 @@
     , spicetify-nix
     , catppuccin-nix
     , firefox-addons
-    , antigravity-nix
     , ...
   }@inputs:
   let
@@ -89,7 +83,6 @@
         })
 
         ./hosts/meowrch/configuration.nix
-        catppuccin-nix.nixosModules.catppuccin
 
         home-manager.nixosModules.home-manager
         {

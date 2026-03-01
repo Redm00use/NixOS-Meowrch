@@ -6,19 +6,19 @@
     enable = true;
     
     theme = {
-      name = "adw-gtk3-dark";
-      package = pkgs.adw-gtk3;
+      name = lib.mkForce "adw-gtk3-dark";
+      package = lib.mkForce pkgs.adw-gtk3;
     };
     
     iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name = lib.mkForce "Papirus-Dark";
+      package = lib.mkForce pkgs.papirus-icon-theme;
     };
     
     cursorTheme = {
-      name = "Bibata-Modern-Classic";
-      package = pkgs.bibata-cursors;
-      size = 24;
+      name = lib.mkForce "Bibata-Modern-Classic";
+      package = lib.mkForce pkgs.bibata-cursors;
+      size = lib.mkForce 24;
     };
     
     font = {
