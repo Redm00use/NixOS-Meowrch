@@ -237,10 +237,16 @@ if [ "$MODE" -eq 1 ]; then
     echo -e "${BLUE}[INFO] Starting 'nixos-install' with --impure...${NC}"
     export NIXPKGS_ALLOW_UNFREE=1
     nixos-install --flake ".#meowrch" --root /mnt --impure
-else
-    echo -e "${BLUE}[INFO] Starting 'nixos-rebuild switch' with --impure...${NC}"
-    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake ".#meowrch" --impure
-fi
 
-echo -e "\n${GREEN}Installation Complete!${NC}"
-echo "Please reboot your system."
+    echo -e "\n${GREEN}Installation Complete!${NC}"
+    echo -e "${BLUE}Detailed logs are saved to: $LOG_FILE${NC}"
+    echo "You can now reboot into your new Meowrch NixOS system."
+    echo "Type 'reboot' to restart."
+else
+    echo -e "${BLUE}[INFO] Starting 'nixos-rebuild boot' with --impure...${NC}"
+    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#meowrch" --impure
+
+    echo -e "\n${GREEN}Update Complete!${NC}"
+    echo -e "${BLUE}Detailed logs are saved to: $LOG_FILE${NC}"
+    echo "Changes will be applied on next boot. Please reboot your system."
+fi
