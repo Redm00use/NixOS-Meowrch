@@ -2,10 +2,14 @@
 Name=Meowrch
 Description=Meowrch SDDM Theme
 Author=Meowrch
+Website=https://github.com/Meowrch/Meowrch
+License=MIT
 Type=sddm-theme
 Version=0.1
-Website=https://github.com/Meowrch/Meowrch
+ConfigFile=theme.conf
 Screenshot=backgrounds/bg.jpg
 MainScript=Main.qml
-ConfigFile=theme.conf
 TranslationsDirectory=translations
+Theme-Id=meowrch
+Theme-API=2.0
+QtVersion=6

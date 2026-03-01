@@ -1,9 +1,18 @@
 { config, pkgs, lib, ... }:
 
 let
-  meowrch-sddm-theme = pkgs.stdenv.mkDerivation {
+  meowrch-sddm-theme = pkgs.stdenvNoCC.mkDerivation {
     name = "meowrch-sddm-theme";
     src = ./../../../assets/sddm;
+
+    dontWrapQtApps = true;
+
+    propagatedBuildInputs = with pkgs.kdePackages; [
+      qtsvg
+      qtmultimedia
+      qt5compat
+      qtdeclarative
+    ];
 
     installPhase = ''
       mkdir -p $out/share/sddm/themes/meowrch
@@ -26,7 +35,6 @@ in {
       qt5compat
       qtmultimedia
       qtsvg
-      qtwayland
       qtdeclarative
     ];
 
@@ -44,7 +52,6 @@ in {
         CursorSize = 24;
         EnableAvatars = true;
         FacesDir = "/var/lib/AccountsService/icons/";
-        ThemeDir = "/var/lib/sddm-theme";
       };
 
       Users = {
@@ -57,58 +64,36 @@ in {
     };
   };
 
-  # Install required Qt6 packages for SDDM and the theme itself
-  environment.systemPackages = with pkgs; [
-    kdePackages.qt5compat
-    kdePackages.qtmultimedia
-    kdePackages.qtsvg
-    kdePackages.qtwayland
-    kdePackages.qtdeclarative
+  # Install the theme package (propagatedBuildInputs will pull in Qt deps)
+  environment.systemPackages = [
     meowrch-sddm-theme
-    bibata-cursors
+    pkgs.bibata-cursors
   ];
 
   # Create required directories
   systemd.tmpfiles.rules = [
     "d /var/lib/AccountsService/icons 0755 root root - -"
-    "d /var/lib/sddm-theme 0755 root root - -"
-    "d /var/lib/sddm-theme/meowrch 0755 root root - -"
     "d /home/kotlin/.cache/meowrch 0755 kotlin users - -"
   ];
 
-  # Activation script: copy theme to writable location and apply overrides
+  # Activation script to apply user theme overrides and avatar
   system.activationScripts.sddmTheme.text = ''
-    THEME_SRC="${meowrch-sddm-theme}/share/sddm/themes/meowrch"
-    THEME_DST="/var/lib/sddm-theme/meowrch"
-
-    echo "Deploying SDDM meowrch theme to $THEME_DST..."
-    mkdir -p "$THEME_DST"
-
-    # Clean old files to avoid stale leftovers from previous builds
-    rm -rf "$THEME_DST"/*
-
-    # Copy all theme files from the Nix store
-    cp -rf "$THEME_SRC"/. "$THEME_DST"/
-
-    # Make the destination writable
-    chmod -R u+w "$THEME_DST"
-
     # If the user has a generated theme.conf (from the meowrch theme manager),
-    # apply it on top of the default one so dynamic color updates take effect.
+    # apply it by copying to a writable location
+    THEME_SRC="${meowrch-sddm-theme}/share/sddm/themes/meowrch"
     USER_CONF="/home/kotlin/.cache/meowrch/sddm-theme.conf"
+
     if [ -f "$USER_CONF" ]; then
-      echo "Applying user theme.conf from $USER_CONF"
+      echo "Applying user SDDM theme.conf override..."
+      # Create writable copy of theme for user overrides
+      THEME_DST="/var/lib/sddm-theme/meowrch"
+      mkdir -p "$THEME_DST"
+      rm -rf "$THEME_DST"/*
+      cp -rf "$THEME_SRC"/. "$THEME_DST"/
+      chmod -R u+w "$THEME_DST"
       cp -f "$USER_CONF" "$THEME_DST/theme.conf"
+      chmod -R a+rX "$THEME_DST"
     fi
-
-    # Ensure SDDM user can read the theme directory
-    chmod -R a+rX "$THEME_DST"
-
-    ${lib.optionalString (config ? "users.users.sddm") ''
-      chown -R sddm:sddm "$THEME_DST" 2>/dev/null || true
-    ''}
-
-    echo "SDDM theme deployed successfully."
 
     # Copy default user avatar if it exists
     if [ -f "${./../../../assets/misc/.face.icon}" ]; then
