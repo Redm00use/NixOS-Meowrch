@@ -84,6 +84,9 @@ in {
     echo "Deploying SDDM meowrch theme to $THEME_DST..."
     mkdir -p "$THEME_DST"
 
+    # Clean old files to avoid stale leftovers from previous builds
+    rm -rf "$THEME_DST"/*
+
     # Copy all theme files from the Nix store
     cp -rf "$THEME_SRC"/. "$THEME_DST"/
 

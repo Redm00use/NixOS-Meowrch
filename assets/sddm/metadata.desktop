@@ -1,0 +1,11 @@
+[SddmGreeterTheme]
+Name=Meowrch
+Description=Meowrch SDDM Theme
+Author=Meowrch
+Type=sddm-theme
+Version=0.1
+Website=https://github.com/Meowrch/Meowrch
+Screenshot=backgrounds/bg.jpg
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations
