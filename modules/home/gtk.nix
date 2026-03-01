@@ -14,6 +14,8 @@
       "file://${home}/Pictures" 
       "file://${home}/Videos" 
     ];
+    
+    theme = {
       name = lib.mkForce "adw-gtk3-dark";
       package = lib.mkForce pkgs.adw-gtk3;
     };
@@ -374,7 +376,7 @@
   home.sessionVariables = {
     # ADW_DEBUG_COLOR_SCHEME is still useful for libadwaita apps
     ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
-    GTK2_RC_FILES = lib.mkForce "$HOME/.gtkrc-2.0";
+    GTK2_RC_FILES = lib.mkForce "${config.home.homeDirectory}/.gtkrc-2.0";
     
     # Cursor theme
     XCURSOR_THEME = "Bibata-Modern-Classic";
