@@ -2,7 +2,7 @@
 
 # Meowrch NixOS Installer
 # Based on the original Meowrch installer (https://github.com/meowrch/meowrch)
-# Adapted for NixOS 25.11
+# Adapted for NixOS 25.11 - v3.5.1 (Fixed & Safe Edition)
 
 set -e
 
@@ -43,7 +43,7 @@ echo -e "${PURPLE}
                                  By Redm00use
 ${NC}"
 
-echo -e "${CYAN}Welcome to Meowrch NixOS Installer v3.5.0${NC}"
+echo -e "${CYAN}Welcome to Meowrch NixOS Installer v3.5.1${NC}"
 echo -e "${BLUE}Starting pre-install checks...${NC}" && sleep 1
 
 if [ -f "/etc/NIXOS" ] && grep -q "iso" /etc/os-release 2>/dev/null; then
@@ -77,6 +77,8 @@ ask_choice() {
     done
 }
 
+# --- Phase 1: Information Gathering ---
+
 echo -e "\n${YELLOW}==> Configuration Survey${NC}"
 MODE_OPTIONS=("Apply to current system (Update)" "Install to new disk (Bootstrap /mnt)")
 ask_choice "Choose installation mode:" "${MODE_OPTIONS[@]}"
@@ -92,8 +94,25 @@ else
     TARGET_DIR="$HOME/NixOS-Meowrch"
 fi
 
-ask "Enter Hostname" "meowrch-machine" "CONF_HOSTNAME"
-ask "Enter Username" "${USER:-meowrch}" "CONF_USER"
+# Hostname Validation
+while true; do
+    ask "Enter Hostname" "meowrch-machine" "CONF_HOSTNAME"
+    if [[ "$CONF_HOSTNAME" =~ [/] ]]; then
+        echo -e "${RED}Hostname cannot contain slashes. Please try again.${NC}"
+    else
+        break
+    fi
+done
+
+# Username Validation
+while true; do
+    ask "Enter Username" "${USER:-meowrch}" "CONF_USER"
+    if [[ "$CONF_USER" =~ [/] ]]; then
+        echo -e "${RED}Username cannot contain slashes. Please try again.${NC}"
+    else
+        break
+    fi
+done
 
 GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia (Beta)")
 ask_choice "Select GPU Driver:" "${GPU_OPTIONS[@]}"
@@ -110,11 +129,39 @@ echo ""
 ask "Proceed with installation?" "y" "CONFIRM"
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then exit 0; fi
 
-# Create target directory
-if [ -d "$TARGET_DIR" ]; then rm -rf "$TARGET_DIR"; fi
-mkdir -p "$TARGET_DIR"
-cp -r . "$TARGET_DIR/"
-cd "$TARGET_DIR"
+# --- Phase 2: Preparation ---
+
+echo -e "\n${YELLOW}==> Preparing Files${NC}"
+
+# Absolute path resolution
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET_PARENT="$(dirname "$TARGET_DIR")"
+mkdir -p "$TARGET_PARENT"
+TARGET_ABS="$(cd "$TARGET_PARENT" && pwd)/$(basename "$TARGET_DIR")"
+
+echo -e "${BLUE}[INFO] Source: $SCRIPT_DIR${NC}"
+echo -e "${BLUE}[INFO] Target: $TARGET_ABS${NC}"
+
+if [ "$SCRIPT_DIR" == "$TARGET_ABS" ]; then
+    echo -e "${BLUE}[INFO] Already in target directory. Skipping clean and copy.${NC}"
+else
+    # Create target directory
+    if [ -d "$TARGET_ABS" ]; then
+        echo -e "${BLUE}[INFO] Cleaning existing directory $TARGET_ABS...${NC}"
+        # Safety check
+        if [[ "$TARGET_ABS" == /mnt/* ]] || [[ "$TARGET_ABS" == "$HOME"/* ]] || [[ "$TARGET_ABS" == /tmp/* ]]; then
+            rm -rf "$TARGET_ABS"
+        else
+            echo -e "${RED}[ERROR] Target $TARGET_ABS is outside safe paths. Aborting.${NC}"
+            exit 1
+        fi
+    fi
+    mkdir -p "$TARGET_ABS"
+    echo -e "${BLUE}[INFO] Copying configuration to $TARGET_ABS...${NC}"
+    cp -a "$SCRIPT_DIR/." "$TARGET_ABS/"
+fi
+
+cd "$TARGET_ABS"
 
 # Patch paths and configuration
 NETWORKING_NIX="modules/nixos/system/networking.nix"
@@ -158,30 +205,41 @@ case "$GPU_CHOICE" in
         ;;
 esac
 
-# Fix script permissions and Shebangs
+# Fix script permissions
 find scripts/ -type f -exec chmod +x {} \;
 chmod +x install.sh
 
-# Generate Hardware Config
+# --- Phase 3: Hardware Config ---
+
+echo -e "\n${YELLOW}==> Generating Hardware Configuration${NC}"
 HW_CONF_PATH="hosts/meowrch/hardware-configuration.nix"
 if [ "$MODE" -eq 1 ]; then
-    nixos-generate-config --root /mnt --dir "$(mktemp -d)"
-    # We copy manually to ensure correct path
-    nixos-generate-config --show-hardware-config > "$HW_CONF_PATH"
+    echo -e "${BLUE}[INFO] Generating from /mnt...${NC}"
+    nixos-generate-config --show-hardware-config --root /mnt > "$HW_CONF_PATH"
 else
+    echo -e "${BLUE}[INFO] Regenerating...${NC}"
     nixos-generate-config --show-hardware-config > "$HW_CONF_PATH"
 fi
 
-# Finalize Git for Flake
-git init >/dev/null 2>&1
-git add . >/dev/null 2>&1
+# --- Phase 5: Installation ---
 
 echo -e "\n${YELLOW}==> Installing System${NC}"
+
+# Mandatory for Flakes: stage all files
+echo -e "${BLUE}[INFO] Staging files in Git...${NC}"
+if [ ! -d .git ]; then git init -q; fi
+git add -A --force >/dev/null 2>&1
+
+echo -e "${BLUE}[INFO] Verification of critical files:${NC}"
+ls -la flake.nix "$CONF_NIX" "$HOME_NIX" "$HW_CONF_PATH" || echo -e "${RED}[WARN] Critical files missing!${NC}"
+
 if [ "$MODE" -eq 1 ]; then
+    echo -e "${BLUE}[INFO] Starting 'nixos-install' with --impure...${NC}"
     export NIXPKGS_ALLOW_UNFREE=1
-    nixos-install --flake ".#meowrch" --root /mnt
+    nixos-install --flake ".#meowrch" --root /mnt --impure
 else
-    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild boot --flake ".#meowrch" --impure
+    echo -e "${BLUE}[INFO] Starting 'nixos-rebuild switch' with --impure...${NC}"
+    sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake ".#meowrch" --impure
 fi
 
 echo -e "\n${GREEN}Installation Complete!${NC}"
