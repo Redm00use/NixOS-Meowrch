@@ -1,5 +1,23 @@
 # NixOS-Meowrch Release History
 
+## 🐱 V3.4.1 (Portability & Modernization) - 2026-03-01
+
+This release focuses on system-wide path audits, total portability for any username, and a major modernization of the display manager.
+
+### 🚀 Highlights
+- **SDDM Qt6 Rewrite**: The Meowrch SDDM theme has been completely rewritten for Qt6, ensuring compatibility with the latest NixOS 25.11+ standards. Added Antigravity dependency and fixed MediaPlayer API.
+- **Total Portability**: Hardcoded `/home/kotlin` paths have been purged. The system now dynamically detects the username, making it truly "out-of-the-box" for any machine.
+- **Mewline Evolution**: Enhanced power-profiles-daemon integration, added laptop brightness detection, and improved window rule stability.
+- **Path Audit**: Comprehensive audit of all 50+ system scripts. Fixed broken shebangs, absolute symlinks, and validator logic.
+- **Simplified CLI**: Added `u` (and `г`) alias for a one-command full system update cycle (flake update + rebuild).
+- **Theming Fixes**: Major patch for `pawlette` to fix Nemo dynamic theming and symlink logic in the Nix Store.
+
+### 🛠 Technical Changes
+- Updated **SDDM** to use `sddm-astronaut` pattern with `propagatedBuildInputs`.
+- Switched installer from `switch` to `boot` to prevent D-Bus activation errors during live sessions.
+- Removed **Waybar** and all redundant legacy components to reduce closure size.
+- Restored original **Kitty** and **Fish** minimalist aesthetics.
+
 ## 🐱 V3.4.0 (The Stability Update) - 2026-02-25
 
 This release focuses on stability, correct system integration, and user convenience.
