@@ -25,14 +25,14 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "mewline";
-  version = "1.4.1";
+  version = "2.0.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "meowrch";
     repo = "mewline";
-    rev = "v1.4.1";
-    hash = "sha256-1C0htvLBBO5YSWgWq/3SdCZZ4+mExRjlFYfOtRAI74k=";
+    rev = "v2.0.0";
+    hash = "sha256-GJ9AUCO/RXIBIvYjJ2TypaU+twJQ8hSBlli5lgK756Y=";
   };
 
   nativeBuildInputs = [
@@ -59,10 +59,10 @@ python3Packages.buildPythonApplication rec {
     setproctitle
     pygobject3
     pycairo
-    click
     systemd-python
     pytesseract
     emoji
+    xlib
     adwaita-icon-theme
     hicolor-icon-theme
   ];
@@ -101,24 +101,6 @@ EOF
     # Redirect writable style paths from read-only Nix store to XDG cache
     substituteInPlace src/mewline/constants.py \
       --replace 'THEME_STYLE = STYLES_FOLDER / "theme.scss"' 'THEME_STYLE = APP_CACHE_DIRECTORY / "theme.scss"'
-
-    # Fix upstream bug: screen_brightness getter crashes with AttributeError
-    # when no backlight device is found (screen_backlight_path is never set).
-    # We return -1 to signal that brightness is not available (e.g. on Desktop).
-    substituteInPlace src/mewline/services/brightness.py \
-      --replace-fail \
-        'brightness_path = self.screen_backlight_path / "brightness"' \
-        'brightness_path = getattr(self, "screen_backlight_path", None)
-        if brightness_path is None:
-            return -1
-        brightness_path = brightness_path / "brightness"'
-
-    # Patch the UI to hide brightness slider if not available (-1)
-    # This targets the Popup widget where the slider is usually located.
-    if [ -f src/mewline/widgets/popup.py ]; then
-      substituteInPlace src/mewline/widgets/popup.py \
-        --replace-fail 'self.brightness_service' 'self.brightness_service if self.brightness_service.screen_brightness != -1 else None' || true
-    fi
   '';
 
   postInstall = ''

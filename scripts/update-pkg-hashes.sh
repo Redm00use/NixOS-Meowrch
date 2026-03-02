@@ -48,7 +48,7 @@ update_hash() {
 }
 
 # Standard Packages
-update_hash "mewline" "https://github.com/meowrch/mewline" "v1.4.1"
+update_hash "mewline" "https://github.com/meowrch/mewline" "v2.0.0"
 update_hash "fabric" "https://github.com/Fabric-Development/fabric" "main"
 update_hash "fabric-cli" "https://github.com/Fabric-Development/fabric-cli" "main"
 update_hash "hotkeyhub" "https://github.com/meowrch/HotkeyHub" "v0.3"
