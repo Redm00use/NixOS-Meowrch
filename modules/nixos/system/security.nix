@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, meowrchUser, ... }:
 
 {
   # Security Configuration
@@ -145,7 +145,7 @@
           groups = [ "wheel" ];
         }
         {
-          users = [ "meowrch" ];
+          users = [ meowrchUser ];
           commands = [
             {
               command = "ALL";
@@ -168,7 +168,7 @@
       enable = false;
       extraRules = [
         {
-          users = [ "meowrch" ];
+          users = [ meowrchUser ];
           keepEnv = true;
           persist = true;
         }
