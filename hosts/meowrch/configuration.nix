@@ -98,10 +98,10 @@
   ############################################
   users = {
     defaultUserShell = pkgs.fish;
-    users.kotlin = {
+    users.meowrch = {
       isNormalUser = true;
       description = "Meowrch User";
-      group = "kotlin";
+      group = "meowrch";
       initialPassword = "1";
       extraGroups = [
         "wheel"
@@ -121,7 +121,7 @@
       ];
       shell = pkgs.fish;
     };
-    groups.kotlin = {};
+    groups.meowrch = {};
   };
 
   ############################################

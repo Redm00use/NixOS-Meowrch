@@ -94,7 +94,7 @@
             inherit inputs firefox-addons pkgs-unstable;
           };
 
-          home-manager.users.kotlin = {
+          home-manager.users.meowrch = {
             imports = [
               inputs.spicetify-nix.homeManagerModules.default
               inputs.catppuccin-nix.homeModules.catppuccin

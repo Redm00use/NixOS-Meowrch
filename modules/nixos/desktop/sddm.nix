@@ -71,14 +71,17 @@ in {
   ];
 
   # Create required directories
-  systemd.tmpfiles.rules = [
+  systemd.tmpfiles.rules = let
+    normalUser = lib.findFirst (u: config.users.users.${u}.isNormalUser) "root" (builtins.attrNames config.users.users);
+    homeDir = config.users.users.${normalUser}.home;
+  in [
     "d /var/lib/AccountsService/icons 0755 root root - -"
-    "d /home/kotlin/.cache/meowrch 0755 kotlin users - -"
+    "d ${homeDir}/.cache/meowrch 0755 ${normalUser} users - -"
   ];
 
   # Activation script to apply user theme overrides and avatar
   system.activationScripts.sddmTheme.text = let
-    # Находим первого обычного пользователя (UID >= 1000), чтобы не хардкодить 'kotlin'
+    # Находим первого обычного пользователя (UID >= 1000), чтобы не хардкодить имя
     # В идеале это должен быть основной пользователь системы
     normalUser = lib.findFirst (u: config.users.users.${u}.isNormalUser) "root" (builtins.attrNames config.users.users);
     homeDir = config.users.users.${normalUser}.home;

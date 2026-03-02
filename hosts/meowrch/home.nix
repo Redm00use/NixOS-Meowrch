@@ -20,8 +20,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = lib.mkForce "kotlin";
-  home.homeDirectory = lib.mkForce "/home/kotlin";
+  home.username = lib.mkForce "meowrch";
+  home.homeDirectory = lib.mkForce "/home/meowrch";
   home.stateVersion = "25.11";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
