@@ -164,8 +164,10 @@
   };
 
   # Qt platform theme configuration (как в оригинальном Meowrch)
+  # Внимание: qt.platformTheme принимает только "qt5ct", но переменная
+  # QT_QPA_PLATFORMTHEME выше устанавливает qt6ct для реального рантайма
   qt = {
     enable = true;
-    platformTheme = "qt6ct";
+    platformTheme = "qt5ct";
   };
 }
