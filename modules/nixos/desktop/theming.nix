@@ -32,8 +32,8 @@
     catppuccin-qt5ct
 
     # Qt5ct/Qt6ct для настройки тем
-    qt5ct
-    qt6ct
+    libsForQt5.qt5ct
+    kdePackages.qt6ct
 
     # Дополнительные темы
     gnome-themes-extra
