@@ -5,7 +5,7 @@
 # ║                                                                          ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
-{ config, pkgs, lib, inputs, firefox-addons, pkgs-unstable, ... }:
+{ config, pkgs, lib, inputs, firefox-addons, pkgs-unstable, meowrchUser, meowrchHostname, ... }:
 
 {
   imports = [
@@ -20,8 +20,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = lib.mkForce "kotlin";
-  home.homeDirectory = lib.mkForce "/home/kotlin";
+  home.username = lib.mkForce meowrchUser;
+  home.homeDirectory = lib.mkForce "/home/${meowrchUser}";
   home.stateVersion = "25.11";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

@@ -1,9 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, meowrchUser, meowrchHostname, ... }:
 
 {
   # Networking Configuration
   networking = {
-    hostName = "meowrch-machine";
+    hostName = meowrchHostname;
 
     # Enable NetworkManager
     networkmanager = {

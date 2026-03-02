@@ -69,10 +69,21 @@
     # Патч для portal/gbm
     overlay-portal-gbm-fix = import ./overlays/portal-gbm-fix.nix;
   in
+  let
+    # Читаем пользовательские данные из user-local.nix (если есть) или user.nix (дефолт)
+    userConfigPath =
+      if builtins.pathExists ./hosts/meowrch/user-local.nix
+      then ./hosts/meowrch/user-local.nix
+      else ./hosts/meowrch/user.nix;
+    userConfig = import userConfigPath;
+    meowrchUser = userConfig.meowrch.user or "meowrch";
+    meowrchHostname = userConfig.meowrch.hostname or "meowrch-machine";
+  in
   {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
       specialArgs = {
         inherit inputs spicetify-nix catppuccin-nix hyprland hyprland-plugins pkgs-unstable;
+        inherit meowrchUser meowrchHostname;
       };
       modules = [
         ({ pkgs, ... }: {
@@ -92,9 +103,10 @@
 
           home-manager.extraSpecialArgs = {
             inherit inputs firefox-addons pkgs-unstable;
+            inherit meowrchUser meowrchHostname;
           };
 
-          home-manager.users.kotlin = {
+          home-manager.users.${meowrchUser} = {
             imports = [
               inputs.spicetify-nix.homeManagerModules.default
               inputs.catppuccin-nix.homeModules.catppuccin
@@ -113,7 +125,7 @@
     homeConfigurations.meowrch = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit inputs firefox-addons pkgs-unstable;
+        inherit inputs firefox-addons pkgs-unstable meowrchUser meowrchHostname;
       };
       modules = [
         inputs.catppuccin-nix.homeModules.catppuccin

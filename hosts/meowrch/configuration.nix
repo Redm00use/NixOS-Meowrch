@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, ... }:
+{ config, pkgs, inputs, lib, meowrchUser, meowrchHostname, ... }:
 
 {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
@@ -98,10 +98,10 @@
   ############################################
   users = {
     defaultUserShell = pkgs.fish;
-    users.kotlin = {
+    users.${meowrchUser} = {
       isNormalUser = true;
       description = "Meowrch User";
-      group = "kotlin";
+      group = meowrchUser;
       initialPassword = "1";
       extraGroups = [
         "wheel"
@@ -121,7 +121,7 @@
       ];
       shell = pkgs.fish;
     };
-    groups.kotlin = {};
+    groups.${meowrchUser} = {};
   };
 
   ############################################

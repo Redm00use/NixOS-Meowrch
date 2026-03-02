@@ -170,30 +170,17 @@ CONF_NIX="hosts/meowrch/configuration.nix"
 HOME_NIX="hosts/meowrch/home.nix"
 SDDM_NIX="modules/nixos/desktop/sddm.nix"
 
-echo -e "${BLUE}[INFO] Patching configuration files...${NC}"
-
-# Hostname
-if [ -f "$NETWORKING_NIX" ]; then
-    sed -i "s/hostName = \".*\";/hostName = \"$CONF_HOSTNAME\";/" "$NETWORKING_NIX"
-fi
-
-# Username & Home
-if [ "$CONF_USER" != "meowrch" ]; then
-    sed -i "s/users\.meowrch/users.$CONF_USER/g" "$CONF_NIX"
-    sed -i "s/group = \"meowrch\"/group = \"$CONF_USER\"/" "$CONF_NIX"
-    sed -i "s/groups\.meowrch/groups.$CONF_USER/g" "$CONF_NIX"
-    sed -i "s/home.username = lib.mkForce \"meowrch\"/home.username = lib.mkForce \"$CONF_USER\"/" "$HOME_NIX"
-    sed -i "s|/home/meowrch|/home/$CONF_USER|g" "$HOME_NIX"
-    sed -i "s|/home/meowrch|/home/$CONF_USER|g" "$SDDM_NIX"
-    sed -i "s|meowrch users|${CONF_USER} users|g" "$SDDM_NIX"
-
-    if [ -f "config/meowrch/config.yaml" ]; then
-        sed -i "s|/home/meowrch|/home/$CONF_USER|g" "config/meowrch/config.yaml"
-        sed -i "s|~/.config/meowrch|/home/$CONF_USER/.config/meowrch|g" "config/meowrch/config.yaml"
-    fi
-
-    sed -i "s/users.meowrch/users.$CONF_USER/g" flake.nix
-fi
+# Username & Hostname → пишем в user-local.nix (не отслеживается git)
+echo -e "${BLUE}[INFO] Writing user-local.nix...${NC}"
+cat > hosts/meowrch/user-local.nix << EOF
+# Этот файл создан установщиком и добавлен в .gitignore.
+# НЕ РЕДАКТИРУЙТЕ вручную — запустите install.sh для изменений.
+{
+  meowrch.user = "${CONF_USER}";
+  meowrch.hostname = "${CONF_HOSTNAME}";
+}
+EOF
+echo -e "${GREEN}[OK] user-local.nix создан.${NC}"
 
 # GPU
 case "$GPU_CHOICE" in

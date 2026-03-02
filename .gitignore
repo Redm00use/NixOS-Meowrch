@@ -29,6 +29,10 @@ Thumbs.db
 # Uncomment if you don't want to share your hardware config
 # hardware-configuration.nix
 
+# Локальная конфигурация пользователя — создаётся install.sh
+# Содержит имя пользователя и hostname, уникальные для каждого ПК
+hosts/meowrch/user-local.nix
+
 # Logs
 *.log
 
