@@ -201,7 +201,9 @@ case "$GPU_CHOICE" in
     1) sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-intel.nix # GPU_MODULE_LINE|' "$CONF_NIX" ;;
     2)
         sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-nvidia.nix # GPU_MODULE_LINE|' "$CONF_NIX"
+        sed -i '/^[[:space:]]*nvidia\.acceptLicense = true;/d' "$CONF_NIX"
         sed -i '/allowUnfreePredicate/a \    nvidia.acceptLicense = true;' "$CONF_NIX"
+        sed -i '/^[[:space:]]*config\.nvidia\.acceptLicense = true;/d' flake.nix
         sed -i '/^[[:space:]]*config\.allowUnfree = true;/a \      config.nvidia.acceptLicense = true;' flake.nix
         ;;
 esac
