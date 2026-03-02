@@ -31,7 +31,6 @@ Thumbs.db
 
 # Локальная конфигурация пользователя — создаётся install.sh
 # Содержит имя пользователя и hostname, уникальные для каждого ПК
-hosts/meowrch/user-local.nix
 
 # Logs
 *.log
