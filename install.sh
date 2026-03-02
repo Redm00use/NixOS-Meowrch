@@ -71,7 +71,8 @@ ask_choice() {
         echo -e -n "${GREEN}> ${NC}"
         read -r choice
         if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#options[@]}" ]; then
-            return $((choice-1))
+            CHOICE_RESULT=$((choice-1))
+            return 0
         fi
         echo -e "${RED}Invalid selection.${NC}"
     done
@@ -82,7 +83,7 @@ ask_choice() {
 echo -e "\n${YELLOW}==> Configuration Survey${NC}"
 MODE_OPTIONS=("Apply to current system (Update)" "Install to new disk (Bootstrap /mnt)")
 ask_choice "Choose installation mode:" "${MODE_OPTIONS[@]}"
-MODE=$?
+MODE=$CHOICE_RESULT
 
 if [ "$MODE" -eq 1 ]; then
     if [ ! -d "/mnt/etc" ]; then
@@ -116,7 +117,7 @@ done
 
 GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia (Beta)")
 ask_choice "Select GPU Driver:" "${GPU_OPTIONS[@]}"
-GPU_CHOICE=$?
+GPU_CHOICE=$CHOICE_RESULT
 
 echo -e "\n${YELLOW}==> Summary${NC}"
 echo -e "  Mode:     ${MODE_OPTIONS[$MODE]}"
@@ -185,12 +186,12 @@ if [ "$CONF_USER" != "meowrch" ]; then
     sed -i "s|/home/meowrch|/home/$CONF_USER|g" "$HOME_NIX"
     sed -i "s|/home/meowrch|/home/$CONF_USER|g" "$SDDM_NIX"
     sed -i "s|meowrch users|${CONF_USER} users|g" "$SDDM_NIX"
-    
+
     if [ -f "config/meowrch/config.yaml" ]; then
         sed -i "s|/home/meowrch|/home/$CONF_USER|g" "config/meowrch/config.yaml"
         sed -i "s|~/.config/meowrch|/home/$CONF_USER/.config/meowrch|g" "config/meowrch/config.yaml"
     fi
-    
+
     sed -i "s/users.meowrch/users.$CONF_USER/g" flake.nix
 fi
 
@@ -198,7 +199,7 @@ fi
 case "$GPU_CHOICE" in
     0) sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-amd.nix # GPU_MODULE_LINE|' "$CONF_NIX" ;;
     1) sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-intel.nix # GPU_MODULE_LINE|' "$CONF_NIX" ;;
-    2) 
+    2)
         sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-nvidia.nix # GPU_MODULE_LINE|' "$CONF_NIX"
         sed -i '/allowUnfreePredicate/a \    nvidia.acceptLicense = true;' "$CONF_NIX"
         sed -i '/config\.allowUnfree = true;/a \      config.nvidia.acceptLicense = true;' flake.nix
