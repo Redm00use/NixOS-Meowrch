@@ -13,8 +13,6 @@
     ../../modules/home/gtk.nix
     ../../modules/home/fish.nix
     ../../modules/home/starship.nix
-    # ../../modules/home/kitty.nix
-    # ../../modules/home/dunst.nix  # Disabled to let Mewline handle notifications
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -27,31 +25,23 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                               Overlays                                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  # nixpkgs.overlays = [
-  #   # Overlay для Spicetify (временно отключен)
-  #   # inputs.spicetify-nix.overlays.default
-  # ];
+  nixpkgs.overlays = [
+  ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                           Пользовательские пакеты                        ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
   home.packages = with pkgs; [
-    # --- Музыкальный плеер Яндекс.Музыка ---
-    # inputs.yandex-music.packages.${pkgs.stdenv.hostPlatform.system}.default  # Temporarily disabled for syntax check
-
     # --- Кастомные скрипты и темы ---
     meowrch-scripts
     meowrch-themes
     mewline
     fabric-cli
     pawlette
-    # hotkeyhub and meowrch-settings are now in systemPackages
     meowrch-tools
 
     # --- Дополнительные пакеты пользователя ---
-    # Добавьте здесь свои пакеты
     pkgs-unstable.gemini-cli
-    # inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗

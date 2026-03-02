@@ -51,16 +51,6 @@
       ];
     };
 
-    # Scanner support (moved to hardware.sane in a hardware module)
-    # sane = {
-    #   enable = true;
-    #   extraBackends = with pkgs; [
-    #     hplip
-    #     epkowa
-    #     sane-airscan
-    #   ];
-    # };
-
     # Time synchronization
     timesyncd.enable = true;
 
@@ -93,21 +83,6 @@
 
     # Thermald for thermal management (Intel)
     thermald.enable = lib.mkIf (config.hardware.cpu.intel.updateMicrocode or false) true;
-
-    # Auto CPU frequency scaling (not available in standard NixOS)
-    # auto-cpufreq = {
-    #   enable = false; # Can conflict with TLP
-    #   settings = {
-    #     battery = {
-    #       governor = "powersave";
-    #       turbo = "never";
-    #     };
-    #     charger = {
-    #       governor = "performance";
-    #       turbo = "auto";
-    #     };
-    #   };
-    # };
 
     # D-Bus
     dbus = {
@@ -184,18 +159,6 @@
       };
     };
 
-    # Zram for compressed swap (using correct NixOS 25.11 syntax)
-    # Note: zram-generator service doesn't exist, use boot.zram instead
-    # This is configured in main configuration.nix as:
-    # zramSwap = {
-    #   enable = true;
-    #   algorithm = "zstd";
-    #   memoryPercent = 50;
-    # };
-
-    # Earlyoom for OOM prevention (using systemd service)
-    # Note: services.earlyoom may not be available, configure via systemd
-
     # TRIM support for SSDs
     fstrim = {
       enable = true;
@@ -213,42 +176,8 @@
     # UDisks2 for removable media
     udisks2.enable = true;
 
-    # Polkit for privilege escalation (configured in security.nix)
-    # polkit.enable = true;
-
-    # GNOME Keyring (configured in security.nix)
-    # gnome.gnome-keyring.enable = true;
-
-    # Hardware acceleration is now managed in graphics.nix
-
     # Bluetooth
     blueman.enable = true;
-
-
-
-    # Preload for faster application startup (not available in NixOS)
-    # preload = {
-    #   enable = false; # Can use significant RAM
-    # };
-
-    # System profiler (sysprof not available as service)
-    # sysprof.enable = false;
-
-    # AppArmor (configured in security.nix)
-    # apparmor = {
-    #   enable = false;
-    #   killUnconfinedConfinables = false;
-    # };
-
-
-
-    # Steam hardware support is enabled via programs.steam in graphics module
-
-    # USB automounting (devmon not available, using udisks2)
-    # devmon.enable = true;
-
-    # Resolved для DNS — настраивается в networking.nix
-    # resolved = { ... }; # перенесено в networking.nix
   };
 
   # XDG Desktop Portal

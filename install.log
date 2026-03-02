@@ -1,0 +1,53 @@
+--- Meowrch NixOS Installation Log: Mon Mar  2 11:12:20 PM MSK 2026 ---
+[H[2J[0;35m
+                          ▄▀▄     ▄▀▄           ▄▄▄▄▄
+                         ▄█░░▀▀▀▀▀░░█▄         █░▄▄░░█
+                     ▄▄  █░░░░░░░░░░░█  ▄▄    █░█  █▄█
+                    █▄▄█ █░░▀░░┬░░▀░░█ █▄▄█  █░█
+███╗░░░███╗███████╗░█████╗░░██╗░░░░░░░██╗██████╗░░█████╗░██╗░░██╗
+████╗░████║██╔════╝██╔══██╗░██║░░██╗░░██║██╔══██╗██╔══██╗██║░░██║
+██╔████╔██║█████╗░░██║░░██║░╚██╗████╗██╔╝██████╔╝██║░░╚═╝███████║
+██║╚██╔╝██║██╔══╝░░██║░░██║░░████╔═████║░██╔══██╗██║░░██╗██╔══██║
+██║░╚═╝░██║███████╗╚█████╔╝░░╚██╔╝░╚██╔╝░██║░░██║╚█████╔╝██║░░██║
+╚═╝░░░░░╚═╝╚══════╝░╚════╝░░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝
+                                 By Redm00use
+[0m
+[0;36mWelcome to Meowrch NixOS Installer v3.5.1[0m
+[0;34mStarting pre-install checks...[0m
+
+[1;33m==> Configuration Survey[0m
+[0;32m? [0mChoose installation mode:
+  [[0;36m1[0m] Apply to current system (Update)
+  [[0;36m2[0m] Install to new disk (Bootstrap /mnt)
+[0;32m> [0m[0;32m? [0mEnter Hostname [[0;36mmeowrch-machine[0m]: [0;32m? [0mEnter Username [[0;36mkotlin[0m]: [0;32m? [0mSelect GPU Driver:
+  [[0;36m1[0m] AMD (Recommended)
+  [[0;36m2[0m] Intel
+  [[0;36m3[0m] Nvidia (Beta)
+[0;32m> [0m
+[1;33m==> Summary[0m
+  Mode:     Apply to current system (Update)
+  Target:   /home/kotlin/NixOS-Meowrch
+  Hostname: meowrch-machine
+  User:     kotlin
+  GPU:      AMD (Recommended)
+
+[0;32m? [0mProceed with installation? [[0;36my[0m]: 
+[1;33m==> Preparing Files[0m
+[0;34m[INFO] Source: /home/kotlin/NixOS-Meowrch[0m
+[0;34m[INFO] Target: /home/kotlin/NixOS-Meowrch[0m
+[0;34m[INFO] Already in target directory. Skipping clean and copy.[0m
+[0;34m[INFO] Generating configuration for kotlin on meowrch-machine...[0m
+[1;33m==> Created user-local.nix with following content:[0m
+# Этот файл создан установщиком.
+# Реальные настройки вашего ПК.
+{
+  meowrch.user = "kotlin";
+  meowrch.hostname = "meowrch-machine";
+}
+
+[0;32m? [0mIs this correct? [[0;36my[0m]: 
+[1;33m==> Generating Hardware Configuration[0m
+[0;34m[INFO] Regenerating...[0m
+
+[1;33m==> Installing System[0m
+[0;34m[INFO] Staging files in Git...[0m

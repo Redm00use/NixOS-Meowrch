@@ -163,27 +163,6 @@
       '';
     };
 
-    # Doas as sudo alternative (disabled by default)
-    doas = {
-      enable = false;
-      extraRules = [
-        {
-          users = [ meowrchUser ];
-          keepEnv = true;
-          persist = true;
-        }
-      ];
-    };
-
-    # AppArmor (optional security framework)
-    apparmor = {
-      enable = false;
-      killUnconfinedConfinables = false;
-    };
-
-    # Process information hiding (removed in NixOS 25.11)
-    # hideProcessInformation option no longer exists
-
     # User namespaces (security vs compatibility trade-off)
     allowUserNamespaces = true;
   };
@@ -193,12 +172,9 @@
     # Authentication
     polkit_gnome
     gnome-keyring
+    libsecret
 
     # Security tools (fail2ban and clamav may not be available)
-    # fail2ban
-    # clamav
-
-    # Password management
     keepassxc
 
     # Encryption tools
@@ -207,15 +183,10 @@
 
     # System monitoring
     lynis
-    # chkrootkit removed from nixpkgs (unmaintained, archived upstream)
 
     # Network security
     nmap
     wireshark
-
-    # Firewall management (NixOS uses built-in firewall)
-    # ufw  # Not available in NixOS
-    # gufw # Not available in NixOS
   ];
 
   # Kernel security parameters
@@ -291,41 +262,8 @@
 
   # Services for security
   services = {
-    # Fail2ban for intrusion prevention (may not be available in NixOS)
-    # fail2ban = {
-    #   enable = true;
-    #   maxretry = 5;
-    #   bantime = "10m";
-    #   bantime-increment = {
-    #     enable = true;
-    #     rndtime = "8m";
-    #     maxtime = "48h";
-    #     factor = "2";
-    #   };
-    #
-    #   jails = {
-    #     sshd = {
-    #       settings = {
-    #         enabled = true;
-    #         port = "ssh";
-    #         filter = "sshd";
-    #         logpath = "/var/log/auth.log";
-    #         maxretry = 3;
-    #         findtime = "10m";
-    #         bantime = "1h";
-    #       };
-    #     };
-    #   };
-    # };
-
-    # ClamAV antivirus (may not be available in NixOS)
-    # clamav = {
-    #   daemon.enable = false;
-    #   updater.enable = false;
-    # };
-
-    # GNOME Keyring (configured via PAM services)
-    # gnome-keyring.enable = true;  # This service doesn't exist
+    # GNOME Keyring for credential storage (Zed IDE, etc)
+    gnome.gnome-keyring.enable = true;
 
     # UDisks2 for secure disk management
     udisks2.enable = true;

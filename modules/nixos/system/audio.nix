@@ -42,9 +42,6 @@
     pamixer
     playerctl
     wireplumber
-    # Optional production tools (uncomment if needed)
-    # audacity
-    # ardour
   ];
 
   ############################################
