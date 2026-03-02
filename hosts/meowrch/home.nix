@@ -20,8 +20,8 @@
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                         Основные настройки Home Manager                   ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
-  home.username = lib.mkForce "meowrch";
-  home.homeDirectory = lib.mkForce "/home/meowrch";
+  home.username = lib.mkForce "kotlin";
+  home.homeDirectory = lib.mkForce "/home/kotlin";
   home.stateVersion = "25.11";
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -319,6 +319,10 @@
   home.file.".config/btop" = { source = ../../config/btop; recursive = true; force = true; };
   home.file.".config/meowrch" = { source = ../../config/meowrch; recursive = true; force = true; };
   home.file.".config/meowrch/bin" = { source = ../../scripts; recursive = true; force = true; };
+
+  # Qt5ct/Qt6ct конфигурация — Catppuccin Mocha тема для Qt приложений (Ark и др.)
+  home.file.".config/qt5ct" = { source = ../../config/qt5ct; recursive = true; force = true; };
+  home.file.".config/qt6ct" = { source = ../../config/qt6ct; recursive = true; force = true; };
   home.file.".config/meowrch/wallpapers" = {
     source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
     recursive = true;

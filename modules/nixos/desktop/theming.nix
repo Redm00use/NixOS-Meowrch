@@ -31,6 +31,10 @@
     catppuccin-gtk
     catppuccin-qt5ct
 
+    # Qt5ct/Qt6ct для настройки тем
+    qt5ct
+    qt6ct
+
     # Дополнительные темы
     gnome-themes-extra
     gsettings-desktop-schemas
@@ -132,9 +136,8 @@
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
 
-    # Qt темы (use mkForce to override system defaults)
-    QT_QPA_PLATFORMTHEME = lib.mkForce "qt5ct";
-    QT_STYLE_OVERRIDE = lib.mkForce "Adwaita-Dark";
+    # Qt темы — qt6ct управляет стилем через свои конфиги (как в оригинальном Meowrch)
+    QT_QPA_PLATFORMTHEME = lib.mkForce "qt6ct";
 
     # Catppuccin
     CATPPUCCIN_FLAVOR = "mocha";
@@ -160,10 +163,9 @@
     dconf.enable = true;
   };
 
-  # Qt platform theme configuration (updated for NixOS 25.11)
+  # Qt platform theme configuration (как в оригинальном Meowrch)
   qt = {
     enable = true;
-    platformTheme = "qt5ct";
-    style = "adwaita-dark";
+    platformTheme = "qt6ct";
   };
 }
