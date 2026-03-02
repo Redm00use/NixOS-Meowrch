@@ -171,16 +171,24 @@ HOME_NIX="hosts/meowrch/home.nix"
 SDDM_NIX="modules/nixos/desktop/sddm.nix"
 
 # Username & Hostname → пишем в user-local.nix (не отслеживается git)
-echo -e "${BLUE}[INFO] Writing user-local.nix...${NC}"
+echo -e "${BLUE}[INFO] Generating configuration for $CONF_USER on $CONF_HOSTNAME...${NC}"
 cat > hosts/meowrch/user-local.nix << EOF
-# Этот файл создан установщиком и добавлен в .gitignore.
-# НЕ РЕДАКТИРУЙТЕ вручную — запустите install.sh для изменений.
+# Этот файл создан установщиком.
+# Реальные настройки вашего ПК.
 {
   meowrch.user = "${CONF_USER}";
   meowrch.hostname = "${CONF_HOSTNAME}";
 }
 EOF
-echo -e "${GREEN}[OK] user-local.nix создан.${NC}"
+
+echo -e "${YELLOW}==> Created user-local.nix with following content:${NC}"
+cat hosts/meowrch/user-local.nix
+echo ""
+ask "Is this correct?" "y" "USER_CONFIRM"
+if [[ ! "$USER_CONFIRM" =~ ^[Yy]$ ]]; then
+    echo "Aborting to prevent incorrect user configuration."
+    exit 1
+fi
 
 # GPU
 case "$GPU_CHOICE" in
