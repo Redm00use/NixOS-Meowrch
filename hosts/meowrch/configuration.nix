@@ -176,6 +176,8 @@
       update-pkgs = "cd ~/NixOS-Meowrch && ./scripts/update-pkg-hashes.sh && nix flake update && sudo nixos-rebuild switch --flake .#meowrch --impure";
       clean = "sudo nix-collect-garbage -d";
       search = "nix search nixpkgs";
+      b = "cd ~/NixOS-Meowrch && nix flake update && sudo nixos-rebuild switch --flake .#meowrch --impure";
+      "и" = "cd ~/NixOS-Meowrch && nix flake update && sudo nixos-rebuild switch --flake .#meowrch --impure";
     };
   };
 
