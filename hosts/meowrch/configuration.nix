@@ -1,20 +1,24 @@
-{ config, pkgs, inputs, lib, meowrchUser, meowrchHostname, ... }:
-
 {
+  config,
+  pkgs,
+  inputs,
+  lib,
+  meowrchUser,
+  meowrchHostname,
+  ...
+}: {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   ############################################
   # Imports (hardware file imported if exists)
   ############################################
-  imports =
-    let
-      hardwareConfigPath =
-        lib.findFirst (path: lib.pathExists path) null [
-          ./hardware-configuration.nix
-          /etc/nixos/hardware-configuration.nix
-        ];
-    in
-    ([
+  imports = let
+    hardwareConfigPath = lib.findFirst (path: lib.pathExists path) null [
+      ./hardware-configuration.nix
+      /etc/nixos/hardware-configuration.nix
+    ];
+  in (
+    [
       # System / hardware related modules
       ../../modules/nixos/system/audio.nix
       ../../modules/nixos/system/bluetooth.nix
@@ -35,10 +39,13 @@
     ]
     ++ lib.optional (hardwareConfigPath != null) hardwareConfigPath
     ++ lib.optional (hardwareConfigPath == null) {
-      fileSystems."/" = { device = "/dev/disk/by-label/nixos"; fsType = "ext4"; };
-      boot.loader.grub.devices = [ "/dev/nodevice" ];
+      fileSystems."/" = {
+        device = "/dev/disk/by-label/nixos";
+        fsType = "ext4";
+      };
+      boot.loader.grub.devices = ["/dev/nodevice"];
     }
-    );
+  );
 
   ############################################
   # Core system
@@ -47,9 +54,9 @@
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = ["nix-command" "flakes"];
       auto-optimise-store = true;
-      trusted-users = [ "root" "@wheel" ];
+      trusted-users = ["root" "@wheel"];
       substituters = [
         "https://cache.nixos.org/"
         "https://hyprland.cachix.org"
@@ -85,6 +92,7 @@
       "quiet"
       "splash"
     ];
+    # Use the latest kernel
     kernelPackages = pkgs.linuxPackages_latest;
     # Plymouth causes blinking underscore / DRM locks on some GPUs, disabled for stability
     plymouth.enable = false;
@@ -252,9 +260,9 @@
   ############################################
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     description = "Polkit Authentication Agent";
-    wantedBy = [ "graphical-session.target" ];
-    wants = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
+    wantedBy = ["graphical-session.target"];
+    wants = ["graphical-session.target"];
+    after = ["graphical-session.target"];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";

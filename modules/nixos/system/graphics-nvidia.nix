@@ -22,8 +22,8 @@
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
-    # Use the beta driver for compatibility with latest kernel (e.g., 6.13+)
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    # Use the latest production driver (580.126.18+) for kernel 6.19 compatibility
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
 
     # Modesetting is required for Wayland compositors (Hyprland)
     modesetting.enable = true;
