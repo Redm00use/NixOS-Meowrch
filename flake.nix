@@ -39,18 +39,18 @@
     };
   };
 
-  outputs = { self
-    , nixpkgs
-    , nixpkgs-unstable
-    , home-manager
-    , hyprland
-    , hyprland-plugins
-    , spicetify-nix
-    , catppuccin-nix
-    , firefox-addons
-    , ...
-  }@inputs:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-unstable,
+    home-manager,
+    hyprland,
+    hyprland-plugins,
+    spicetify-nix,
+    catppuccin-nix,
+    firefox-addons,
+    ...
+  } @ inputs: let
     system = "x86_64-linux";
 
     pkgs = import nixpkgs {
@@ -64,12 +64,11 @@
     };
 
     # Overlay с кастомными пакетами (mewline, pawlette, hotkeyhub и т.д.)
-    overlay-meowrch = final: prev: (import ./pkgs { pkgs = final; });
+    overlay-meowrch = final: prev: (import ./pkgs {pkgs = final;});
 
     # Патч для portal/gbm
     overlay-portal-gbm-fix = import ./overlays/portal-gbm-fix.nix;
-  in
-  let
+  in let
     # Читаем пользовательские данные из user-local.nix (если есть) или user.nix (дефолт)
     userConfigPath =
       if builtins.pathExists ./hosts/meowrch/user-local.nix
@@ -78,15 +77,14 @@
     userConfig = import userConfigPath;
     meowrchUser = userConfig.meowrch.user or "meowrch";
     meowrchHostname = userConfig.meowrch.hostname or "meowrch-machine";
-  in
-  {
+  in {
     nixosConfigurations.meowrch = nixpkgs.lib.nixosSystem {
       specialArgs = {
         inherit inputs spicetify-nix catppuccin-nix hyprland hyprland-plugins pkgs-unstable;
         inherit meowrchUser meowrchHostname;
       };
       modules = [
-        ({ pkgs, ... }: {
+        ({pkgs, ...}: {
           nixpkgs.overlays = [
             overlay-meowrch
             overlay-portal-gbm-fix
@@ -99,7 +97,6 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          nixpkgs.config.allowUnfree = true;
 
           home-manager.extraSpecialArgs = {
             inherit inputs firefox-addons pkgs-unstable;
@@ -136,7 +133,7 @@
     formatter.${system} = pkgs.alejandra;
 
     packages.${system} = let
-      customPkgs = import ./pkgs { inherit pkgs; };
+      customPkgs = import ./pkgs {inherit pkgs;};
     in {
       inherit (customPkgs) fabric fabric-cli mewline pawlette meowrch-themes hotkeyhub meowrch-settings meowrch-scripts meowrch-tools;
     };

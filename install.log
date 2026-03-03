@@ -1,4 +1,4 @@
---- Meowrch NixOS Installation Log: Mon Mar  2 11:12:20 PM MSK 2026 ---
+--- Meowrch NixOS Installation Log: Mon Mar  2 11:34:13 PM MSK 2026 ---
 [H[2J[0;35m
                           ▄▀▄     ▄▀▄           ▄▄▄▄▄
                          ▄█░░▀▀▀▀▀░░█▄         █░▄▄░░█
@@ -31,23 +31,4 @@
   User:     kotlin
   GPU:      AMD (Recommended)
 
-[0;32m? [0mProceed with installation? [[0;36my[0m]: 
-[1;33m==> Preparing Files[0m
-[0;34m[INFO] Source: /home/kotlin/NixOS-Meowrch[0m
-[0;34m[INFO] Target: /home/kotlin/NixOS-Meowrch[0m
-[0;34m[INFO] Already in target directory. Skipping clean and copy.[0m
-[0;34m[INFO] Generating configuration for kotlin on meowrch-machine...[0m
-[1;33m==> Created user-local.nix with following content:[0m
-# Этот файл создан установщиком.
-# Реальные настройки вашего ПК.
-{
-  meowrch.user = "kotlin";
-  meowrch.hostname = "meowrch-machine";
-}
-
-[0;32m? [0mIs this correct? [[0;36my[0m]: 
-[1;33m==> Generating Hardware Configuration[0m
-[0;34m[INFO] Regenerating...[0m
-
-[1;33m==> Installing System[0m
-[0;34m[INFO] Staging files in Git...[0m
+[0;32m? [0mProceed with installation? [[0;36my[0m]: ./install.sh: line 58: read: 0: read error: Input/output error

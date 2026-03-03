@@ -1,0 +1,215 @@
+diff --git a/src/mewline/constants.py b/src/mewline/constants.py
+index 79f61be..c011702 100644
+--- a/src/mewline/constants.py
++++ b/src/mewline/constants.py
+@@ -69,6 +69,7 @@ KEYBINDINGS = {
+         "T",
+         kb_di_open.format(module="pawlette-themes"),
+     ),
++    "media": (kb_prefix, "M", kb_di_open.format(module="media")),
+     "workspaces": (
+         kb_prefix,
+         "Tab",
+@@ -133,6 +134,7 @@ DEFAULT_CONFIG = {
+             "default_lang": "rus+eng",
+         },
+         "dynamic_island": {
++            "media": { "enabled": True },
+             "power_menu": {
+                 "lock_icon": "",
+                 "lock_icon_size": "20px",
+diff --git a/src/mewline/styles/dynamic_island/island.scss b/src/mewline/styles/dynamic_island/island.scss
+index 7f68534..2b0d75f 100644
+--- a/src/mewline/styles/dynamic_island/island.scss
++++ b/src/mewline/styles/dynamic_island/island.scss
+@@ -12,6 +12,7 @@
+ @use "./network.scss";
+ @use "./pawlette_themes.scss";
+ @use "./workspaces_overview.scss";
++@use "./media.scss";
+ 
+ #dynamic-island-box {
+   margin: 10px;
+@@ -122,6 +123,7 @@
+ #app-launcher,
+ #clipboard,
+ #pawlette-themes,
++#media-menu,
+ #workspaces-overview {
+   opacity: 1;
+   margin: -800px;
+@@ -252,6 +254,7 @@
+ #inline-notification-container.app-launcher { min-width: 480px; }
+ #inline-notification-container.clipboard { min-width: 500px; }
+ #inline-notification-container.pawlette-themes { min-width: 620px; }
++#inline-notification-container.media { min-width: 320px; }
+ 
+ #dynamic-island-corner-left,
+ #dynamic-island-corner-right {
+diff --git a/src/mewline/styles/dynamic_island/media.scss b/src/mewline/styles/dynamic_island/media.scss
+new file mode 100644
+index 0000000..d4ee982
+--- /dev/null
++++ b/src/mewline/styles/dynamic_island/media.scss
+@@ -0,0 +1,35 @@
++@use "../theme.scss";
++
++#media-menu {
++  padding: 0 20px;
++  background-color: theme.$background-base;
++  border-radius: 0 0 36px 36px;
++  min-width: 320px;
++  min-height: 80px;
++}
++
++#media-album-art {
++  border-radius: 10px;
++}
++
++#media-title {
++  font-weight: bold;
++  font-size: 14px;
++  color: theme.$text-color;
++}
++
++#media-artist {
++  font-size: 12px;
++  color: theme.$text-muted;
++}
++
++#media-control-button {
++  background: transparent;
++  border: none;
++  padding: 5px;
++}
++
++#media-icon {
++  font-size: 20px;
++  color: theme.$text-color;
++}
+diff --git a/src/mewline/widgets/dynamic_island/__init__.py b/src/mewline/widgets/dynamic_island/__init__.py
+index 49d206d..c4bf7a8 100644
+--- a/src/mewline/widgets/dynamic_island/__init__.py
++++ b/src/mewline/widgets/dynamic_island/__init__.py
+@@ -32,6 +32,7 @@ from mewline.widgets.dynamic_island.pawlette_themes import PawletteThemes
+ from mewline.widgets.dynamic_island.power import PowerMenu
+ from mewline.widgets.dynamic_island.wallpapers import WallpaperSelector
+ from mewline.widgets.dynamic_island.workspaces import WorkspacesOverview
++from mewline.widgets.dynamic_island.media import Media
+ from mewline.widgets.screen_corners import MyCorner
+ 
+ 
+@@ -61,6 +62,7 @@ class DynamicIsland:
+         "network": (500, 300),
+         "pawlette-themes": (620, 420),
+         "workspaces": (980, 280),
++        "media": (320, 80),
+     }
+ 
+     def __init__(self, monitor: int | None = None):
+@@ -86,6 +88,7 @@ class DynamicIsland:
+         self.network = NetworkConnections()
+         self.pawlette_themes = PawletteThemes()
+         self.workspaces_overview = WorkspacesOverview()
++        self.media = Media(self)
+ 
+         self.widgets: dict[str, type[BaseDiWidget]] = {
+             "compact": self.compact,
+@@ -100,6 +103,7 @@ class DynamicIsland:
+             "network": self.network,
+             "pawlette-themes": self.pawlette_themes,
+             "workspaces": self.workspaces_overview,
++            "media": self.media,
+         }
+         self.current_widget: str | None = None
+ 
+diff --git a/src/mewline/widgets/dynamic_island/media.py b/src/mewline/widgets/dynamic_island/media.py
+new file mode 100644
+index 0000000..d3144b4
+--- /dev/null
++++ b/src/mewline/widgets/dynamic_island/media.py
+@@ -0,0 +1,84 @@
++import os
++from typing import TYPE_CHECKING
++from fabric.widgets.box import Box
++from fabric.widgets.label import Label
++from fabric.widgets.image import Image
++from fabric.widgets.button import Button
++from mewline.services.mpris import MprisPlayerManager, MprisPlayer
++from loguru import logger
++from mewline.widgets.dynamic_island.base import BaseDiWidget
++from mewline.utils.widget_utils import setup_cursor_hover
++from gi.repository import Gtk
++
++if TYPE_CHECKING:
++    from mewline.widgets.dynamic_island import DynamicIsland
++
++class Media(BaseDiWidget, Box):
++    focuse_kb: bool = False
++
++    def __init__(self, di: "DynamicIsland", **kwargs):
++        Box.__init__(
++            self,
++            name="media-menu",
++            orientation="h",
++            spacing=15,
++            v_align="center",
++            h_align="center",
++            v_expand=True,
++            h_expand=True,
++            visible=True,
++            **kwargs,
++        )
++        self.dynamic_island: "DynamicIsland" = di
++        self.mpris = MprisPlayerManager()
++        self.player: MprisPlayer | None = None
++
++        self.album_art = Image(name="media-album-art", width=48, height=48)
++        self.title_label = Label(name="media-title", label="Not Playing", ellipsize="end", h_align="start", width=150)
++        self.artist_label = Label(name="media-artist", label="Unknown Artist", ellipsize="end", h_align="start", width=150)
++        self.info_box = Box(orientation="v", spacing=0, v_align="center", children=[self.title_label, self.artist_label])
++
++        self.prev_button = Button(name="media-control-button", child=Label(label="󰒮", name="media-icon"), on_clicked=lambda *_: self._prev())
++        self.play_pause_button = Button(name="media-control-button", child=Label(label="󰐊", name="media-icon"), on_clicked=lambda *_: self._play_pause())
++        self.next_button = Button(name="media-control-button", child=Label(label="󰒭", name="media-icon"), on_clicked=lambda *_: self._next())
++        self.controls_box = Box(orientation="h", spacing=8, v_align="center", children=[self.prev_button, self.play_pause_button, self.next_button])
++
++        self.add(self.album_art)
++        self.add(self.info_box)
++        self.add(self.controls_box)
++
++        setup_cursor_hover(self.prev_button, "pointer")
++        setup_cursor_hover(self.play_pause_button, "pointer")
++        setup_cursor_hover(self.next_button, "pointer")
++
++        self.mpris.connect("player-appeared", self.on_player_appeared)
++        players = self.mpris.players
++        if players:
++            self.on_player_appeared(self.mpris, players[0])
++
++    def on_player_appeared(self, mpris, player):
++        self.player = MprisPlayer(player)
++        self.player.connect("changed", lambda *_: self.update_ui())
++        self.update_ui()
++
++    def update_ui(self):
++        if not self.player: return
++        self.title_label.set_label(self.player.title or "Unknown Title")
++        self.artist_label.set_label(self.player.artist or "Unknown Artist")
++        icon = "󰏤" if self.player.playback_status == "playing" else "󰐊"
++        self.play_pause_button.get_child().set_label(icon)
++        
++        art_url = self.player.arturl
++        if art_url:
++            path = art_url.replace("file://", "")
++            if os.path.exists(path): self.album_art.set_from_file(path)
++        else:
++            self.album_art.set_from_icon_name("audio-x-generic-symbolic", 48)
++
++    def _prev(self): 
++        if self.player: self.player.previous()
++    def _play_pause(self): 
++        if self.player: self.player.play_pause()
++    def _next(self): 
++        if self.player: self.player.next()
++    def open_widget_from_di(self): self.update_ui()

@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 #
 # Nvidia GPU module
 #
@@ -14,11 +19,11 @@
   ############################################
   # Nvidia driver
   ############################################
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
-    # Use the production (stable) driver
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    # Use the beta driver for compatibility with latest kernel (e.g., 6.13+)
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
 
     # Modesetting is required for Wayland compositors (Hyprland)
     modesetting.enable = true;

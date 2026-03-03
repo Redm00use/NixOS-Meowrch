@@ -35,6 +35,10 @@ python3Packages.buildPythonApplication rec {
     hash = "sha256-GJ9AUCO/RXIBIvYjJ2TypaU+twJQ8hSBlli5lgK756Y=";
   };
 
+  patches = [
+    ./patches/media-player.patch
+  ];
+
   nativeBuildInputs = [
     python3Packages.setuptools
     gobject-introspection

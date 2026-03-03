@@ -4,10 +4,17 @@
 # ║                         Оптимизирован для NixOS 25.11                    ║
 # ║                                                                          ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
-
-{ config, pkgs, lib, inputs, firefox-addons, pkgs-unstable, meowrchUser, meowrchHostname, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  firefox-addons,
+  pkgs-unstable,
+  meowrchUser,
+  meowrchHostname,
+  ...
+}: {
   imports = [
     ../../modules/home/rofi.nix
     ../../modules/home/gtk.nix
@@ -21,12 +28,6 @@
   home.username = lib.mkForce meowrchUser;
   home.homeDirectory = lib.mkForce "/home/${meowrchUser}";
   home.stateVersion = "25.11";
-
-  # ╔════════════════════════════════════════════════════════════════════════════╗
-  # ║                               Overlays                                   ║
-  # ╚════════════════════════════════════════════════════════════════════════════╝
-  nixpkgs.overlays = [
-  ];
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                           Пользовательские пакеты                        ║
@@ -50,8 +51,8 @@
   systemd.user.services.mewline = {
     Unit = {
       Description = "Mewline Dynamic Island Status Bar";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
     };
     Service = {
       ExecStart = "${pkgs.mewline}/bin/mewline";
@@ -59,7 +60,7 @@
       RestartSec = "3";
     };
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 
@@ -122,7 +123,7 @@
 
     # Disable problematic integrations
     starship.enable = false;
-    delta.enable = false;  # workaround: programs.git.delta.enable renamed in HM 25.11
+    delta.enable = false; # workaround: programs.git.delta.enable renamed in HM 25.11
   };
 
   # ╔════════════════════════════════════════════════════════════════════════════╗
@@ -303,16 +304,48 @@
   home.file.".config/.keep".text = "";
 
   # Подключение конфигураций из репозитория
-  home.file.".config/hypr" = { source = ../../config/hypr; recursive = true; force = true; };
-  home.file.".config/kitty" = { source = ../../config/kitty; recursive = true; force = true; };
-  home.file.".config/fastfetch" = { source = ../../config/fastfetch; recursive = true; force = true; };
-  home.file.".config/btop" = { source = ../../config/btop; recursive = true; force = true; };
-  home.file.".config/meowrch" = { source = ../../config/meowrch; recursive = true; force = true; };
-  home.file.".config/meowrch/bin" = { source = ../../scripts; recursive = true; force = true; };
+  home.file.".config/hypr" = {
+    source = ../../config/hypr;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/kitty" = {
+    source = ../../config/kitty;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/fastfetch" = {
+    source = ../../config/fastfetch;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/btop" = {
+    source = ../../config/btop;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/meowrch" = {
+    source = ../../config/meowrch;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/meowrch/bin" = {
+    source = ../../scripts;
+    recursive = true;
+    force = true;
+  };
 
   # Qt5ct/Qt6ct конфигурация — Catppuccin Mocha тема для Qt приложений (Ark и др.)
-  home.file.".config/qt5ct" = { source = ../../config/qt5ct; recursive = true; force = true; };
-  home.file.".config/qt6ct" = { source = ../../config/qt6ct; recursive = true; force = true; };
+  home.file.".config/qt5ct" = {
+    source = ../../config/qt5ct;
+    recursive = true;
+    force = true;
+  };
+  home.file.".config/qt6ct" = {
+    source = ../../config/qt6ct;
+    recursive = true;
+    force = true;
+  };
   home.file.".config/meowrch/wallpapers" = {
     source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
     recursive = true;
@@ -336,8 +369,8 @@
     wallpaper-changer = {
       Unit = {
         Description = "Random wallpaper changer";
-        After = [ "graphical-session-pre.target" ];
-        PartOf = [ "graphical-session.target" ];
+        After = ["graphical-session-pre.target"];
+        PartOf = ["graphical-session.target"];
       };
 
       Service = {
@@ -346,7 +379,7 @@
       };
 
       Install = {
-        WantedBy = [ "default.target" ];
+        WantedBy = ["default.target"];
       };
     };
   };
@@ -375,19 +408,19 @@
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/html" = [ "firefox.desktop" ];
-        "x-scheme-handler/http" = [ "firefox.desktop" ];
-        "x-scheme-handler/https" = [ "firefox.desktop" ];
-        "x-scheme-handler/about" = [ "firefox.desktop" ];
-        "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-        "application/pdf" = [ "firefox.desktop" ];
-        "image/jpeg" = [ "feh.desktop" ];
-        "image/png" = [ "feh.desktop" ];
-        "image/gif" = [ "feh.desktop" ];
-        "video/mp4" = [ "mpv.desktop" ];
-        "video/x-matroska" = [ "mpv.desktop" ];
-        "audio/mpeg" = [ "mpv.desktop" ];
-        "audio/flac" = [ "mpv.desktop" ];
+        "text/html" = ["firefox.desktop"];
+        "x-scheme-handler/http" = ["firefox.desktop"];
+        "x-scheme-handler/https" = ["firefox.desktop"];
+        "x-scheme-handler/about" = ["firefox.desktop"];
+        "x-scheme-handler/unknown" = ["firefox.desktop"];
+        "application/pdf" = ["firefox.desktop"];
+        "image/jpeg" = ["feh.desktop"];
+        "image/png" = ["feh.desktop"];
+        "image/gif" = ["feh.desktop"];
+        "video/mp4" = ["mpv.desktop"];
+        "video/x-matroska" = ["mpv.desktop"];
+        "audio/mpeg" = ["mpv.desktop"];
+        "audio/flac" = ["mpv.desktop"];
       };
     };
   };
