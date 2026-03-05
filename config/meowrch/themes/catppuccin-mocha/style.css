@@ -1,11 +1,11 @@
-@define-color bar-bg rgba(239, 241, 245, 0);
-@define-color main-bg rgba(239, 241, 245, 0.95); /* Чуть плотнее фон */
-@define-color main-fg rgba(76, 79, 105, 1); /* Темно-синий текст (Latte Text) */
-@define-color accent-color rgba(30, 102, 245, 1); /* Синий акцент (Latte Blue) */
-@define-color wb-act-bg rgba(30, 102, 245, 0.9);
-@define-color wb-act-fg rgba(239, 241, 245, 1);
-@define-color wb-hvr-bg rgba(204, 208, 234, 0.6);
-@define-color wb-hvr-fg rgba(76, 79, 105, 1);
+@define-color bar-bg rgba(30, 30, 46, 0);
+@define-color main-bg rgba(30, 30, 46, 0.95);
+@define-color main-fg rgba(205, 214, 244, 1);
+@define-color accent-color rgba(180, 190, 254, 1);
+@define-color wb-act-bg rgba(180, 190, 254, 0.9);
+@define-color wb-act-fg rgba(17, 17, 27, 1);
+@define-color wb-hvr-bg rgba(69, 71, 90, 0.6);
+@define-color wb-hvr-fg rgba(205, 214, 244, 1);
 
 * {
     border: none;

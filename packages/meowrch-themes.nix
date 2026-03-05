@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ lib, stdenv, fetchFromGitHub, gtk3 }:
 
 let
   # Original Meowrch Wallpapers from the main Arch repo
@@ -34,39 +34,76 @@ stdenv.mkDerivation rec {
     hash = "sha256-KAXoEP18KbFQLuXh1QYOKrsEdOe6zlNJpQCjrpp5mi8=";
   };
 
+  nativeBuildInputs = [ gtk3 ];
+
   dontBuild = true;
   dontConfigure = true;
 
   installPhase = ''
     runHook preInstall
-    
+
     # 1. Create directory structure in $out
     mkdir -p $out/share/pawlette/catppuccin-mocha
     mkdir -p $out/share/pawlette/catppuccin-latte
     mkdir -p $out/share/wallpapers/meowrch
-    
+
     # 2. Copy the theme contents
     cp -r ${mocha-theme}/* $out/share/pawlette/catppuccin-mocha/
     cp -r ${latte-theme}/* $out/share/pawlette/catppuccin-latte/
-    
+
     # 3. Copy ORIGINAL wallpapers from Meowrch repo
     if [ -d "${meowrch-src}/home/.local/share/wallpapers" ]; then
       cp -r ${meowrch-src}/home/.local/share/wallpapers/* $out/share/wallpapers/meowrch/
     fi
-    
+
     # 4. Create and populate the wallpapers directory within the themes
     mkdir -p $out/share/pawlette/catppuccin-mocha/wallpapers
     mkdir -p $out/share/pawlette/catppuccin-latte/wallpapers
-    
+
     # Use find to safely link all wallpapers to both theme folders
     find $out/share/wallpapers/meowrch -type f -exec ln -sf {} $out/share/pawlette/catppuccin-mocha/wallpapers/ \;
     find $out/share/wallpapers/meowrch -type f -exec ln -sf {} $out/share/pawlette/catppuccin-latte/wallpapers/ \;
-    
+
     # 5. Fix permissions to ensure everything is readable
     chmod -R u+w $out/share/pawlette
-    
+
+    # 6. Install GTK themes into share/themes/ so gsettings gtk-theme works
+    #    pawlette sets: gtk-theme 'pawlette-catppuccin-latte' / 'pawlette-catppuccin-mocha'
+    mkdir -p $out/share/themes/pawlette-catppuccin-latte
+    mkdir -p $out/share/themes/pawlette-catppuccin-mocha
+    if [ -d "${latte-theme}/gtk-theme" ]; then
+      cp -r ${latte-theme}/gtk-theme/. $out/share/themes/pawlette-catppuccin-latte/
+    fi
+    if [ -d "${mocha-theme}/gtk-theme" ]; then
+      cp -r ${mocha-theme}/gtk-theme/. $out/share/themes/pawlette-catppuccin-mocha/
+    fi
+
+    # 7. Install icon themes to share/icons/ so GTK/Hyprland can find them by name
+    #    (pawlette ships icon themes inside icons/ subdirectory of the theme)
+    if [ -d "$out/share/pawlette/catppuccin-mocha/icons" ]; then
+      mkdir -p $out/share/icons
+      cp -r $out/share/pawlette/catppuccin-mocha/icons/. $out/share/icons/
+      # Rebuild icon cache for each installed icon theme
+      for dir in $out/share/icons/*/; do
+        if [ -f "$dir/index.theme" ]; then
+          gtk-update-icon-cache -f -t "$dir" 2>/dev/null || true
+        fi
+      done
+    fi
+
+    # 7. Patch Hyprland custom-prefs: remove borders (visual cleanup for NixOS)
+    find $out/share/pawlette -name "*.conf" -path "*/hypr/*" -exec \
+      sed -i \
+        -e 's/border_size = [0-9]*/border_size = 0/' \
+        -e 's/col\.active_border = .*/col.active_border = rgba(00000000)/' \
+        {} \;
+
+    # NOTE: No cursor patch — the original pawlette cursor IS Bibata-Modern-Classic.
+    # Cursor is managed system-wide via home.pointerCursor + HYPRCURSOR_* env vars.
+
     runHook postInstall
   '';
+
 
   meta = with lib; {
     description = "Official Meowrch (Arch) wallpapers and themes for NixOS";

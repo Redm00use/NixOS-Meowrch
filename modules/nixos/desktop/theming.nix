@@ -131,8 +131,11 @@
   };
 
   # ────────────── Переменные окружения ──────────────
+  # Cursor vars здесь — системный фолбэк для SDDM и системных сервисов.
+  # Для Hyprland/Wayland сессии — используется home.pointerCursor (home.nix)
+  # и переменные из hyprland.nix (XCURSOR_THEME/SIZE, HYPRCURSOR_THEME/SIZE).
   environment.variables = {
-    # Курсоры
+    # XCursor (X11/XWayland фолбэк, системный уровень)
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
 
@@ -149,9 +152,6 @@
     QT_QPA_PLATFORM = "wayland;xcb";
     QT_AUTO_SCREEN_SCALE_FACTOR = "1";
     QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-
-    # Курсоры (use mkDefault to avoid conflict with system)
-    XCURSOR_PATH = lib.mkDefault "/usr/share/icons:$XDG_DATA_HOME/icons";
   };
 
   # ────────────── XDG настройки ──────────────

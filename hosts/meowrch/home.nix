@@ -29,6 +29,18 @@
   home.homeDirectory = lib.mkForce "/home/${meowrchUser}";
   home.stateVersion = "25.11";
 
+  # Cursor theme (critical for Wayland — without this, cursor stays default)
+  # bibata-cursors ships a built-in hyprcursor theme (no separate package needed)
+  home.pointerCursor = {
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    size = 24;
+    gtk.enable = true;       # writes ~/.icons/default/index.theme + gtk settings
+    x11.enable = true;       # writes ~/.Xresources cursor entry
+    hyprcursor.enable = true; # sets HYPRCURSOR_THEME / HYPRCURSOR_SIZE for Hyprland
+    hyprcursor.size = 24;
+  };
+
   # ╔════════════════════════════════════════════════════════════════════════════╗
   # ║                           Пользовательские пакеты                        ║
   # ╚════════════════════════════════════════════════════════════════════════════╝

@@ -30,9 +30,11 @@
   # Intel VA-API (hardware video acceleration)
   ############################################
   hardware.graphics.extraPackages = with pkgs; [
-    intel-media-driver   # iHD driver (Broadwell+, recommended)
-    intel-vaapi-driver   # i965 driver (older GPUs fallback)
-    libvdpau-va-gl       # VDPAU via VA-API
+    intel-media-driver    # iHD driver (Broadwell+, recommended)
+    intel-vaapi-driver    # i965 driver (older GPUs fallback)
+    libva-vdpau-driver    # VDPAU backend for VA-API
+    libvdpau-va-gl        # VDPAU via VA-API
+    vpl-gpu-rt            # Intel oneVPL GPU runtime
   ];
 
   ############################################

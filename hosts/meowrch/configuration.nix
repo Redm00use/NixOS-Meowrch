@@ -92,8 +92,8 @@
       "quiet"
       "splash"
     ];
-    # Use the latest kernel
-    kernelPackages = pkgs.linuxPackages_latest;
+    # Use latest kernel by default; nvidia module overrides this to stable for compatibility
+    kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
     # Plymouth causes blinking underscore / DRM locks on some GPUs, disabled for stability
     plymouth.enable = false;
   };

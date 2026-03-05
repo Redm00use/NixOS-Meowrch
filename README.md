@@ -82,7 +82,7 @@ NixOS-Meowrch/
 │   └── home/                       # Модули Home Manager
 │       ├── fish.nix                # Shell-конфигурация
 │       ├── starship.nix            # Prompt-конфигурация
-│       ├── hypr-configs/           # Конфиги Hyprland (Binds, Rules)
+│   └── hypr/                   # Конфиги Hyprland (Binds, Rules) в config/hypr/
 │       └── ...                     # Rofi, GTK
 ├── config/                         # "Сырые" конфигурации приложений (symlinks)
 │   ├── hypr/                       # Настройки Hyprland
@@ -173,7 +173,7 @@ home.packages = with pkgs; [
 Здесь собраны инструкции по изменению внешнего вида и поведения вашей системы.
 
 ### 🖼️ Управление интерфейсом (Hyprland)
-Все основные настройки находятся в `modules/home/hypr-configs/`. 
+Все основные настройки находятся в `config/hypr/`. 
 
 *   **Горячие клавиши**: Правьте `keybindings.conf`. Можно менять существующие или добавлять свои (например, запуск любимой игры).
 *   **Правила окон**: В `windowrules.conf` можно заставить Spotify открываться на 10-м рабочем столе или сделать Telegram всегда плавающим.

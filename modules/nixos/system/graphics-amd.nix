@@ -23,9 +23,7 @@
   # AMD kernel tuning
   ############################################
   boot.kernelParams = [
-    "amdgpu.ppfeaturemask=0xffffffff"
     "amdgpu.gpu_recovery=1"
-    "amdgpu.deep_color=1"
     "amdgpu.dc=1"
   ];
 

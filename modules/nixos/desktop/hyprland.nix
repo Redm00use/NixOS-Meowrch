@@ -30,8 +30,13 @@
     # For Java applications
     _JAVA_AWT_WM_NONREPARENTING = "1";
 
-    # For correct cursor size
+    # XCursor fallback for XWayland / X11 apps
+    XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
+
+    # Hyprcursor — native Wayland cursor rendering in Hyprland (crisp on HiDPI)
+    HYPRCURSOR_THEME = "Bibata-Modern-Classic";
+    HYPRCURSOR_SIZE = "24";
 
     # Force dark theme for Libadwaita
     ADW_DEBUG_COLOR_SCHEME = "prefer-dark";

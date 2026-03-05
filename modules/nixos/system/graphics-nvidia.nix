@@ -15,15 +15,24 @@
 #  - Wayland/GBM environment variables for Nvidia
 #  - nvidia-settings, nvtop monitoring tools
 #
+# IMPORTANT: Forces stable kernel to avoid Nvidia driver build failures
+# with bleeding-edge kernels (e.g. 6.19.x breaks nvidia 580.x).
+#
 {
+  ############################################
+  # Force stable kernel for Nvidia compatibility
+  # linuxPackages_latest often breaks nvidia driver builds
+  ############################################
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+
   ############################################
   # Nvidia driver
   ############################################
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
-    # Use the latest production driver (580.126.18+) for kernel 6.19 compatibility
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    # Use the stable production driver
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     # Modesetting is required for Wayland compositors (Hyprland)
     modesetting.enable = true;

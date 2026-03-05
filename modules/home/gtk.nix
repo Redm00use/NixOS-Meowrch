@@ -4,40 +4,42 @@
   # GTK Configuration
   gtk = {
     enable = true;
-    
+
     # Force overwrite existing config files to prevent activation errors
     gtk2.configLocation = lib.mkForce "${config.xdg.configHome}/gtk-2.0/gtkrc";
-    gtk3.bookmarks = let home = config.home.homeDirectory; in [ 
-      "file://${home}/Documents" 
-      "file://${home}/Downloads" 
-      "file://${home}/Music" 
-      "file://${home}/Pictures" 
-      "file://${home}/Videos" 
+    gtk3.bookmarks = let home = config.home.homeDirectory; in [
+      "file://${home}/Documents"
+      "file://${home}/Downloads"
+      "file://${home}/Music"
+      "file://${home}/Pictures"
+      "file://${home}/Videos"
     ];
-    
+
+    # Default theme — pawlette will override via gsettings when switching themes.
+    # adw-gtk3 package ships BOTH adw-gtk3 (light) and adw-gtk3-dark variants.
     theme = {
-      name = lib.mkForce "adw-gtk3-dark";
-      package = lib.mkForce pkgs.adw-gtk3;
+      name = lib.mkDefault "adw-gtk3-dark"; # mocha is default, latte overrides at runtime
+      package = lib.mkDefault pkgs.adw-gtk3;
     };
-    
+
+    # Papirus (without -Dark suffix) auto-follows color-scheme: dark → -Dark, light → regular
     iconTheme = {
-      name = lib.mkForce "Papirus-Dark";
-      package = lib.mkForce pkgs.papirus-icon-theme;
+      name = lib.mkDefault "Papirus-Dark";
+      package = lib.mkDefault pkgs.papirus-icon-theme;
     };
-    
+
     cursorTheme = {
       name = lib.mkForce "Bibata-Modern-Classic";
       package = lib.mkForce pkgs.bibata-cursors;
       size = lib.mkForce 24;
     };
-    
+
     font = {
       name = "Noto Sans";
       size = 11;
     };
-    
+
     gtk2.extraConfig = ''
-      gtk-application-prefer-dark-theme = true
       gtk-toolbar-style = GTK_TOOLBAR_BOTH_HORIZ
       gtk-toolbar-icon-size = GTK_ICON_SIZE_LARGE_TOOLBAR
       gtk-button-images = 1
@@ -51,7 +53,8 @@
     '';
     
     gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
+      # DO NOT set gtk-application-prefer-dark-theme here — pawlette manages it via gsettings.
+      # mocha sets prefer-dark, latte sets prefer-light at runtime.
       gtk-toolbar-style = "GTK_TOOLBAR_BOTH_HORIZ";
       gtk-toolbar-icon-size = "GTK_ICON_SIZE_LARGE_TOOLBAR";
       gtk-button-images = true;
@@ -64,240 +67,74 @@
       gtk-xft-rgba = "rgb";
       gtk-decoration-layout = "appmenu:minimize,maximize,close";
     };
-    
+
     gtk3.extraCss = ''
-      /* Catppuccin Mocha GTK Theme */
-      @define-color accent_color #89b4fa;
-      @define-color accent_bg_color #89b4fa;
-      @define-color accent_fg_color #1e1e2e;
-      @define-color destructive_color #f38ba8;
-      @define-color destructive_bg_color #f38ba8;
-      @define-color destructive_fg_color #1e1e2e;
-      @define-color success_color #a6e3a1;
-      @define-color success_bg_color #a6e3a1;
-      @define-color success_fg_color #1e1e2e;
-      @define-color warning_color #f9e2af;
-      @define-color warning_bg_color #f9e2af;
-      @define-color warning_fg_color #1e1e2e;
-      @define-color error_color #f38ba8;
-      @define-color error_bg_color #f38ba8;
-      @define-color error_fg_color #1e1e2e;
-      @define-color window_bg_color #1e1e2e;
-      @define-color window_fg_color #cdd6f4;
-      @define-color view_bg_color #181825;
-      @define-color view_fg_color #cdd6f4;
-      @define-color headerbar_bg_color #313244;
-      @define-color headerbar_fg_color #cdd6f4;
-      @define-color headerbar_border_color #45475a;
-      @define-color headerbar_backdrop_color #1e1e2e;
-      @define-color headerbar_shade_color rgba(0, 0, 0, 0.07);
-      @define-color card_bg_color #313244;
-      @define-color card_fg_color #cdd6f4;
-      @define-color card_shade_color rgba(0, 0, 0, 0.07);
-      @define-color dialog_bg_color #313244;
-      @define-color dialog_fg_color #cdd6f4;
-      @define-color popover_bg_color #313244;
-      @define-color popover_fg_color #cdd6f4;
-      @define-color shade_color rgba(0, 0, 0, 0.07);
-      @define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
-      
+      /* Structural styling only — NO color variables here! */
+      /* Colors come from the active GTK theme (set by pawlette via gsettings). */
+      /* Hardcoding colors here would override the latte theme with mocha colors. */
+
       /* Window decorations */
       decoration {
         border-radius: 12px;
         margin: 4px;
-        box-shadow: 0 3px 9px 1px rgba(0, 0, 0, 0.5);
       }
-      
-      /* Headerbar styling */
-      headerbar {
-        background: @headerbar_bg_color;
-        color: @headerbar_fg_color;
-        border-radius: 12px 12px 0 0;
-        box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
-      }
-      
-      headerbar:backdrop {
-        background: @headerbar_backdrop_color;
-      }
-      
-      /* Button styling */
+
+      /* Rounded buttons */
       button {
         border-radius: 8px;
         transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
-      
-      button:hover {
-        background: alpha(@accent_color, 0.1);
-      }
-      
-      button.suggested-action {
-        background: @accent_bg_color;
-        color: @accent_fg_color;
-      }
-      
-      button.destructive-action {
-        background: @destructive_bg_color;
-        color: @destructive_fg_color;
-      }
-      
-      /* Entry styling */
+
+      /* Rounded entries */
       entry {
         border-radius: 8px;
-        background: @view_bg_color;
-        color: @view_fg_color;
-        border: 1px solid alpha(@accent_color, 0.3);
       }
-      
-      entry:focus {
-        border-color: @accent_color;
-        box-shadow: 0 0 0 2px alpha(@accent_color, 0.3);
-      }
-      
-      /* Scrollbar styling */
+
+      /* Slim scrollbars */
       scrollbar slider {
         border-radius: 10px;
-        background: alpha(@accent_color, 0.5);
         min-width: 6px;
         min-height: 6px;
       }
-      
-      scrollbar slider:hover {
-        background: alpha(@accent_color, 0.7);
-      }
-      
-      /* Switch styling */
-      switch {
-        border-radius: 14px;
-        background: @view_bg_color;
-        border: 1px solid alpha(@accent_color, 0.3);
-      }
-      
-      switch:checked {
-        background: @accent_bg_color;
-      }
-      
-      switch slider {
-        border-radius: 50%;
-        background: white;
-        margin: 2px;
-      }
-      
-      /* Progress bar styling */
-      progressbar progress {
-        background: @accent_bg_color;
-        border-radius: 4px;
-      }
-      
-      progressbar trough {
-        background: @view_bg_color;
-        border-radius: 4px;
-      }
-      
-      /* Menu styling */
+
+      /* Rounded menus */
       menu {
-        background: @popover_bg_color;
-        color: @popover_fg_color;
         border-radius: 8px;
-        border: 1px solid alpha(@accent_color, 0.2);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       }
-      
-      menuitem {
-        border-radius: 4px;
-        padding: 8px 12px;
-      }
-      
-      menuitem:hover {
-        background: alpha(@accent_color, 0.1);
-      }
-      
-      /* Tooltip styling */
+
+      /* Rounded tooltips */
       tooltip {
-        background: @popover_bg_color;
-        color: @popover_fg_color;
         border-radius: 8px;
-        border: 1px solid alpha(@accent_color, 0.2);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      }
-      
-      /* Notebook (tab) styling */
-      notebook > header {
-        background: @headerbar_bg_color;
-        border-radius: 8px 8px 0 0;
-      }
-      
-      notebook > header > tabs > tab {
-        border-radius: 6px 6px 0 0;
-        padding: 8px 16px;
-        background: transparent;
-        color: alpha(@headerbar_fg_color, 0.7);
-      }
-      
-      notebook > header > tabs > tab:checked {
-        background: @view_bg_color;
-        color: @view_fg_color;
-      }
-      
-      /* Sidebar styling */
-      .sidebar {
-        background: @view_bg_color;
-        color: @view_fg_color;
-        border-radius: 0 0 0 12px;
-      }
-      
-      .sidebar row {
-        border-radius: 6px;
-        margin: 2px 6px;
-      }
-      
-      .sidebar row:selected {
-        background: alpha(@accent_color, 0.2);
       }
     '';
-    
+
     gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
+      # DO NOT set gtk-application-prefer-dark-theme here — pawlette manages it via gsettings.
       gtk-decoration-layout = "appmenu:minimize,maximize,close";
     };
-    
+
     gtk4.extraCss = ''
-      /* GTK4 Catppuccin Mocha Theme */
-      @define-color accent_color #89b4fa;
-      @define-color accent_bg_color #89b4fa;
-      @define-color accent_fg_color #1e1e2e;
-      @define-color window_bg_color #1e1e2e;
-      @define-color window_fg_color #cdd6f4;
-      @define-color view_bg_color #181825;
-      @define-color view_fg_color #cdd6f4;
-      @define-color headerbar_bg_color #313244;
-      @define-color headerbar_fg_color #cdd6f4;
-      @define-color card_bg_color #313244;
-      @define-color card_fg_color #cdd6f4;
-      
+      /* Structural styling only — NO color variables here! */
+      /* Colors come from the active GTK theme (set by pawlette via gsettings). */
+
+      /* Rounded window decorations */
       window {
-        background: @window_bg_color;
-        color: @window_fg_color;
+        border-radius: 12px;
       }
-      
+
+      /* Rounded headerbar */
       headerbar {
-        background: @headerbar_bg_color;
-        color: @headerbar_fg_color;
         border-radius: 12px 12px 0 0;
       }
-      
+
+      /* Rounded buttons */
       button {
         border-radius: 8px;
       }
-      
-      button.suggested-action {
-        background: @accent_bg_color;
-        color: @accent_fg_color;
-      }
-      
+
+      /* Rounded entries */
       entry {
         border-radius: 8px;
-        background: @view_bg_color;
-        color: @view_fg_color;
       }
     '';
   };
@@ -309,15 +146,20 @@
   xdg.configFile."gtk-3.0/settings.ini".force = true;
 
   # GNOME dconf settings for GTK
+  # IMPORTANT: color-scheme and gtk-theme are NOT set here — pawlette manages them
+  # at runtime via gsettings. locking them here would break theme switching.
   dconf.settings = {
     "org/gnome/desktop/interface" = {
-      icon-theme = "Papirus-Dark";
+      # cursor is safe to lock — pawlette uses the same Bibata-Modern-Classic
       cursor-theme = "Bibata-Modern-Classic";
       cursor-size = 24;
+      # fonts are theme-independent
       font-name = "Noto Sans 11";
       document-font-name = "Noto Sans 11";
       monospace-font-name = "JetBrainsMono Nerd Font 10";
-      color-scheme = "prefer-dark";
+      # DO NOT set color-scheme or icon-theme here — pawlette sets them per-theme:
+      # mocha: prefer-dark + Papirus-Dark + adw-gtk3-dark
+      # latte: prefer-light + pawlette-catppuccin-latte + adw-gtk3 (light)
       enable-animations = true;
       gtk-enable-primary-paste = false;
       locate-pointer = true;
@@ -357,16 +199,16 @@
     # GTK tools
     glib
     gsettings-desktop-schemas
-    
-    # Theme packages
+
+    # NOTE: papirus-icon-theme is in environment.systemPackages (theming.nix).
+    # Do NOT add it here — catppuccin-nix adds catppuccin-papirus-folders which
+    # also ships Papirus icons and would cause a buildEnv conflict.
     adwaita-icon-theme
-    papirus-icon-theme
-    bibata-cursors
-    
-    # GTK applications for testing
+
+    # GTK dev libs (needed for palette/theming scripts)
     gtk3
     gtk4
-    
+
     # Theme tools
     lxappearance
     nwg-look
@@ -374,19 +216,19 @@
 
   # Environment variables for GTK
   home.sessionVariables = {
-    # ADW_DEBUG_COLOR_SCHEME is still useful for libadwaita apps
-    ADW_DEBUG_COLOR_SCHEME = "prefer-dark";
+    # ADW_DEBUG_COLOR_SCHEME intentionally NOT set here:
+    # libadwaita apps will follow the org.gnome.desktop.interface color-scheme gsetting
+    # which pawlette sets to 'prefer-dark' (mocha) or 'prefer-light' (latte).
     GTK2_RC_FILES = lib.mkForce "${config.home.homeDirectory}/.gtkrc-2.0";
-    
-    # Cursor theme
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "24";
-    
+
     # Enable Wayland for GTK apps
     GDK_BACKEND = "wayland,x11";
-    
+
     # GTK scaling
     GDK_SCALE = "1";
     GDK_DPI_SCALE = "1";
+    # NOTE: XCURSOR_THEME/SIZE set by home.pointerCursor + hyprland.nix
+    # NOTE: HYPRCURSOR_THEME/SIZE set by home.pointerCursor (hyprcursor.enable = true)
   };
+
 }

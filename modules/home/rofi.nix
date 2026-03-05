@@ -87,7 +87,7 @@
     window {
         height: 450px;
         width: 700px;
-        border: 2px;
+        border: 0px;
         border-color: @border-col;
         background-color: @bg-col;
         border-radius: 12px;
@@ -205,7 +205,7 @@
         enabled:                     true;
         margin:                      0px;
         padding:                     0px;
-        border:                      2px solid;
+        border:                      0px solid;
         border-radius:               15px;
         border-color:                @selected-col;
         background-color:            @bg-col;

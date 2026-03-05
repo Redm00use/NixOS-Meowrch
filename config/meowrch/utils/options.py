@@ -22,11 +22,7 @@ class CopyOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists():
 			if self.is_dir and cfg_path.is_dir() or not self.is_dir and cfg_path.is_file():
@@ -52,12 +48,6 @@ class CopyOrGenOption(BaseOption):
 		
 		if not self.path_to.parent.exists():
 			self.path_to.parent.mkdir(parents=True, exist_ok=True)
-			if not self.path_to.parent.exists():
-				logging.error(
-					f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-					f"The config cannot be copied to the path \"{self.path_to}\""
-				)
-				return
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -93,11 +83,7 @@ class TmuxCfgOption(BaseOption):
 		tmux_base: Path = BASE_CONFIGS / self.base_config_name
 
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if tmux_base.exists():
 			with open(tmux, "w") as f:
@@ -126,11 +112,7 @@ class DunstOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -161,11 +143,7 @@ class CavaOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -196,11 +174,7 @@ class FishOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -247,11 +221,7 @@ class KittyOption(BaseOption):
 		template_path = OOMOX_TEMPLATES / self.template_name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
@@ -278,6 +248,39 @@ class KittyOption(BaseOption):
 		)
 
 @dataclass
+class MewlineOption(BaseOption):
+	name: str
+	path_to: str
+
+	def _run(self, theme_name: str) -> None:
+		cfg_dir = MEOWRCH_THEMES / theme_name / "mewline"
+		
+		if not self.path_to.parent.exists():
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
+
+		if cfg_dir.exists() and cfg_dir.is_dir():
+			# Copy config.json.jsonpaw
+			json_src = cfg_dir / "config.json.jsonpaw"
+			json_dst = self.path_to / "config.json"
+			if json_src.exists():
+				overcopy(json_src, json_dst)
+
+			# Copy themes directory
+			themes_src = cfg_dir / "themes"
+			themes_dst = self.path_to / "themes"
+			if themes_src.exists():
+				overcopy(themes_src, themes_dst)
+
+			# Reload mewline using fabric-cli
+			try:
+				subprocess.run(["fabric-cli", "invoke-action", "mewline", "dynamic-island-open", "date_notification"], check=False)
+			except Exception:
+				logging.warning("Failed to notify mewline about theme change")
+			return
+
+		logging.error(f"Theme \"{theme_name}\" has no mewline config")
+
+@dataclass
 class WaybarCfgOption(BaseOption):
 	name: str
 	path_to: str
@@ -287,19 +290,18 @@ class WaybarCfgOption(BaseOption):
 		cfg_path = MEOWRCH_THEMES / theme_name / self.name
 		
 		if not self.path_to.parent.exists():
-			logging.error(
-				f"Theme \"{theme_name}\" has not been applied to \"{self._id}\"! " \
-				f"The config cannot be copied to the path \"{self.path_to}\""
-			)
-			return
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
 
 		if cfg_path.exists() and cfg_path.is_file():
 			overcopy(cfg_path, self.path_to)
 
 			if self.reload:
 				try:
-					if wb_exists:
+					wb_pids = subprocess.run(["pgrep", "waybar"], capture_output=True, text=True).stdout.strip()
+					if wb_pids:
+						subprocess.run(["pkill", "-SIGUSR2", "waybar"], check=False)
 				except Exception:
+					logging.warning("Failed to reload waybar")
 
 			return
 
@@ -319,154 +321,73 @@ class GTKOption(BaseOption):
 		try:
 			subprocess.check_output(["which", "oomox-cli"])
 		except subprocess.CalledProcessError:
-			logging.error("GTK theme is not installed. A dependency is required - \"oomox\"")
 			return False
-
 		try:
-			subprocess.run(
-				["oomox-cli", oomox_colors_path, "-o", theme_name, "-m", "all", "-d", "true"],
-				stdout=subprocess.DEVNULL,
-				stderr=subprocess.DEVNULL, 
-				check=True
-			)
-		except Exception:
-			logging.error(f"GTK theme is not installed. Failed to generate gtk 2/3 theme: {traceback.format_exc()}")
+			subprocess.run(["oomox-cli", oomox_colors_path, "-o", theme_name, "-m", "all", "-d", "true"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+		except:
 			return False
-
 		return True
 
 	def generate_gtk_4(self, path_to_theme: Path, gtk4_template: Path, oomox_colors_path: Path) -> bool:
-		if not (OOMOX_TEMPLATES / gtk4_template).exists():
-			logging.error(f"GTK4 theme is not installed. Template file not found: {gtk4_template}")
-			return False
-		
-		gtk3_path: Path = path_to_theme / "gtk-3.0"
-		gtk4_path: Path = path_to_theme / "gtk-4.0"
-
 		generated_gtk4 = generate_theme(template_name=self.gtk4_template_name, oomox_colors=oomox_colors_path)
 		if generated_gtk4 is not None:
-			if gtk3_path.exists():
-				shutil.copytree(str(gtk3_path), str(gtk4_path))
-				(gtk4_path/"gtk.gresource").unlink(missing_ok=True)
-				(gtk4_path/"gtk.gresource.xml").unlink(missing_ok=True)
-				if (gtk4_path/"dist").exists():
-					shutil.rmtree(gtk4_path/"dist")
-			else:
-				gtk4_path.mkdir(parents=True, exist_ok=True)
+			gtk4_path: Path = path_to_theme / "gtk-4.0"
+			gtk4_path.mkdir(parents=True, exist_ok=True)
+			with open(str(gtk4_path / "gtk.css"), "w") as file: file.write(generated_gtk4)
+			with open(str(gtk4_path / "gtk-dark.css"), "w") as file: file.write(generated_gtk4)
+			return True
+		return False
 
-			with open(str(gtk4_path / "gtk.css"), "w") as file:
-				file.write(generated_gtk4)
-			
-			with open(str(gtk4_path / "gtk-dark.css"), "w") as file:
-				file.write(generated_gtk4)
-		else:
-			logging.warning("The GTK4 theme is not installed due to an unknown error!")
-			return False
+	def _is_light_theme(self, original_theme_name: str) -> bool:
+		try:
+			oomox_colors_path = OOMOX_COLORS(original_theme_name)
+			if oomox_colors_path.exists():
+				with open(oomox_colors_path, "r") as f:
+					for line in f:
+						if line.startswith("BG="):
+							bg_hex = line.strip().split("=", 1)[1].strip().lstrip("#")
+							r, g, b = int(bg_hex[0:2], 16), int(bg_hex[2:4], 16), int(bg_hex[4:6], 16)
+							return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 128
+		except: pass
+		return "latte" in original_theme_name.lower()
 
-		return True
-
-	def apply_gtk_themes(self, gtk_configs: List[Path], theme_name: str):
+	def apply_gtk_themes(self, gtk_configs: List[Path], theme_name: str, original_theme_name: str = ""):
 		for gtk_cfg in gtk_configs:
-			if not gtk_cfg.parent.exists():
-				logging.warning(f"The theme cannot be applied to the \"{gtk_cfg.name}\" file, because the path \"{str(gtk_cfg)}\" does not exist")
-				continue
-
-			if not gtk_cfg.exists():
-				gtk_cfg.touch()
-
+			if not gtk_cfg.parent.exists(): continue
+			if not gtk_cfg.exists(): gtk_cfg.touch()
 			try:
-				with open(gtk_cfg, "r") as file:
-					content = file.read()
-				
-				if f"gtk-theme-name={theme_name}" in content:
-					pass
-				elif "gtk-theme-name=" in content:
-					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={theme_name}", content)
-					try:
-						with open(gtk_cfg, "w") as file:
-							file.write(new_content)
-					except PermissionError:
-						# If it's a symlink to Nix store, try to replace it
-						if gtk_cfg.is_symlink():
-							gtk_cfg.unlink()
-							with open(gtk_cfg, "w") as file:
-								file.write(new_content)
-						else:
-							raise
+				with open(gtk_cfg, "r") as file: content = file.read()
+				if f"gtk-theme-name={theme_name}" in content: pass
 				else:
-					try:
-						with open(gtk_cfg, "a") as file:
-							file.write(f"gtk-theme-name={theme_name}\n")
-					except PermissionError:
-						if gtk_cfg.is_symlink():
-							content += f"gtk-theme-name={theme_name}\n"
-							gtk_cfg.unlink()
-							with open(gtk_cfg, "w") as file:
-								file.write(content)
-						else:
-							raise
-			except Exception as e:
-				logging.warning(f"Failed to update {gtk_cfg}: {e}")
+					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={theme_name}", content) if "gtk-theme-name=" in content else content + f"gtk-theme-name={theme_name}\n"
+					if gtk_cfg.is_symlink(): gtk_cfg.unlink()
+					with open(gtk_cfg, "w") as file: file.write(new_content)
+			except: pass
 
-		##==> Установка темы в реальном времени
-		############################################
+		is_light = self._is_light_theme(original_theme_name)
+		color_scheme = "prefer-light" if is_light else "prefer-dark"
+		icon_theme = "Papirus" if is_light else "Papirus-Dark"
 		if SESSION_TYPE == "wayland":
 			try:
-				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", theme_name], check=True)
-				# Add Cinnamon-specific key as Nemo is a Cinnamon app
-				subprocess.run(["gsettings", "set", "org.cinnamon.desktop.interface", "gtk-theme", theme_name], check=True)
-				# Also enforce dark mode via gsettings
-				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "prefer-dark"], check=True)
-			except Exception:
-				logging.warning("Failed to set theme with gsettings")
-		elif SESSION_TYPE == "x11":
-			xsettingsd_config: Path = HOME / ".config" / "xsettingsd" / "xsettingsd.conf"
-			if xsettingsd_config.exists():
-				with open(xsettingsd_config, "r") as file:
-					content = file.read()
-				
-				if f"Net/ThemeName \"{theme_name}\"" in content:
-					return
-				elif content.startswith("Net/ThemeName"):
-					new_content = re.sub(r"Net/ThemeName .*", f"Net/ThemeName \"{theme_name}\"", content)
-					with open(xsettingsd_config, "w") as file:
-						file.write(new_content)
-				else:
-					with open(xsettingsd_config, "a") as file:
-						file.write(f"Net/ThemeName \"{theme_name}\"")
-						
-				try:
-					subprocess.run(["killall", "-HUP", "xsettingsd"], check=True)
-				except Exception:
-					logging.warning("Failed to set theme with xsettingsd")
+				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", theme_name], check=False)
+				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", color_scheme], check=False)
+				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", icon_theme], check=False)
+				subprocess.run(["hyprctl", "keyword", "decoration:drop_shadow", "no"], check=False)
+				subprocess.run(["hyprctl", "keyword", "general:border_size", "0"], check=False)
+			except: pass
 
 	def _run(self, theme_name: str) -> None:
-		oomox_colors_path: Path = OOMOX_COLORS(theme_name)
-		theme_name: str = f"meowrch-{theme_name}"
-		path_to_theme: Path = HOME / ".themes" / theme_name
-
-		if not oomox_colors_path.exists():
-			logging.error(f"GTK theme is not installed. There is no \"{oomox_colors_path}\" file.")
+		original_theme_name = theme_name
+		meowrch_theme_name = f"meowrch-{theme_name}"
+		path_to_theme = HOME / ".themes" / meowrch_theme_name
+		oomox_colors_path = OOMOX_COLORS(theme_name)
+		try:
+			subprocess.check_output(["which", "oomox-cli"], stderr=subprocess.DEVNULL)
+			oomox_available = True
+		except: oomox_available = False
+		if not oomox_available:
+			self.apply_gtk_themes([self.gtk2_cfg, self.gtk3_cfg, self.gtk4_cfg], f"pawlette-{theme_name}", original_theme_name)
 			return
-
-		##==> Генерация GTK2/3 (Пропускаем если сгенерирована)
-		##############################################################
-		if not path_to_theme.exists():
-			gtk23 = self.generate_gtk_2_3(path_to_theme, str(oomox_colors_path), theme_name)
-			if not gtk23:
-				return
-
-		##==> Генерация GTK4 (Пропускаем если сгенерирована)
-		############################################
-		if not (path_to_theme / "gtk-4.0").exists():
-			gtk4 = self.generate_gtk_4(path_to_theme, self.gtk4_template_name, oomox_colors_path)
-
-			if not gtk4:
-				return
-
-		##==> Применение тем
-		############################################
-		self.apply_gtk_themes(
-			gtk_configs=[self.gtk2_cfg, self.gtk3_cfg, self.gtk4_cfg],
-			theme_name=theme_name,
-		)
+		if not path_to_theme.exists(): self.generate_gtk_2_3(path_to_theme, str(oomox_colors_path), meowrch_theme_name)
+		if not (path_to_theme / "gtk-4.0").exists(): self.generate_gtk_4(path_to_theme, self.gtk4_template_name, oomox_colors_path)
+		self.apply_gtk_themes([self.gtk2_cfg, self.gtk3_cfg, self.gtk4_cfg], meowrch_theme_name, original_theme_name)

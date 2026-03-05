@@ -6,7 +6,7 @@ from pathlib import Path
 from utils.schemes import BaseOption
 from utils.options import (
 	CopyOption, CopyOrGenOption, TmuxCfgOption, GTKOption, FishOption, 
-	WaybarCfgOption, KittyOption, DunstOption, CavaOption
+	WaybarCfgOption, KittyOption, DunstOption, CavaOption, MewlineOption
 )
 from vars import HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE	
 
@@ -81,6 +81,10 @@ theme_options: List[BaseOption] = [
 		apply_theme=True
 	),
 	WaybarCfgOption(
+		_id="waybar_style",
+		name="style.css",
+		path_to=HOME / ".config" / "waybar" / "style.css",
+		xorg_needed=False,
 		reload=True
 	),
 	TmuxCfgOption(
@@ -88,6 +92,11 @@ theme_options: List[BaseOption] = [
 		name="tmux-custom-prefs.conf", 
 		path_to=HOME / ".config" / "tmux" / "tmux.conf",
 		base_config_name="tmux.conf"
+	),
+	MewlineOption(
+		_id="mewline",
+		name="mewline",
+		path_to=HOME / ".config" / "mewline"
 	),
 	GTKOption(
 		_id="gtk_theme",
