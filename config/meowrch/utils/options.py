@@ -372,7 +372,7 @@ class GTKOption(BaseOption):
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", theme_name], check=False)
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", color_scheme], check=False)
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", icon_theme], check=False)
-				subprocess.run(["hyprctl", "keyword", "decoration:drop_shadow", "no"], check=False)
+				subprocess.run(["hyprctl", "keyword", "decoration:shadow:enabled", "false"], check=False)
 				subprocess.run(["hyprctl", "keyword", "general:border_size", "0"], check=False)
 			except: pass
 
