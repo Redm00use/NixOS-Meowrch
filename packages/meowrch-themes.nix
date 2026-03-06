@@ -51,16 +51,21 @@ stdenv.mkDerivation rec {
     cp -r ${mocha-theme}/* $out/share/pawlette/catppuccin-mocha/
     cp -r ${latte-theme}/* $out/share/pawlette/catppuccin-latte/
 
-    # 3. Copy ORIGINAL wallpapers from Meowrch repo
+    # 3. Copy wallpapers from BOTH themes into a common directory
+    mkdir -p $out/share/wallpapers/meowrch
+    [ -d "${mocha-theme}/wallpapers" ] && cp -rf ${mocha-theme}/wallpapers/* $out/share/wallpapers/meowrch/ || true
+    [ -d "${latte-theme}/wallpapers" ] && cp -rf ${latte-theme}/wallpapers/* $out/share/wallpapers/meowrch/ || true
+    
+    # Also try to copy from original src if available (fallback), without overwriting existing
     if [ -d "${meowrch-src}/home/.local/share/wallpapers" ]; then
-      cp -r ${meowrch-src}/home/.local/share/wallpapers/* $out/share/wallpapers/meowrch/
+      cp -rn ${meowrch-src}/home/.local/share/wallpapers/* $out/share/wallpapers/meowrch/ || true
     fi
 
     # 4. Create and populate the wallpapers directory within the themes
     mkdir -p $out/share/pawlette/catppuccin-mocha/wallpapers
     mkdir -p $out/share/pawlette/catppuccin-latte/wallpapers
 
-    # Use find to safely link all wallpapers to both theme folders
+    # Use find to link files, ignoring errors if links already exist
     find $out/share/wallpapers/meowrch -type f -exec ln -sf {} $out/share/pawlette/catppuccin-mocha/wallpapers/ \;
     find $out/share/wallpapers/meowrch -type f -exec ln -sf {} $out/share/pawlette/catppuccin-latte/wallpapers/ \;
 

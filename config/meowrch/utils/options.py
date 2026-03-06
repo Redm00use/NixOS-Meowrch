@@ -61,6 +61,9 @@ class CopyOrGenOption(BaseOption):
 				)
 
 				if generated_theme is not None:
+					if self.path_to.exists():
+						try: os.chmod(self.path_to, 0o644)
+						except: pass
 					with open(self.path_to, "w") as file:
 						file.write(generated_theme)	
 					return
@@ -236,6 +239,9 @@ class KittyOption(BaseOption):
 				)
 
 				if generated_theme is not None:
+					if self.path_to.exists():
+						try: os.chmod(self.path_to, 0o644)
+						except: pass
 					with open(self.path_to, "w") as file:
 						file.write(generated_theme)	
 

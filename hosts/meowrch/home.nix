@@ -359,12 +359,12 @@
     force = true;
   };
   home.file.".config/meowrch/wallpapers" = {
-    source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
+    source = "${pkgs.meowrch-themes}/share/wallpapers/meowrch";
     recursive = true;
     force = true;
   };
   home.file.".local/share/wallpapers" = {
-    source = "${pkgs.meowrch-themes}/share/pawlette/catppuccin-mocha/wallpapers";
+    source = "${pkgs.meowrch-themes}/share/wallpapers/meowrch";
     recursive = true;
     force = true;
   };

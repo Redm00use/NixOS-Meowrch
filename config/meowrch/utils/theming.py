@@ -52,7 +52,7 @@ class ThemeManager:
 			obj: Optional[Theme] = self.themes.get(theme, None)
 
 			if obj is None:
-				logging.error(f"[X] Theme named \"{theme.name}\" not found")
+				logging.error(f"[X] Theme named \"{theme}\" not found")
 				return
 
 			theme = obj

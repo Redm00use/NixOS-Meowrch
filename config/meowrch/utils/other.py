@@ -42,9 +42,14 @@ def overcopy(src: Path, dst: Path) -> None:
 
 	if src.is_dir():
 		shutil.copytree(src, dst)
+		# Make everything writable in the new directory
+		for root, dirs, files in os.walk(dst):
+			for d in dirs: os.chmod(os.path.join(root, d), 0o755)
+			for f in files: os.chmod(os.path.join(root, f), 0o644)
 	else:
 		dst.parent.mkdir(parents=True, exist_ok=True)
 		shutil.copy2(src, dst)
+		os.chmod(dst, 0o644)
 
 def generate_theme(template_name: str, oomox_colors: Path) -> Optional[str]:
 	template_path = OOMOX_TEMPLATES / template_name
