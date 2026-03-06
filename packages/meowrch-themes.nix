@@ -104,6 +104,7 @@ stdenv.mkDerivation rec {
         -e 's/col\.inactive_border = .*/col.inactive_border = rgba(00000000)/' \
         -e 's/drop_shadow = yes/shadow { enabled = true }/g' \
         -e 's/drop_shadow = no/shadow { enabled = false }/g' \
+        -e '/drop_shadow/d' \
         {} \;
 
     # NOTE: No cursor patch — the original pawlette cursor IS Bibata-Modern-Classic.

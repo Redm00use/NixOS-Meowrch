@@ -150,7 +150,7 @@
 
       extensions = {
         force = true;
-        packages = with firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
+        packages = with firefox-addons; [
           ublock-origin
           bitwarden
         ];
