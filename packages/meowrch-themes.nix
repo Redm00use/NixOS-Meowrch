@@ -96,11 +96,14 @@ stdenv.mkDerivation rec {
       done
     fi
 
-    # 7. Patch Hyprland custom-prefs: remove borders (visual cleanup for NixOS)
+    # 7. Patch Hyprland custom-prefs: remove borders and fix deprecated syntax (visual cleanup for NixOS)
     find $out/share/pawlette -name "*.conf" -path "*/hypr/*" -exec \
       sed -i \
         -e 's/border_size = [0-9]*/border_size = 0/' \
         -e 's/col\.active_border = .*/col.active_border = rgba(00000000)/' \
+        -e 's/col\.inactive_border = .*/col.inactive_border = rgba(00000000)/' \
+        -e 's/drop_shadow = yes/shadow { enabled = true }/g' \
+        -e 's/drop_shadow = no/shadow { enabled = false }/g' \
         {} \;
 
     # NOTE: No cursor patch — the original pawlette cursor IS Bibata-Modern-Classic.
