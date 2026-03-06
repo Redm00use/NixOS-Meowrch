@@ -112,12 +112,17 @@ class MeowInstaller:
         except: pass
 
     def update_hashes(self):
-        log.info("Auto-calculating latest source hashes...")
+        log.info("Auto-calculating latest source hashes for all packages...")
         pkgs = [
             ("packages/meowrch-themes.nix", "https://github.com/Meowrch/meowrch-themes/archive/main.tar.gz"),
             ("packages/meowrch-scripts.nix", "https://github.com/Meowrch/meowrch/archive/main.tar.gz"),
             ("pkgs/meowrch-settings/default.nix", "https://github.com/Meowrch/meowrch-settings/archive/main.tar.gz"),
-            ("pkgs/pawlette/default.nix", "https://github.com/Meowrch/pawlette/archive/main.tar.gz")
+            ("pkgs/pawlette/default.nix", "https://github.com/Meowrch/pawlette/archive/main.tar.gz"),
+            ("pkgs/libcvc/default.nix", "https://github.com/Meowrch/libcvc/archive/main.tar.gz"),
+            ("pkgs/libgray/default.nix", "https://github.com/Meowrch/libgray/archive/main.tar.gz"),
+            ("pkgs/fabric/default.nix", "https://github.com/Meowrch/fabric/archive/main.tar.gz"),
+            ("pkgs/fabric-cli/default.nix", "https://github.com/Meowrch/fabric-cli/archive/main.tar.gz"),
+            ("pkgs/hotkeyhub/default.nix", "https://github.com/Meowrch/hotkeyhub/archive/main.tar.gz"),
         ]
         for path, url in pkgs:
             fpath = os.path.join(self.source_dir, path)
