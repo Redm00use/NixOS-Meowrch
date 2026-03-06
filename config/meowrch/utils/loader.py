@@ -8,7 +8,11 @@ from utils.options import (
 	CopyOption, CopyOrGenOption, TmuxCfgOption, GTKOption, FishOption, 
 	WaybarCfgOption, KittyOption, DunstOption, CavaOption, MewlineOption
 )
-from vars import HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE	
+from vars import (
+    HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE,
+    HYPR_THEME_CFG, KITTY_THEME_CFG, WAYBAR_THEME_CFG, ROFI_THEME_CFG,
+    BTOP_THEME_CFG, STARSHIP_THEME_CFG
+)
 
 
 ##==> Настройки применения тем для конфигураций
@@ -16,14 +20,12 @@ from vars import HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE
 theme_options: List[BaseOption] = [
 	##==> Копирование конфигов
 	###############################################
-	CopyOption(_id="polybar", name="polybar.ini", path_to=HOME / ".config" / "polybar" / "config.ini", wayland_needed=False),
-	CopyOption(_id="picom", name="picom.conf", path_to=HOME / ".config" / "bspwm" / "picom.conf", wayland_needed=False),
-	CopyOption(_id="tmux_theme", is_dir=True, name="tmux-theme", path_to=HOME / ".config" / "tmux" / "theme"),
-	CopyOption(_id="starship", name="starship.toml", path_to=HOME / ".config" / "starship.toml"),
-	CopyOption(_id="rofi", name="rofi.rasi", path_to=HOME / ".config" / "rofi" / "theme.rasi"),
-	CopyOption(_id="btop", name="btop.theme", path_to=HOME / ".config" / "btop" / "themes" / "meowrch.theme"),
+	CopyOption(_id="tmux_theme", is_dir=True, name="tmux-theme", path_to=HOME / ".cache" / "meowrch" / "tmux" / "theme"),
+	CopyOption(_id="starship", name="starship.toml", path_to=STARSHIP_THEME_CFG),
+	CopyOption(_id="rofi", name="rofi.rasi", path_to=ROFI_THEME_CFG),
+	CopyOption(_id="btop", name="btop.theme", path_to=BTOP_THEME_CFG),
 	CopyOption(_id="micro", name="theme.micro", path_to=HOME / ".config" / "micro" / "colorschemes" / "meowrch.micro"),
-	CopyOption(_id="hyprland", name="hyprland-custom-prefs.conf", path_to=HOME / ".config" / "hypr" / "custom-prefs.conf", xorg_needed=False),
+	CopyOption(_id="hyprland", name="hyprland-custom-prefs.conf", path_to=HYPR_THEME_CFG, xorg_needed=False),
 
 
 	##==> Копирование / Генерация конфигов
@@ -31,19 +33,19 @@ theme_options: List[BaseOption] = [
 	CopyOrGenOption(
 		_id="alacritty",
 		name="alacritty.toml",
-		path_to=HOME / ".config" / "alacritty" / "themes" / "meowrch.toml",
+		path_to=HOME / ".cache" / "meowrch" / "alacritty" / "meowrch.toml",
 		template_name="alacritty.mustache"
 	),
 	CopyOrGenOption(
 		_id="qt5ct",
 		name="qt5ct-colors.conf",
-		path_to=HOME / ".config" / "qt5ct" / "colors" / "meowrch.conf",
+		path_to=HOME / ".cache" / "meowrch" / "qt5ct" / "colors" / "meowrch.conf",
 		template_name="qt5ct-colors.mustache"
 	),
 	CopyOrGenOption(
 		_id="qt6ct",
 		name="qt6ct-colors.conf",
-		path_to=HOME / ".config" / "qt6ct" / "colors" / "meowrch.conf",
+		path_to=HOME / ".cache" / "meowrch" / "qt6ct" / "colors" / "meowrch.conf",
 		template_name="qt6ct-colors.mustache"
 	),
 	CopyOrGenOption(
@@ -55,16 +57,10 @@ theme_options: List[BaseOption] = [
 
 	##==> Кастомные действия 
 	###############################################
-	DunstOption(
-		_id="dunst", 
-		name="dunstrc", 
-		path_to=HOME / ".config" / "dunst" / "dunstrc",
-		apply_theme=True
-	),
 	CavaOption(
 		_id="cava", 
 		name="cava", 
-		path_to=HOME / ".config" / "cava" / "config",
+		path_to=HOME / ".cache" / "meowrch" / "cava" / "config",
 		apply_theme=True
 	),
 	FishOption(
@@ -76,27 +72,14 @@ theme_options: List[BaseOption] = [
 	KittyOption(
 		_id="kitty",
 		name="kitty.conf",
-		path_to=HOME / ".config" / "kitty" / "themes" / "meowrch.conf",
+		path_to=KITTY_THEME_CFG,
 		template_name="kitty.mustache",
 		apply_theme=True
-	),
-	WaybarCfgOption(
-		_id="waybar_style",
-		name="style.css",
-		path_to=HOME / ".config" / "waybar" / "style.css",
-		xorg_needed=False,
-		reload=True
-	),
-	TmuxCfgOption(
-		_id="tmux_config",
-		name="tmux-custom-prefs.conf", 
-		path_to=HOME / ".config" / "tmux" / "tmux.conf",
-		base_config_name="tmux.conf"
 	),
 	MewlineOption(
 		_id="mewline",
 		name="mewline",
-		path_to=HOME / ".config" / "mewline"
+		path_to=HOME / ".cache" / "meowrch" / "mewline"
 	),
 	GTKOption(
 		_id="gtk_theme",

@@ -35,6 +35,14 @@ if not THEME_GEN_SCRIPT.exists():
 
 SESSION_TYPE: Optional[str] = (lambda s: s if s != "$XDG_SESSION_TYPE" else None)(expandvars("$XDG_SESSION_TYPE"))
 
-GTK2_CFG: Path = HOME / ".config" / "gtk-2.0" / "gtkrc"
+GTK2_CFG: Path = HOME / ".gtkrc-2.0"
 GTK3_CFG: Path = HOME / ".config" / "gtk-3.0" / "settings.ini"
 GTK4_CFG: Path = HOME / ".config" / "gtk-4.0" / "settings.ini"
+
+# Dynamic theme files for apps (NixOS writable locations)
+HYPR_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "hypr" / "theme.conf"
+KITTY_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "kitty" / "theme.conf"
+WAYBAR_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "waybar" / "theme.css"
+ROFI_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "rofi" / "theme.rasi"
+BTOP_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "btop" / "meowrch.theme"
+STARSHIP_THEME_CFG: Path = HOME / ".cache" / "meowrch" / "starship" / "starship.toml"
