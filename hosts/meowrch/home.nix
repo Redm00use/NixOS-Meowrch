@@ -311,9 +311,12 @@
   # ║                              Dotfiles                                    ║
   # ╚════════════════════════════════════════════════════════════════════════════╝
 
-  # Создание необходимых директорий
+  # Создание необходимых директорий и файлов-заглушек
   home.file.".local/bin/.keep".text = "";
   home.file.".config/.keep".text = "";
+  home.file.".cache/meowrch/hypr/theme.conf".text = "# Initial theme placeholder\n";
+  home.file.".cache/meowrch/kitty/theme.conf".text = "# Initial theme placeholder\n";
+  home.file.".cache/meowrch/waybar/theme.css".text = "/* Initial theme placeholder */\n";
 
   # Подключение конфигураций из репозитория
   home.file.".config/hypr" = {
