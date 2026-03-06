@@ -402,14 +402,23 @@ class GTKOption(BaseOption):
 				with open(gtk_cfg, "r") as file: content = file.read()
 				# Special handling for catppuccin theme names in gtkrc/settings.ini
 				real_theme_name = theme_name
+				is_light = self._is_light_theme(original_theme_name)
+				prefer_dark = "0" if is_light else "1"
+
 				if original_theme_name == "catppuccin-mocha":
 					real_theme_name = "pawlette-catppuccin-mocha"
 				elif original_theme_name == "catppuccin-latte":
 					real_theme_name = "pawlette-catppuccin-latte"
 
-				if f"gtk-theme-name={real_theme_name}" in content: pass
-				else:
-					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={real_theme_name}", content) if "gtk-theme-name=" in content else content + f"gtk-theme-name={real_theme_name}\n"
+				# Update theme name and dark theme preference
+				new_content = content
+				if f"gtk-theme-name={real_theme_name}" not in content:
+					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={real_theme_name}", new_content) if "gtk-theme-name=" in new_content else new_content + f"gtk-theme-name={real_theme_name}\n"
+				
+				if f"gtk-application-prefer-dark-theme={prefer_dark}" not in new_content:
+					new_content = re.sub(r"gtk-application-prefer-dark-theme=.*", f"gtk-application-prefer-dark-theme={prefer_dark}", new_content) if "gtk-application-prefer-dark-theme=" in new_content else new_content + f"gtk-application-prefer-dark-theme={prefer_dark}\n"
+
+				if new_content != content:
 					if gtk_cfg.is_symlink(): gtk_cfg.unlink()
 					with open(gtk_cfg, "w") as file: file.write(new_content)
 			except: pass
