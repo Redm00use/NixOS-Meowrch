@@ -136,10 +136,12 @@ class MeowInstaller:
 
         if self.conf["mode"] == 1:
             if not os.path.exists("/mnt/etc"):
-                log.error("/mnt is not mounted or empty. Please mount your partitions first.")
+                log.error("/mnt is not mounted or empty. Please mount your partitions first if you are bootstraping.")
                 sys.exit(1)
             self.target_dir = "/mnt/etc/nixos/meowrch"
         else:
+            if os.path.exists("/mnt/etc") and self.conf["mode"] == 0:
+                log.warn("Detected mounted /mnt. If you manually partitioned, you should choose 'Bootstrap /mnt' instead of 'Update'.")
             self.target_dir = os.path.join(os.path.expanduser("~"), "NixOS-Meowrch")
 
         self.conf["hostname"] = ask("Enter Hostname", self.conf["hostname"])
@@ -241,16 +243,36 @@ class MeowInstaller:
                     os.chmod(os.path.join(root, f), 0o755)
 
     def generate_hardware_config(self):
-        log.info("Generating hardware configuration...")
+        log.info("Generating hardware configuration (requires sudo)... ")
         hw_path = "hosts/meowrch/hardware-configuration.nix"
-        cmd = "nixos-generate-config --show-hardware-config"
+        
+        # We use sudo here because scanning hardware/partitions requires root privileges
+        cmd = "sudo nixos-generate-config --show-hardware-config"
         if self.conf["mode"] == 1:
             cmd += " --root /mnt"
         
-        result = run_command(cmd, capture_output=True)
-        with open(hw_path, "w") as f:
-            f.write(result.stdout)
-        log.success(f"Hardware configuration saved to {hw_path}")
+        # Some filesystems like Btrfs might throw warnings to stderr, 
+        # so we capture both and check if we got actual config in stdout.
+        try:
+            result = subprocess.run(
+                cmd, shell=True, text=True, capture_output=True, check=False
+            )
+            
+            if result.returncode != 0 and not result.stdout.strip():
+                log.error(f"nixos-generate-config failed with code {result.returncode}")
+                if result.stderr: log.error(f"Error: {result.stderr}")
+                sys.exit(1)
+            
+            if "Failed to retrieve subvolume info" in result.stderr:
+                log.warn("Btrfs subvolume warning detected, but proceeding with generated config.")
+
+            with open(hw_path, "w") as f:
+                f.write(result.stdout)
+            log.success(f"Hardware configuration saved to {hw_path}")
+            
+        except Exception as e:
+            log.error(f"Failed to generate hardware config: {str(e)}")
+            sys.exit(1)
 
     def install(self):
         log.info("Starting installation phase...")
