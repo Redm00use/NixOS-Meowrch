@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import logging
 import getpass
+import re
 
 # --- Configuration & Aesthetics ---
 COLORS = {
@@ -93,11 +94,9 @@ def ask_choice(prompt, options):
 # --- Installer Class ---
 class MeowInstaller:
     def __init__(self):
-        # Resolve real path of the script (handling symlinks)
         real_script_path = os.path.realpath(__file__)
         self.script_dir = os.path.dirname(real_script_path)
         
-        # If running from scripts/ folder, source_dir is parent
         if os.path.basename(self.script_dir) == "scripts":
             self.source_dir = os.path.dirname(self.script_dir)
         else:
@@ -114,22 +113,71 @@ class MeowInstaller:
     def startup(self):
         os.system('clear')
         print(BANNER)
-        print(f"{COLORS['cyan']}Welcome to Meowrch NixOS Python Installer v4.0.0 (Verified Edition){COLORS['nc']}\n")
+        print(f"{COLORS['cyan']}Welcome to Meowrch NixOS Python Installer v4.1.0 (Auto-Hash Edition){COLORS['nc']}\n")
         
-        # Check environment
         if not os.path.exists("/etc/NIXOS"):
             log.warn("This doesn't look like NixOS. Proceed with caution.")
         
-        # Check dependencies
-        for cmd in ["nix-env", "git", "sudo"]:
+        for cmd in ["nix-env", "git", "sudo", "nix-prefetch-url", "nix-hash"]:
             if shutil.which(cmd) is None:
                 log.error(f"Required command '{cmd}' not found. Please install it first.")
                 sys.exit(1)
         
         log.info("System checks passed.")
 
+    def update_source_hashes(self):
+        log.info("Refreshing source hashes to prevent 'hash mismatch' errors...")
+        
+        packages_to_update = [
+            # (File, Package Name, Repo URL, Branch/Tag)
+            ("packages/meowrch-themes.nix", "meowrch-themes", "https://github.com/Meowrch/meowrch-themes", "main"),
+            ("packages/meowrch-scripts.nix", "meowrch-scripts", "https://github.com/Meowrch/meowrch", "main"),
+            ("pkgs/meowrch-settings/default.nix", "meowrch-settings", "https://github.com/Meowrch/meowrch-settings", "main"),
+            ("pkgs/mewline/default.nix", "mewline", "https://github.com/meowrch/mewline", "v2.0.0"),
+            ("pkgs/pawlette/default.nix", "pawlette", "https://github.com/Meowrch/pawlette", "main"),
+        ]
+
+        for rel_path, pkg_name, repo_url, branch in packages_to_update:
+            file_path = os.path.join(self.source_dir, rel_path)
+            if not os.path.exists(file_path):
+                continue
+
+            tar_url = f"{repo_url}/archive/{branch}.tar.gz"
+            log.info(f"Fetching latest hash for {pkg_name}...")
+            
+            try:
+                # Fetch raw hash
+                raw_hash = subprocess.check_output(
+                    ["nix-prefetch-url", "--unpack", tar_url],
+                    text=True, stderr=subprocess.DEVNULL
+                ).strip()
+                
+                # Convert to SRI format (sha256-...)
+                sri_hash = "sha256-" + subprocess.check_output(
+                    ["nix-hash", "--to-base64", "--type", "sha256", raw_hash],
+                    text=True, stderr=subprocess.DEVNULL
+                ).strip()
+
+                # Update the file
+                with open(file_path, "r") as f:
+                    content = f.read()
+                
+                # Find 'hash = "..." ' or 'sha256 = "..." '
+                # We prioritize the first one found in the stdenv.mkDerivation block
+                new_content = re.sub(r'(hash|sha256)\s*=\s*"sha256-[^"]+";', f'\\1 = "{sri_hash}";', content, count=1)
+                
+                if new_content != content:
+                    with open(file_path, "w") as f:
+                        f.write(new_content)
+                    log.success(f"Updated hash for {pkg_name} in {rel_path}")
+                else:
+                    log.info(f"Hash for {pkg_name} is already up to date or file format mismatch.")
+
+            except Exception as e:
+                log.warn(f"Could not update hash for {pkg_name}: {str(e)}")
+
     def survey(self):
-        print(f"{COLORS['yellow']}==> Configuration Survey{COLORS['nc']}")
+        print(f"\n{COLORS['yellow']}==> Configuration Survey{COLORS['nc']}")
         
         modes = ["Apply to current system (Update)", "Install to new disk (Bootstrap /mnt)"]
         self.conf["mode"] = ask_choice("Choose installation mode:", modes)
@@ -140,7 +188,7 @@ class MeowInstaller:
                 sys.exit(1)
             self.target_dir = "/mnt/etc/nixos/meowrch"
         else:
-            if os.path.exists("/mnt/etc") and self.conf["mode"] == 0:
+            if os.path.exists("/mnt/etc"):
                 log.warn("Detected mounted /mnt. If you manually partitioned, you should choose 'Bootstrap /mnt' instead of 'Update'.")
             self.target_dir = os.path.join(os.path.expanduser("~"), "NixOS-Meowrch")
 
@@ -177,7 +225,6 @@ class MeowInstaller:
             
             os.makedirs(os.path.dirname(target_abs), exist_ok=True)
             log.info(f"Copying files from {self.source_dir} to {target_abs}...")
-            # Ignore git history and logs during copy
             shutil.copytree(
                 self.source_dir, 
                 target_abs, 
@@ -202,20 +249,12 @@ class MeowInstaller:
         # GPU Patching
         conf_nix = "hosts/meowrch/configuration.nix"
         flake_nix = "flake.nix"
-        gpu_map = {
-            0: "graphics-amd.nix",
-            1: "graphics-intel.nix",
-            2: "graphics-nvidia.nix"
-        }
+        gpu_map = {0: "graphics-amd.nix", 1: "graphics-intel.nix", 2: "graphics-nvidia.nix"}
         gpu_file = gpu_map[self.conf["gpu"]]
         
-        # 1. Patch configuration.nix
-        with open(conf_nix, "r") as f:
-            lines = f.readlines()
-        
-        # Remove any existing nvidia lines to avoid duplicates
+        # Patch configuration.nix
+        with open(conf_nix, "r") as f: lines = f.readlines()
         lines = [l for l in lines if "nvidia.acceptLicense = true" not in l]
-        
         with open(conf_nix, "w") as f:
             for line in lines:
                 if "GPU_MODULE_LINE" in line:
@@ -223,18 +262,12 @@ class MeowInstaller:
                 elif self.conf["gpu"] == 2 and "allowUnfreePredicate" in line:
                     f.write(line)
                     f.write("    nvidia.acceptLicense = true;\n")
-                else:
-                    f.write(line)
+                else: f.write(line)
         
-        # 2. Patch flake.nix
+        # Patch flake.nix for Nvidia
         if self.conf["gpu"] == 2:
-            with open(flake_nix, "r") as f:
-                f_lines = f.readlines()
-            
-            # Remove all existing license lines to avoid duplicates
+            with open(flake_nix, "r") as f: f_lines = f.readlines()
             f_lines = [l for l in f_lines if "config.nvidia.acceptLicense = true" not in l]
-            
-            # Insert only once after the first allowUnfree occurrence
             inserted = False
             with open(flake_nix, "w") as f:
                 for line in f_lines:
@@ -245,78 +278,57 @@ class MeowInstaller:
         
         log.info(f"Patched configuration for {gpu_file}")
 
-        # Fix permissions
         if os.path.exists("scripts"):
             for root, dirs, files in os.walk("scripts"):
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0o755)
+                for f in files: os.chmod(os.path.join(root, f), 0o755)
 
     def generate_hardware_config(self):
         log.info("Generating hardware configuration (requires sudo)... ")
         hw_path = "hosts/meowrch/hardware-configuration.nix"
-        
-        # We use sudo here because scanning hardware/partitions requires root privileges
         cmd = "sudo nixos-generate-config --show-hardware-config"
-        if self.conf["mode"] == 1:
-            cmd += " --root /mnt"
+        if self.conf["mode"] == 1: cmd += " --root /mnt"
         
-        # Some filesystems like Btrfs might throw warnings to stderr, 
-        # so we capture both and check if we got actual config in stdout.
         try:
-            result = subprocess.run(
-                cmd, shell=True, text=True, capture_output=True, check=False
-            )
-            
+            result = subprocess.run(cmd, shell=True, text=True, capture_output=True, check=False)
             if result.returncode != 0 and not result.stdout.strip():
-                log.error(f"nixos-generate-config failed with code {result.returncode}")
-                if result.stderr: log.error(f"Error: {result.stderr}")
+                log.error(f"nixos-generate-config failed: {result.stderr}")
                 sys.exit(1)
-            
             if "Failed to retrieve subvolume info" in result.stderr:
-                log.warn("Btrfs subvolume warning detected, but proceeding with generated config.")
-
-            with open(hw_path, "w") as f:
-                f.write(result.stdout)
+                log.warn("Btrfs subvolume warning detected, but proceeding.")
+            with open(hw_path, "w") as f: f.write(result.stdout)
             log.success(f"Hardware configuration saved to {hw_path}")
-            
         except Exception as e:
             log.error(f"Failed to generate hardware config: {str(e)}")
             sys.exit(1)
 
     def install(self):
         log.info("Starting installation phase...")
-        
-        # Git staging (mandatory for flakes)
-        if not os.path.exists(".git"):
-            run_command("git init -q")
+        if not os.path.exists(".git"): run_command("git init -q")
         run_command("git add -A --force")
-        
         env = os.environ.copy()
         env["NIXPKGS_ALLOW_UNFREE"] = "1"
         
         try:
             if self.conf["mode"] == 1:
-                log.info("Running nixos-install...")
                 subprocess.run(["sudo", "nixos-install", "--flake", ".#meowrch", "--root", "/mnt", "--impure"], env=env, check=True)
-                log.success("Installation complete! You can now reboot into your new system.")
             else:
-                log.info("Running nixos-rebuild boot...")
                 subprocess.run(["sudo", "nixos-rebuild", "boot", "--flake", ".#meowrch", "--impure"], env=env, check=True)
-                log.success("Update complete! Changes will take effect after reboot.")
+            log.success("Action complete! Please reboot.")
         except subprocess.CalledProcessError:
-            log.error("The installation command failed. Check the output above for errors.")
+            log.error("The installation command failed.")
             sys.exit(1)
 
 def main():
     installer = MeowInstaller()
     try:
         installer.startup()
+        installer.update_source_hashes() # New step: Auto-hash update
         installer.survey()
         installer.prepare_files()
         installer.generate_hardware_config()
         installer.install()
     except KeyboardInterrupt:
-        print(f"\n{COLORS['red']}Installation cancelled by user.{COLORS['nc']}")
+        print(f"\n{COLORS['red']}Installation cancelled.{COLORS['nc']}")
         sys.exit(0)
     except Exception as e:
         log.error(f"Unexpected error: {str(e)}")
