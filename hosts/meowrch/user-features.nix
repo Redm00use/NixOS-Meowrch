@@ -29,10 +29,10 @@ in {
   };
 
   config = {
-    programs.steam.enable = cfg.steam;
-    programs.gamemode.enable = cfg.gamemode;
-    virtualisation.docker.enable = cfg.docker;
-    services.flatpak.enable = cfg.flatpak;
+    programs.steam.enable = lib.mkForce cfg.steam;
+    programs.gamemode.enable = lib.mkForce cfg.gamemode;
+    virtualisation.docker.enable = lib.mkForce cfg.docker;
+    services.flatpak.enable = lib.mkForce cfg.flatpak;
 
     environment.systemPackages = with pkgs; [
       (lib.mkIf cfg.mangohud mangohud)
