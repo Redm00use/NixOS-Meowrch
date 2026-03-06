@@ -209,8 +209,12 @@ class MeowInstaller:
         }
         gpu_file = gpu_map[self.conf["gpu"]]
         
+        # 1. Patch configuration.nix
         with open(conf_nix, "r") as f:
             lines = f.readlines()
+        
+        # Remove any existing nvidia lines to avoid duplicates
+        lines = [l for l in lines if "nvidia.acceptLicense = true" not in l]
         
         with open(conf_nix, "w") as f:
             for line in lines:
@@ -222,17 +226,22 @@ class MeowInstaller:
                 else:
                     f.write(line)
         
-        # Nvidia special: patch flake.nix for license
+        # 2. Patch flake.nix
         if self.conf["gpu"] == 2:
             with open(flake_nix, "r") as f:
                 f_lines = f.readlines()
+            
+            # Remove all existing license lines to avoid duplicates
+            f_lines = [l for l in f_lines if "config.nvidia.acceptLicense = true" not in l]
+            
+            # Insert only once after the first allowUnfree occurrence
+            inserted = False
             with open(flake_nix, "w") as f:
                 for line in f_lines:
-                    if "config.allowUnfree = true;" in line:
-                        f.write(line)
+                    f.write(line)
+                    if "config.allowUnfree = true;" in line and not inserted:
                         f.write("      config.nvidia.acceptLicense = true;\n")
-                    else:
-                        f.write(line)
+                        inserted = True
         
         log.info(f"Patched configuration for {gpu_file}")
 
