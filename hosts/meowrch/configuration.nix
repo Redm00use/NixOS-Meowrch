@@ -30,6 +30,7 @@
       ../../modules/nixos/system/security.nix
       ../../modules/nixos/system/services.nix
       ../../modules/nixos/system/fonts.nix
+      ../../modules/nixos/system/features.nix
 
       # Desktop / theming
       ../../modules/nixos/desktop/sddm.nix

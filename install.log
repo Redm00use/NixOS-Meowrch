@@ -1,10 +1,27 @@
-2026-03-06 15:59:17,468 [INFO] [0;34m[INFO][0m System checks passed.
-2026-03-06 15:59:24,167 [INFO] [0;34m[INFO][0m Preparing files...
-2026-03-06 15:59:24,167 [INFO] [0;34m[INFO][0m Already in target directory. Skipping copy.
-2026-03-06 15:59:24,168 [INFO] [0;34m[INFO][0m Generated hosts/meowrch/user-local.nix
-2026-03-06 15:59:24,169 [INFO] [0;34m[INFO][0m Patched configuration for graphics-amd.nix
-2026-03-06 15:59:24,170 [INFO] [0;34m[INFO][0m Generating hardware configuration (requires sudo)... 
-2026-03-06 15:59:24,439 [INFO] [0;32m[SUCCESS][0m Hardware configuration saved to hosts/meowrch/hardware-configuration.nix
-2026-03-06 15:59:24,440 [INFO] [0;34m[INFO][0m Starting installation phase...
-2026-03-06 15:59:24,460 [INFO] [0;34m[INFO][0m Running nixos-rebuild boot...
-2026-03-06 15:59:58,641 [INFO] [0;32m[SUCCESS][0m Update complete! Changes will take effect after reboot.
+2026-03-06 19:42:18,206 [INFO] [0;34m[INFO][0m Starting Meowrch Ultimate Installer...
+2026-03-06 19:42:31,053 [INFO] [0;34m[INFO][0m Source and target are the same. Skipping file sync.
+2026-03-06 19:42:31,054 [INFO] [0;34m[INFO][0m Starting build process...
+2026-03-06 19:42:32,649 [ERROR] [0;31m[ERROR][0m Installation failed. Check install.log
+e 'seq' builtin
+         at /nix/store/gxfq7q8jr2lqzjrc3s8dpx5l2rj9h281-source/lib/modules.nix:361:18:
+          360|         options = checked options;
+          361|         config = checked (removeAttrs config [ "_module" ]);
+             |                  ^
+          362|         _module = checked (config._module);
+
+       … while calling the 'throw' builtin
+         at /nix/store/gxfq7q8jr2lqzjrc3s8dpx5l2rj9h281-source/lib/modules.nix:333:13:
+          332|           else
+          333|             throw baseMsg
+             |             ^
+          334|         else
+
+       error: The option `meowrch' does not exist. Definition values:
+       - In `/nix/store/zwy675w9bbqchrbrqkz0pgghgrnqjw2h-source/hosts/meowrch/user-features.nix':
+           {
+             features = {
+               discord = true;
+               flatpak = true;
+               gamemode = true;
+           ...
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."meowrch".config.system.build.nixos-rebuild' --impure --no-link' returned non-zero exit status 1.

@@ -189,7 +189,7 @@ class MeowInstaller:
         os.chdir(target_abs)
         # Write feature file
         with open("hosts/meowrch/user-features.nix", "w") as f:
-            f.write("{\n  meowrch.features = {\n")
+            f.write("{ ... }: {\n  meowrch.features = {\n")
             for feat in self.conf["features"]: f.write(f"    {feat} = true;\n")
             f.write("  };\n}\n")
         
