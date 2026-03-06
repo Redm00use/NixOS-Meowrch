@@ -62,10 +62,6 @@
     swaylock-effects
     hyprlock
 
-    # Notifications
-    dunst
-    libnotify
-
     # Input methods
     cliphist
 

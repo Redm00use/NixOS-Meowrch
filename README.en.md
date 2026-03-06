@@ -106,10 +106,12 @@ NixOS-Meowrch/
 ## 🚀 Installation
 
 ### 1. Preparation (Important!)
-Before you begin, ensure you have NixOS installed. You will need **Git** to clone this repository:
+For the easiest installation, it is recommended to first install a clean **NixOS with KDE Plasma desktop** (using the official graphical installer). This ensures all basic drivers and settings are present.
+
+After installing NixOS, open a terminal and prepare the environment:
 ```bash
-# Temporarily install git
-nix-shell -p git
+# Temporarily install git and python to run the installer
+nix-shell -p git python3
 ```
 
 > [!CAUTION]
@@ -120,8 +122,8 @@ nix-shell -p git
 ```bash
 git clone https://github.com/Redm00use/NixOS-Meowrch.git
 cd NixOS-Meowrch
-chmod +x install.sh
-./install.sh
+chmod +x install.py
+./install.py
 ```
 
 ---
