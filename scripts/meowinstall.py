@@ -54,34 +54,30 @@ class MeowLogger:
 
 log = MeowLogger()
 
-# --- Terminal UI Helpers ---
+# --- UI Helpers ---
 def get_key():
     fd = sys.stdin.fileno()
     old = termios.tcgetattr(fd)
     try:
         tty.setraw(fd)
         ch = sys.stdin.read(1)
-        if ch == '\x1b':
-            ch += sys.stdin.read(2)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        if ch == '\x1b': ch += sys.stdin.read(2)
+    finally: termios.tcsetattr(fd, termios.TCSADRAIN, old)
     return ch
 
 def interactive_menu(title, options, multi=False, detected_idx=None):
     index = detected_idx if detected_idx is not None else 0
     selected = [False] * len(options)
-    
     while True:
         os.system('clear')
         print(BANNER)
         print(f"{COLORS['yellow']}==> {title}{COLORS['nc']}")
         print(f"{COLORS['dim']}(Arrows: Navigate, {'Space: Toggle, ' if multi else ''}Enter: Confirm){COLORS['nc']}\n")
-        
         for i, opt in enumerate(options):
             prefix = f"{COLORS['cyan']}➔{COLORS['nc']}" if i == index else " "
             if multi:
                 check = f"[{COLORS['green']}x{COLORS['nc']}]" if selected[i] else "[ ]"
-                label = f"{opt['label']}"
+                label = opt['label']
                 if i == index: label = f"{COLORS['rev']} {label} {COLORS['nc']}"
                 print(f" {prefix} {check} {label}")
             else:
@@ -89,7 +85,6 @@ def interactive_menu(title, options, multi=False, detected_idx=None):
                 if i == detected_idx: label += f" {COLORS['green']}(Detected){COLORS['nc']}"
                 if i == index: label = f"{COLORS['rev']} {label} {COLORS['nc']}"
                 print(f" {prefix} {label}")
-
         key = get_key()
         if key == '\x1b[A': index = (index - 1) % len(options)
         elif key == '\x1b[B': index = (index + 1) % len(options)
@@ -98,7 +93,7 @@ def interactive_menu(title, options, multi=False, detected_idx=None):
             if multi: return [options[i]['id'] for i, s in enumerate(selected) if s]
             return index
 
-# --- Main Installer ---
+# --- Installer ---
 class MeowInstaller:
     def __init__(self):
         self.source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -108,7 +103,7 @@ class MeowInstaller:
     def startup(self):
         os.system('clear')
         print(BANNER)
-        log.info("Starting Meowrch Ultimate Installer...")
+        log.info("Meowrch Ultimate Installer v4.6.0 starting...")
         try:
             lspci = subprocess.check_output("lspci", text=True)
             if "NVIDIA" in lspci: self.detected_gpu = 2
@@ -116,107 +111,96 @@ class MeowInstaller:
             else: self.detected_gpu = 1
         except: pass
 
+    def update_hashes(self):
+        log.info("Auto-calculating latest source hashes...")
+        pkgs = [
+            ("packages/meowrch-themes.nix", "https://github.com/Meowrch/meowrch-themes/archive/main.tar.gz"),
+            ("packages/meowrch-scripts.nix", "https://github.com/Meowrch/meowrch/archive/main.tar.gz"),
+            ("pkgs/meowrch-settings/default.nix", "https://github.com/Meowrch/meowrch-settings/archive/main.tar.gz"),
+            ("pkgs/pawlette/default.nix", "https://github.com/Meowrch/pawlette/archive/main.tar.gz")
+        ]
+        for path, url in pkgs:
+            fpath = os.path.join(self.source_dir, path)
+            if not os.path.exists(fpath): continue
+            try:
+                # Fetch new hash
+                raw_hash = subprocess.check_output(["nix-prefetch-url", "--unpack", url], text=True, stderr=subprocess.DEVNULL).strip()
+                sri_hash = "sha256-" + subprocess.check_output(["nix-hash", "--to-base64", "--type", "sha256", raw_hash], text=True, stderr=subprocess.DEVNULL).strip()
+                
+                with open(fpath, "r") as f: content = f.read()
+                # Powerful regex to catch hash = "..." or sha256 = "..."
+                new_content = re.sub(r'(hash|sha256)\s*=\s*"sha256-[^"]+";', f'\\1 = "{sri_hash}";', content)
+                
+                if new_content != content:
+                    with open(fpath, "w") as f: f.write(new_content)
+                    log.success(f"Fixed hash in {path}")
+                    # CRITICAL: Stage the fixed file for Git so Nix Flakes see it!
+                    subprocess.run(["git", "add", fpath], cwd=self.source_dir, stderr=subprocess.DEVNULL)
+            except Exception as e:
+                log.warn(f"Skip hash fix for {path}: {e}")
+
     def survey(self):
-        # 1. Mode
         self.conf["mode"] = interactive_menu("Installation Mode", ["Update current system", "Clean Install (Manual partitioning /mnt)"])
-        
-        # 2. Identity
         print(f"\n{COLORS['yellow']}==> Identity{COLORS['nc']}")
-        self.conf["hostname"] = input(f" ? Enter Hostname [{self.conf['hostname']}]: ") or self.conf['hostname']
-        self.conf["username"] = input(f" ? Enter Username [{self.conf['username']}]: ") or self.conf['username']
+        self.conf["hostname"] = input(f" ? Hostname [{self.conf['hostname']}]: ") or self.conf['hostname']
+        self.conf["username"] = input(f" ? Username [{self.conf['username']}]: ") or self.conf['username']
+        self.conf["gpu"] = interactive_menu("GPU Driver", ["AMD", "Intel", "NVIDIA"], detected_idx=self.detected_gpu)
         
-        # 3. GPU
-        self.conf["gpu"] = interactive_menu("Select GPU Driver", ["AMD (Mesa)", "Intel (Mesa)", "NVIDIA (Proprietary)"], detected_idx=self.detected_gpu)
-        
-        # 4. Features (Categorized)
         feature_list = [
-            {"id": "header_gaming", "label": f"{COLORS['bold']}--- GAMING ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "steam", "label": "Steam", "selected": False},
             {"id": "gamemode", "label": "GameMode", "selected": False},
-            {"id": "mangohud", "label": "MangoHud", "selected": False},
-            {"id": "header_social", "label": f"\n{COLORS['bold']}--- SOCIAL ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "telegram", "label": "Telegram", "selected": True},
             {"id": "discord", "label": "Discord", "selected": True},
-            {"id": "obsidian", "label": "Obsidian", "selected": False},
-            {"id": "header_office", "label": f"\n{COLORS['bold']}--- OFFICE ---{COLORS['nc']}", "selected": False, "is_header": True},
-            {"id": "libreoffice", "label": "LibreOffice", "selected": False},
-            {"id": "thunderbird", "label": "Thunderbird", "selected": False},
-            {"id": "header_dev", "label": f"\n{COLORS['bold']}--- DEVELOPMENT ---{COLORS['nc']}", "selected": False, "is_header": True},
-            {"id": "docker", "label": "Docker", "selected": False},
-            {"id": "vscode", "label": "VS Code", "selected": False},
             {"id": "zed", "label": "Zed Editor", "selected": True},
-            {"id": "header_sys", "label": f"\n{COLORS['bold']}--- SYSTEM ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "flatpak", "label": "Flatpak", "selected": True},
             {"id": "wine", "label": "Wine", "selected": False},
         ]
-        
-        # Filter out headers from the final selection
-        raw_features = interactive_menu("Select Applications", [f for f in feature_list], multi=True)
-        self.conf["features"] = [f for f in raw_features if not f.startswith("header_")]
+        self.conf["features"] = interactive_menu("Select Applications", feature_list, multi=True)
 
     def prepare(self):
-        # Refresh hashes logic (already robust)
+        self.update_hashes() # AUTO-FIX HASHES BEFORE INSTALL
         target = "/mnt/etc/nixos/meowrch" if self.conf["mode"] == 1 else os.path.expanduser("~/NixOS-Meowrch")
-        target_abs = os.path.abspath(target)
         source_abs = os.path.abspath(self.source_dir)
+        target_abs = os.path.abspath(target)
 
-        # Sync files only if directories are different
         if source_abs != target_abs:
-            log.info(f"Syncing files to {target}...")
+            log.info(f"Syncing to {target}...")
             os.makedirs(target_abs, exist_ok=True)
             for root, dirs, files in os.walk(self.source_dir):
                 if ".git" in dirs: dirs.remove(".git")
-                if "__pycache__" in dirs: dirs.remove("__pycache__")
-                
                 rel = os.path.relpath(root, self.source_dir)
                 dest = os.path.join(target_abs, rel)
                 os.makedirs(dest, exist_ok=True)
-                
                 for f in files:
-                    # Ignore logs and temp files
-                    if f.endswith(".log") or f == "error.txt" or f == "result": continue
-                    
-                    src_file = os.path.join(root, f)
-                    rel_file = os.path.join(rel, f) if rel != "." else f
-                    dst_file = os.path.join(dest, f)
-                    
-                    if rel_file in PROTECTED_FILES and os.path.exists(dst_file):
-                        continue
-                    shutil.copy2(src_file, dst_file)
-        else:
-            log.info("Source and target are the same. Skipping file sync.")
-
+                    if f.endswith(".log") or f == "result": continue
+                    if os.path.join(rel, f) in PROTECTED_FILES and os.path.exists(os.path.join(dest, f)): continue
+                    shutil.copy2(os.path.join(root, f), os.path.join(dest, f))
+        
         os.chdir(target_abs)
-        # Write feature file
         with open("hosts/meowrch/user-features.nix", "w") as f:
             f.write("{ ... }: {\n  meowrch.features = {\n")
             for feat in self.conf["features"]: f.write(f"    {feat} = true;\n")
             f.write("  };\n}\n")
-        
-        # Write identity
         with open("hosts/meowrch/user-local.nix", "w") as f:
             f.write(f'{{ meowrch.user = "{self.conf["username"]}"; meowrch.hostname = "{self.conf["hostname"]}"; }}\n')
 
     def install(self):
-        log.info("Starting build process...")
+        log.info("Starting build...")
+        if not os.path.exists(".git"): subprocess.run(["git", "init", "-q"])
+        subprocess.run(["git", "add", "-A"]) # Stage everything
         env = os.environ.copy(); env["NIXPKGS_ALLOW_UNFREE"] = "1"
-        cmd = ["sudo", "nixos-install", "--flake", ".#meowrch", "--root", "/mnt", "--impure"] if self.conf["mode"] == 1 else ["sudo", "nixos-rebuild", "boot", "--flake", ".#meowrch", "--impure"]
+        cmd = ["sudo", "nixos-rebuild", "boot", "--flake", ".#meowrch", "--impure"]
+        if self.conf["mode"] == 1: cmd = ["sudo", "nixos-install", "--flake", ".#meowrch", "--root", "/mnt", "--impure"]
         
-        # Run with live output to log and screen
         process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         with open("install.log", "a") as f:
             for line in process.stdout:
-                sys.stdout.write(line)
-                f.write(line)
+                sys.stdout.write(line); f.write(line)
         process.wait()
-        if process.returncode == 0: log.success("Installation finished! Please reboot.")
-        else: log.error("Installation failed. Check install.log")
+        if process.returncode == 0: log.success("Finished! Please reboot.")
+        else: log.error("Failed. See install.log")
 
 if __name__ == "__main__":
     inst = MeowInstaller()
-    try:
-        inst.startup()
-        inst.survey()
-        inst.prepare()
-        inst.install()
+    try: inst.startup(); inst.survey(); inst.prepare(); inst.install()
     except KeyboardInterrupt: print("\nAborted.")
