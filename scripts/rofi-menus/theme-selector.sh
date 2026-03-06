@@ -42,9 +42,9 @@ main() {
     if [[ "$selected" == "Random Theme" ]]; then
         themes=($(echo "$THEMES_JSON" | jq -r 'keys[]'))
         random_theme="${themes[RANDOM % ${#themes[@]}]}"
-        pawlette set-theme "$random_theme"
+        python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$random_theme"
     else
-        pawlette set-theme "$selected"
+        python3 $HOME/.config/meowrch/meowrch.py --action set-theme --name "$selected"
     fi
 }
 
