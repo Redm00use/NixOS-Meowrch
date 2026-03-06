@@ -18,6 +18,7 @@
       /etc/nixos/hardware-configuration.nix
     ];
     userPackagesPath = ./user-packages.nix;
+    userFeaturesPath = ./user-features.nix;
   in (
     [
       # System / hardware related modules
@@ -40,6 +41,7 @@
     ]
     ++ lib.optional (hardwareConfigPath != null) hardwareConfigPath
     ++ lib.optional (lib.pathExists userPackagesPath) userPackagesPath
+    ++ lib.optional (lib.pathExists userFeaturesPath) userFeaturesPath
     ++ lib.optional (hardwareConfigPath == null) {
       fileSystems."/" = {
         device = "/dev/disk/by-label/nixos";
