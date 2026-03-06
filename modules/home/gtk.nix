@@ -16,10 +16,10 @@
     ];
 
     # Default theme — pawlette will override via gsettings when switching themes.
-    # adw-gtk3 package ships BOTH adw-gtk3 (light) and adw-gtk3-dark variants.
+    # pawlette themes are provided by the meowrch-themes package.
     theme = {
-      name = lib.mkDefault "adw-gtk3-dark"; # mocha is default, latte overrides at runtime
-      package = lib.mkDefault pkgs.adw-gtk3;
+      name = lib.mkDefault "pawlette-catppuccin-mocha";
+      package = lib.mkDefault pkgs.meowrch-themes;
     };
 
     # Papirus (without -Dark suffix) auto-follows color-scheme: dark → -Dark, light → regular

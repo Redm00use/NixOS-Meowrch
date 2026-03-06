@@ -254,6 +254,43 @@ class KittyOption(BaseOption):
 		)
 
 @dataclass
+class ZedOption(BaseOption):
+	name: str
+	path_to: str
+	template_name: str
+
+	def _run(self, theme_name: str) -> None:
+		cfg_path = MEOWRCH_THEMES / theme_name / self.name
+		oomox_colors_path = OOMOX_COLORS(theme_name)
+		template_path = OOMOX_TEMPLATES / self.template_name
+		
+		if not self.path_to.parent.exists():
+			self.path_to.parent.mkdir(parents=True, exist_ok=True)
+
+		if self.path_to.exists():
+			try: os.chmod(self.path_to, 0o644)
+			except: pass
+
+		if cfg_path.exists() and cfg_path.is_file():
+			overcopy(cfg_path, self.path_to)
+			return
+
+		if template_path.exists() and oomox_colors_path.exists():
+			generated_theme = generate_theme(
+				template_name=self.template_name,
+				oomox_colors=oomox_colors_path,
+			)
+
+			if generated_theme is not None:
+				# For Zed, we might want to update only the theme field in settings.json
+				# but for simplicity in this port, we overwrite a dynamic settings file
+				with open(self.path_to, "w") as file:
+					file.write(generated_theme)
+				return
+
+		logging.error(f"Theme \"{theme_name}\" has not been applied to Zed!")
+
+@dataclass
 class MewlineOption(BaseOption):
 	name: str
 	path_to: str
@@ -363,9 +400,16 @@ class GTKOption(BaseOption):
 			if not gtk_cfg.exists(): gtk_cfg.touch()
 			try:
 				with open(gtk_cfg, "r") as file: content = file.read()
-				if f"gtk-theme-name={theme_name}" in content: pass
+				# Special handling for catppuccin theme names in gtkrc/settings.ini
+				real_theme_name = theme_name
+				if original_theme_name == "catppuccin-mocha":
+					real_theme_name = "pawlette-catppuccin-mocha"
+				elif original_theme_name == "catppuccin-latte":
+					real_theme_name = "pawlette-catppuccin-latte"
+
+				if f"gtk-theme-name={real_theme_name}" in content: pass
 				else:
-					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={theme_name}", content) if "gtk-theme-name=" in content else content + f"gtk-theme-name={theme_name}\n"
+					new_content = re.sub(r"gtk-theme-name=.*", f"gtk-theme-name={real_theme_name}", content) if "gtk-theme-name=" in content else content + f"gtk-theme-name={real_theme_name}\n"
 					if gtk_cfg.is_symlink(): gtk_cfg.unlink()
 					with open(gtk_cfg, "w") as file: file.write(new_content)
 			except: pass
@@ -373,9 +417,17 @@ class GTKOption(BaseOption):
 		is_light = self._is_light_theme(original_theme_name)
 		color_scheme = "prefer-light" if is_light else "prefer-dark"
 		icon_theme = "Papirus" if is_light else "Papirus-Dark"
+		
+		# Map meowrch theme names to actual GTK theme names for gsettings
+		gsettings_theme = theme_name
+		if original_theme_name == "catppuccin-mocha":
+			gsettings_theme = "pawlette-catppuccin-mocha"
+		elif original_theme_name == "catppuccin-latte":
+			gsettings_theme = "pawlette-catppuccin-latte"
+
 		if SESSION_TYPE == "wayland":
 			try:
-				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", theme_name], check=False)
+				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", gsettings_theme], check=False)
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", color_scheme], check=False)
 				subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "icon-theme", icon_theme], check=False)
 				subprocess.run(["hyprctl", "keyword", "decoration:shadow:enabled", "false"], check=False)

@@ -6,12 +6,12 @@ from pathlib import Path
 from utils.schemes import BaseOption
 from utils.options import (
 	CopyOption, CopyOrGenOption, TmuxCfgOption, GTKOption, FishOption, 
-	WaybarCfgOption, KittyOption, DunstOption, CavaOption, MewlineOption
+	WaybarCfgOption, KittyOption, DunstOption, CavaOption, MewlineOption, ZedOption
 )
 from vars import (
     HOME, MEOWRCH_DIR, GTK2_CFG, GTK3_CFG, GTK4_CFG, LOG_FILE,
     HYPR_THEME_CFG, KITTY_THEME_CFG, WAYBAR_THEME_CFG, ROFI_THEME_CFG,
-    BTOP_THEME_CFG, STARSHIP_THEME_CFG
+    BTOP_THEME_CFG, STARSHIP_THEME_CFG, ZED_THEME_CFG
 )
 
 
@@ -35,6 +35,12 @@ theme_options: List[BaseOption] = [
 		name="alacritty.toml",
 		path_to=HOME / ".cache" / "meowrch" / "alacritty" / "meowrch.toml",
 		template_name="alacritty.mustache"
+	),
+	ZedOption(
+		_id="zed",
+		name="zed.json",
+		path_to=ZED_THEME_CFG,
+		template_name="zed.mustache"
 	),
 	CopyOrGenOption(
 		_id="qt5ct",
