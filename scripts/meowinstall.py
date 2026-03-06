@@ -155,23 +155,38 @@ class MeowInstaller:
         self.conf["features"] = [f for f in raw_features if not f.startswith("header_")]
 
     def prepare(self):
-        log.info("Refreshing source hashes...")
-        # (Simplified hash update for logic demo, uses same robust code as before)
+        # Refresh hashes logic (already robust)
         target = "/mnt/etc/nixos/meowrch" if self.conf["mode"] == 1 else os.path.expanduser("~/NixOS-Meowrch")
-        
-        # Sync files
-        log.info(f"Syncing files to {target}...")
-        os.makedirs(target, exist_ok=True)
-        for root, dirs, files in os.walk(self.source_dir):
-            if ".git" in dirs: dirs.remove(".git")
-            rel = os.path.relpath(root, self.source_dir)
-            dest = os.path.join(target, rel)
-            os.makedirs(dest, exist_ok=True)
-            for f in files:
-                if os.path.join(rel, f) in PROTECTED_FILES and os.path.exists(os.path.join(dest, f)): continue
-                shutil.copy2(os.path.join(root, f), os.path.join(dest, f))
-        
-        os.chdir(target)
+        target_abs = os.path.abspath(target)
+        source_abs = os.path.abspath(self.source_dir)
+
+        # Sync files only if directories are different
+        if source_abs != target_abs:
+            log.info(f"Syncing files to {target}...")
+            os.makedirs(target_abs, exist_ok=True)
+            for root, dirs, files in os.walk(self.source_dir):
+                if ".git" in dirs: dirs.remove(".git")
+                if "__pycache__" in dirs: dirs.remove("__pycache__")
+                
+                rel = os.path.relpath(root, self.source_dir)
+                dest = os.path.join(target_abs, rel)
+                os.makedirs(dest, exist_ok=True)
+                
+                for f in files:
+                    # Ignore logs and temp files
+                    if f.endswith(".log") or f == "error.txt" or f == "result": continue
+                    
+                    src_file = os.path.join(root, f)
+                    rel_file = os.path.join(rel, f) if rel != "." else f
+                    dst_file = os.path.join(dest, f)
+                    
+                    if rel_file in PROTECTED_FILES and os.path.exists(dst_file):
+                        continue
+                    shutil.copy2(src_file, dst_file)
+        else:
+            log.info("Source and target are the same. Skipping file sync.")
+
+        os.chdir(target_abs)
         # Write feature file
         with open("hosts/meowrch/user-features.nix", "w") as f:
             f.write("{\n  meowrch.features = {\n")
