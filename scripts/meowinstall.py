@@ -33,6 +33,15 @@ BANNER = f"""{COLORS['purple']}
                                  By Redm00use
 {COLORS['nc']}"""
 
+# Files that should NEVER be overwritten during an update
+PROTECTED_FILES = [
+    "hosts/meowrch/user-local.nix",
+    "hosts/meowrch/user-packages.nix",
+    "hosts/meowrch/hardware-configuration.nix",
+    "config/hypr/monitors.conf",
+    "config/hypr/userprefs.conf"
+]
+
 # --- Logging Setup ---
 class MeowLogger:
     def __init__(self, log_file="install.log"):
@@ -113,23 +122,40 @@ class MeowInstaller:
     def startup(self):
         os.system('clear')
         print(BANNER)
-        print(f"{COLORS['cyan']}Welcome to Meowrch NixOS Python Installer v4.1.0 (Auto-Hash Edition){COLORS['nc']}\n")
+        print(f"{COLORS['cyan']}Welcome to Meowrch NixOS Python Installer v4.2.0 (Smart Update Edition){COLORS['nc']}\n")
         
         if not os.path.exists("/etc/NIXOS"):
             log.warn("This doesn't look like NixOS. Proceed with caution.")
         
         for cmd in ["nix-env", "git", "sudo", "nix-prefetch-url", "nix-hash"]:
             if shutil.which(cmd) is None:
-                log.error(f"Required command '{cmd}' not found. Please install it first.")
+                log.error(f"Required command '{cmd}' not found.")
                 sys.exit(1)
         
         log.info("System checks passed.")
 
+    def detect_gpu(self):
+        log.info("Detecting hardware...")
+        try:
+            lspci = subprocess.check_output("lspci", text=True)
+            if "NVIDIA" in lspci:
+                log.info("NVIDIA GPU detected.")
+                self.conf["gpu"] = 2
+            elif "AMD" in lspci or "ATI" in lspci:
+                log.info("AMD GPU detected.")
+                self.conf["gpu"] = 0
+            elif "Intel" in lspci:
+                log.info("Intel GPU detected.")
+                self.conf["gpu"] = 1
+            else:
+                log.warn("Could not determine GPU. Defaulting to AMD (Mesa).")
+                self.conf["gpu"] = 0
+        except:
+            log.warn("lspci not available. Manual selection required.")
+
     def update_source_hashes(self):
-        log.info("Refreshing source hashes to prevent 'hash mismatch' errors...")
-        
+        log.info("Refreshing source hashes...")
         packages_to_update = [
-            # (File, Package Name, Repo URL, Branch/Tag)
             ("packages/meowrch-themes.nix", "meowrch-themes", "https://github.com/Meowrch/meowrch-themes", "main"),
             ("packages/meowrch-scripts.nix", "meowrch-scripts", "https://github.com/Meowrch/meowrch", "main"),
             ("pkgs/meowrch-settings/default.nix", "meowrch-settings", "https://github.com/Meowrch/meowrch-settings", "main"),
@@ -139,120 +165,92 @@ class MeowInstaller:
 
         for rel_path, pkg_name, repo_url, branch in packages_to_update:
             file_path = os.path.join(self.source_dir, rel_path)
-            if not os.path.exists(file_path):
-                continue
-
+            if not os.path.exists(file_path): continue
             tar_url = f"{repo_url}/archive/{branch}.tar.gz"
-            log.info(f"Fetching latest hash for {pkg_name}...")
-            
             try:
-                # Fetch raw hash
-                raw_hash = subprocess.check_output(
-                    ["nix-prefetch-url", "--unpack", tar_url],
-                    text=True, stderr=subprocess.DEVNULL
-                ).strip()
-                
-                # Convert to SRI format (sha256-...)
-                sri_hash = "sha256-" + subprocess.check_output(
-                    ["nix-hash", "--to-base64", "--type", "sha256", raw_hash],
-                    text=True, stderr=subprocess.DEVNULL
-                ).strip()
-
-                # Update the file
-                with open(file_path, "r") as f:
-                    content = f.read()
-                
-                # Find 'hash = "..." ' or 'sha256 = "..." '
-                # We prioritize the first one found in the stdenv.mkDerivation block
+                raw_hash = subprocess.check_output(["nix-prefetch-url", "--unpack", tar_url], text=True, stderr=subprocess.DEVNULL).strip()
+                sri_hash = "sha256-" + subprocess.check_output(["nix-hash", "--to-base64", "--type", "sha256", raw_hash], text=True, stderr=subprocess.DEVNULL).strip()
+                with open(file_path, "r") as f: content = f.read()
                 new_content = re.sub(r'(hash|sha256)\s*=\s*"sha256-[^"]+";', f'\\1 = "{sri_hash}";', content, count=1)
-                
                 if new_content != content:
-                    with open(file_path, "w") as f:
-                        f.write(new_content)
-                    log.success(f"Updated hash for {pkg_name} in {rel_path}")
-                else:
-                    log.info(f"Hash for {pkg_name} is already up to date or file format mismatch.")
-
-            except Exception as e:
-                log.warn(f"Could not update hash for {pkg_name}: {str(e)}")
+                    with open(file_path, "w") as f: f.write(new_content)
+                    log.success(f"Updated {pkg_name} hash.")
+            except: pass
 
     def survey(self):
         print(f"\n{COLORS['yellow']}==> Configuration Survey{COLORS['nc']}")
-        
         modes = ["Apply to current system (Update)", "Install to new disk (Bootstrap /mnt)"]
         self.conf["mode"] = ask_choice("Choose installation mode:", modes)
 
         if self.conf["mode"] == 1:
             if not os.path.exists("/mnt/etc"):
-                log.error("/mnt is not mounted or empty. Please mount your partitions first if you are bootstraping.")
+                log.error("/mnt is not mounted. Mount your partitions first.")
                 sys.exit(1)
             self.target_dir = "/mnt/etc/nixos/meowrch"
         else:
-            if os.path.exists("/mnt/etc"):
-                log.warn("Detected mounted /mnt. If you manually partitioned, you should choose 'Bootstrap /mnt' instead of 'Update'.")
             self.target_dir = os.path.join(os.path.expanduser("~"), "NixOS-Meowrch")
 
         self.conf["hostname"] = ask("Enter Hostname", self.conf["hostname"])
         self.conf["username"] = ask("Enter Username", self.conf["username"])
         
-        gpus = ["AMD (Recommended)", "Intel", "Nvidia (Proprietary)"]
-        self.conf["gpu"] = ask_choice("Select GPU Driver:", gpus)
+        self.detect_gpu()
+        gpus = ["AMD (Mesa)", "Intel (Mesa)", "Nvidia (Proprietary)"]
+        self.conf["gpu"] = ask_choice("Confirm GPU Driver:", gpus)
 
-        print(f"\n{COLORS['yellow']}==> Summary{COLORS['nc']}")
+        print(f"\n{COLORS['bold']}INSTALLATION SUMMARY{COLORS['nc']}")
         print(f"  Mode:     {modes[self.conf['mode']]}")
         print(f"  Target:   {self.target_dir}")
-        print(f"  Hostname: {self.conf['hostname']}")
-        print(f"  User:     {self.conf['username']}")
+        print(f"  User:     {self.conf['username']} (@{self.conf['hostname']})")
         print(f"  GPU:      {gpus[self.conf['gpu']]}")
+        print(f"  Updates:  Smart (will preserve your custom binds and monitor configs)")
         
-        if ask("Proceed with installation?", "y").lower() != 'y':
-            log.info("Installation aborted by user.")
+        if ask("Proceed?", "y").lower() != 'y':
+            log.info("Aborted.")
             sys.exit(0)
 
     def prepare_files(self):
-        log.info("Preparing files...")
+        log.info("Syncing core files...")
         target_abs = os.path.abspath(self.target_dir)
         
         if os.path.abspath(self.source_dir) == target_abs:
-            log.info("Already in target directory. Skipping copy.")
+            log.info("Running from target dir. No copy needed.")
         else:
-            if os.path.exists(target_abs):
-                log.info(f"Cleaning existing directory {target_abs}...")
-                if target_abs == "/" or target_abs == os.path.expanduser("~"):
-                    log.error("Safety trigger: Target is root or home. Aborting.")
-                    sys.exit(1)
-                shutil.rmtree(target_abs)
+            os.makedirs(target_abs, exist_ok=True)
             
-            os.makedirs(os.path.dirname(target_abs), exist_ok=True)
-            log.info(f"Copying files from {self.source_dir} to {target_abs}...")
-            shutil.copytree(
-                self.source_dir, 
-                target_abs, 
-                symlinks=True, 
-                ignore=shutil.ignore_patterns('.git', 'install.log', '__pycache__')
-            )
+            # Recursive copy with smart skip
+            for root, dirs, files in os.walk(self.source_dir):
+                if ".git" in dirs: dirs.remove(".git")
+                if "__pycache__" in dirs: dirs.remove("__pycache__")
+                
+                rel_path = os.path.relpath(root, self.source_dir)
+                dest_root = os.path.join(target_abs, rel_path)
+                os.makedirs(dest_root, exist_ok=True)
+                
+                for f in files:
+                    src_file = os.path.join(root, f)
+                    rel_file = os.path.join(rel_path, f) if rel_path != "." else f
+                    dst_file = os.path.join(dest_root, f)
+                    
+                    # SMART CHECK: If file is protected and already exists, SKIP IT
+                    if rel_file in PROTECTED_FILES and os.path.exists(dst_file):
+                        log.info(f"Skipping protected file (preserved): {rel_file}")
+                        continue
+                    
+                    shutil.copy2(src_file, dst_file)
 
         os.chdir(target_abs)
         
         # Write user-local.nix
         user_local_path = "hosts/meowrch/user-local.nix"
-        content = f"""# This file is auto-generated by Meowrch Installer.
-{{
-  meowrch.user = "{self.conf['username']}";
-  meowrch.hostname = "{self.conf['hostname']}";
-}}
-"""
-        with open(user_local_path, "w") as f:
-            f.write(content)
-        log.info(f"Generated {user_local_path}")
-
-        # GPU Patching
+        if not os.path.exists(user_local_path):
+            with open(user_local_path, "w") as f:
+                f.write(f'# Auto-generated\n{{\n  meowrch.user = "{self.conf["username"]}";\n  meowrch.hostname = "{self.conf["hostname"]}";\n}}\n')
+        
+        # GPU Patching (Configuration.nix)
         conf_nix = "hosts/meowrch/configuration.nix"
-        flake_nix = "flake.nix"
         gpu_map = {0: "graphics-amd.nix", 1: "graphics-intel.nix", 2: "graphics-nvidia.nix"}
         gpu_file = gpu_map[self.conf["gpu"]]
         
-        # Patch configuration.nix
         with open(conf_nix, "r") as f: lines = f.readlines()
         lines = [l for l in lines if "nvidia.acceptLicense = true" not in l]
         with open(conf_nix, "w") as f:
@@ -264,8 +262,9 @@ class MeowInstaller:
                     f.write("    nvidia.acceptLicense = true;\n")
                 else: f.write(line)
         
-        # Patch flake.nix for Nvidia
+        # Flake Nvidia license
         if self.conf["gpu"] == 2:
+            flake_nix = "flake.nix"
             with open(flake_nix, "r") as f: f_lines = f.readlines()
             f_lines = [l for l in f_lines if "config.nvidia.acceptLicense = true" not in l]
             inserted = False
@@ -275,65 +274,55 @@ class MeowInstaller:
                     if "config.allowUnfree = true;" in line and not inserted:
                         f.write("      config.nvidia.acceptLicense = true;\n")
                         inserted = True
-        
-        log.info(f"Patched configuration for {gpu_file}")
 
         if os.path.exists("scripts"):
-            for root, dirs, files in os.walk("scripts"):
+            for root, _, files in os.walk("scripts"):
                 for f in files: os.chmod(os.path.join(root, f), 0o755)
 
     def generate_hardware_config(self):
-        log.info("Generating hardware configuration (requires sudo)... ")
         hw_path = "hosts/meowrch/hardware-configuration.nix"
+        if os.path.exists(hw_path) and self.conf["mode"] == 0:
+            log.info("Hardware config exists, skipping generation.")
+            return
+            
+        log.info("Generating hardware config...")
         cmd = "sudo nixos-generate-config --show-hardware-config"
         if self.conf["mode"] == 1: cmd += " --root /mnt"
-        
         try:
-            result = subprocess.run(cmd, shell=True, text=True, capture_output=True, check=False)
-            if result.returncode != 0 and not result.stdout.strip():
-                log.error(f"nixos-generate-config failed: {result.stderr}")
-                sys.exit(1)
-            if "Failed to retrieve subvolume info" in result.stderr:
-                log.warn("Btrfs subvolume warning detected, but proceeding.")
-            with open(hw_path, "w") as f: f.write(result.stdout)
-            log.success(f"Hardware configuration saved to {hw_path}")
-        except Exception as e:
-            log.error(f"Failed to generate hardware config: {str(e)}")
-            sys.exit(1)
+            res = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+            with open(hw_path, "w") as f: f.write(res.stdout)
+        except: pass
 
     def install(self):
-        log.info("Starting installation phase...")
+        log.info("Installing...")
         if not os.path.exists(".git"): run_command("git init -q")
         run_command("git add -A --force")
         env = os.environ.copy()
         env["NIXPKGS_ALLOW_UNFREE"] = "1"
-        
         try:
             if self.conf["mode"] == 1:
                 subprocess.run(["sudo", "nixos-install", "--flake", ".#meowrch", "--root", "/mnt", "--impure"], env=env, check=True)
             else:
                 subprocess.run(["sudo", "nixos-rebuild", "boot", "--flake", ".#meowrch", "--impure"], env=env, check=True)
-            log.success("Action complete! Please reboot.")
-        except subprocess.CalledProcessError:
-            log.error("The installation command failed.")
+            log.success("Done! Reboot to see changes.")
+        except:
+            log.error("Installation failed.")
             sys.exit(1)
 
 def main():
     installer = MeowInstaller()
     try:
         installer.startup()
-        installer.update_source_hashes() # New step: Auto-hash update
+        installer.update_source_hashes()
         installer.survey()
         installer.prepare_files()
         installer.generate_hardware_config()
         installer.install()
     except KeyboardInterrupt:
-        print(f"\n{COLORS['red']}Installation cancelled.{COLORS['nc']}")
+        print("\nExit.")
         sys.exit(0)
     except Exception as e:
-        log.error(f"Unexpected error: {str(e)}")
-        import traceback
-        log.error(traceback.format_exc())
+        log.error(f"Error: {str(e)}")
         sys.exit(1)
 
 if __name__ == "__main__":
