@@ -1,0 +1,19 @@
+{
+  "theme": "One Dark Pro",
+  "theme_mode": "dark",
+  "ui_font_size": 14,
+  "buffer_font_size": 14,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_family": "JetBrainsMono Nerd Font",
+  "tab_size": 2,
+  "soft_wrap": "editor_width",
+  "git.git_gutter": "tracked_files",
+  "assistant": {
+    "enabled": true,
+    "version": "2",
+    "default_model": {
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-r1-0528"
+    }
+  }
+}
