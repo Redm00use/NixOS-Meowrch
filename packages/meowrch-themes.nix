@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     owner = "Meowrch";
     repo = "meowrch-themes";
     rev = "main";
-    hash = "sha256-KAXoEP18KbFQLuXh1QYOKrsEdOe6zlNJpQCjrpp5mi8=";
+    hash = "sha256-DXteZOOXU+qGYd1o5J+MUjv8lx2u3MNPFmWxoCcbTY8I=";
   };
 
   nativeBuildInputs = [ gtk3 ];
