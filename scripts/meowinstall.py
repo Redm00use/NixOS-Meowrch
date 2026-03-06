@@ -76,6 +76,9 @@ def interactive_menu(title, options, multi=False, detected_idx=None):
         for i, opt in enumerate(options):
             prefix = f"{COLORS['cyan']}➔{COLORS['nc']}" if i == index else " "
             if multi:
+                if isinstance(opt, dict) and opt.get('is_header'):
+                    print(f" {opt['label']}")
+                    continue
                 check = f"[{COLORS['green']}x{COLORS['nc']}]" if selected[i] else "[ ]"
                 label = opt['label']
                 if i == index: label = f"{COLORS['rev']} {label} {COLORS['nc']}"
@@ -86,11 +89,15 @@ def interactive_menu(title, options, multi=False, detected_idx=None):
                 if i == index: label = f"{COLORS['rev']} {label} {COLORS['nc']}"
                 print(f" {prefix} {label}")
         key = get_key()
-        if key == '\x1b[A': index = (index - 1) % len(options)
-        elif key == '\x1b[B': index = (index + 1) % len(options)
+        if key == '\x1b[A': 
+            index = (index - 1) % len(options)
+            while multi and options[index].get('is_header'): index = (index - 1) % len(options)
+        elif key == '\x1b[B': 
+            index = (index + 1) % len(options)
+            while multi and options[index].get('is_header'): index = (index + 1) % len(options)
         elif key == ' ' and multi: selected[index] = not selected[index]
         elif key == '\r':
-            if multi: return [options[i]['id'] for i, s in enumerate(selected) if s]
+            if multi: return [options[i]['id'] for i, s in enumerate(selected) if s if not options[i].get('is_header')]
             return index
 
 # --- Installer ---
@@ -103,7 +110,7 @@ class MeowInstaller:
     def startup(self):
         os.system('clear')
         print(BANNER)
-        log.info("Meowrch Ultimate Installer v4.6.0 starting...")
+        log.info("Meowrch Ultimate Installer v4.6.1 starting...")
         try:
             lspci = subprocess.check_output("lspci", text=True)
             if "NVIDIA" in lspci: self.detected_gpu = 2
@@ -113,36 +120,32 @@ class MeowInstaller:
 
     def update_hashes(self):
         log.info("Auto-calculating latest source hashes for all packages...")
+        # (Relative Path, URL, Name)
         pkgs = [
-            ("packages/meowrch-themes.nix", "https://github.com/Meowrch/meowrch-themes/archive/main.tar.gz"),
-            ("packages/meowrch-scripts.nix", "https://github.com/Meowrch/meowrch/archive/main.tar.gz"),
-            ("pkgs/meowrch-settings/default.nix", "https://github.com/Meowrch/meowrch-settings/archive/main.tar.gz"),
-            ("pkgs/pawlette/default.nix", "https://github.com/Meowrch/pawlette/archive/main.tar.gz"),
-            ("pkgs/libcvc/default.nix", "https://github.com/Meowrch/libcvc/archive/main.tar.gz"),
-            ("pkgs/libgray/default.nix", "https://github.com/Meowrch/libgray/archive/main.tar.gz"),
-            ("pkgs/fabric/default.nix", "https://github.com/Meowrch/fabric/archive/main.tar.gz"),
-            ("pkgs/fabric-cli/default.nix", "https://github.com/Meowrch/fabric-cli/archive/main.tar.gz"),
-            ("pkgs/hotkeyhub/default.nix", "https://github.com/Meowrch/hotkeyhub/archive/main.tar.gz"),
+            ("packages/meowrch-themes.nix", "https://github.com/Meowrch/meowrch-themes/archive/main.tar.gz", "themes"),
+            ("packages/meowrch-scripts.nix", "https://github.com/Meowrch/meowrch/archive/main.tar.gz", "scripts"),
+            ("pkgs/meowrch-settings/default.nix", "https://github.com/Meowrch/meowrch-settings/archive/main.tar.gz", "settings"),
+            ("pkgs/pawlette/default.nix", "https://github.com/Meowrch/pawlette/archive/main.tar.gz", "pawlette"),
+            ("pkgs/libcvc/default.nix", "https://github.com/linuxmint/cinnamon-desktop/archive/6.6.2.tar.gz", "libcvc"),
+            ("pkgs/libgray/default.nix", "https://github.com/Meowrch/libgray/archive/main.tar.gz", "libgray"),
+            ("pkgs/fabric/default.nix", "https://github.com/Fabric-Development/fabric/archive/fd2aabbd7e1859aa7c11c626a6c36a937aca736a.tar.gz", "fabric"),
+            ("pkgs/fabric-cli/default.nix", "https://github.com/Fabric-Development/fabric-cli/archive/main.tar.gz", "fabric-cli"),
+            ("pkgs/hotkeyhub/default.nix", "https://github.com/Meowrch/hotkeyhub/archive/main.tar.gz", "hotkeyhub"),
         ]
-        for path, url in pkgs:
+        for path, url, name in pkgs:
             fpath = os.path.join(self.source_dir, path)
             if not os.path.exists(fpath): continue
             try:
-                # Fetch new hash
                 raw_hash = subprocess.check_output(["nix-prefetch-url", "--unpack", url], text=True, stderr=subprocess.DEVNULL).strip()
                 sri_hash = "sha256-" + subprocess.check_output(["nix-hash", "--to-base64", "--type", "sha256", raw_hash], text=True, stderr=subprocess.DEVNULL).strip()
-                
                 with open(fpath, "r") as f: content = f.read()
-                # Powerful regex to catch hash = "..." or sha256 = "..."
                 new_content = re.sub(r'(hash|sha256)\s*=\s*"sha256-[^"]+";', f'\\1 = "{sri_hash}";', content)
-                
                 if new_content != content:
                     with open(fpath, "w") as f: f.write(new_content)
                     log.success(f"Fixed hash in {path}")
-                    # CRITICAL: Stage the fixed file for Git so Nix Flakes see it!
                     subprocess.run(["git", "add", fpath], cwd=self.source_dir, stderr=subprocess.DEVNULL)
             except Exception as e:
-                log.warn(f"Skip hash fix for {path}: {e}")
+                log.warn(f"Skip hash fix for {name}: {e}")
 
     def survey(self):
         self.conf["mode"] = interactive_menu("Installation Mode", ["Update current system", "Clean Install (Manual partitioning /mnt)"])
@@ -152,18 +155,29 @@ class MeowInstaller:
         self.conf["gpu"] = interactive_menu("GPU Driver", ["AMD", "Intel", "NVIDIA"], detected_idx=self.detected_gpu)
         
         feature_list = [
+            {"id": "h1", "label": f"{COLORS['bold']}--- GAMING ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "steam", "label": "Steam", "selected": False},
             {"id": "gamemode", "label": "GameMode", "selected": False},
+            {"id": "mangohud", "label": "MangoHud", "selected": False},
+            {"id": "h2", "label": f"\n{COLORS['bold']}--- SOCIAL ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "telegram", "label": "Telegram", "selected": True},
             {"id": "discord", "label": "Discord", "selected": True},
+            {"id": "obsidian", "label": "Obsidian", "selected": False},
+            {"id": "h3", "label": f"\n{COLORS['bold']}--- OFFICE ---{COLORS['nc']}", "selected": False, "is_header": True},
+            {"id": "libreoffice", "label": "LibreOffice", "selected": False},
+            {"id": "thunderbird", "label": "Thunderbird", "selected": False},
+            {"id": "h4", "label": f"\n{COLORS['bold']}--- DEV ---{COLORS['nc']}", "selected": False, "is_header": True},
+            {"id": "docker", "label": "Docker", "selected": False},
+            {"id": "vscode", "label": "VS Code", "selected": False},
             {"id": "zed", "label": "Zed Editor", "selected": True},
+            {"id": "h5", "label": f"\n{COLORS['bold']}--- SYSTEM ---{COLORS['nc']}", "selected": False, "is_header": True},
             {"id": "flatpak", "label": "Flatpak", "selected": True},
             {"id": "wine", "label": "Wine", "selected": False},
         ]
         self.conf["features"] = interactive_menu("Select Applications", feature_list, multi=True)
 
     def prepare(self):
-        self.update_hashes() # AUTO-FIX HASHES BEFORE INSTALL
+        self.update_hashes()
         target = "/mnt/etc/nixos/meowrch" if self.conf["mode"] == 1 else os.path.expanduser("~/NixOS-Meowrch")
         source_abs = os.path.abspath(self.source_dir)
         target_abs = os.path.abspath(target)
@@ -177,7 +191,7 @@ class MeowInstaller:
                 dest = os.path.join(target_abs, rel)
                 os.makedirs(dest, exist_ok=True)
                 for f in files:
-                    if f.endswith(".log") or f == "result": continue
+                    if f.endswith(".log") or f == "result" or f == "error.txt": continue
                     if os.path.join(rel, f) in PROTECTED_FILES and os.path.exists(os.path.join(dest, f)): continue
                     shutil.copy2(os.path.join(root, f), os.path.join(dest, f))
         
@@ -192,11 +206,10 @@ class MeowInstaller:
     def install(self):
         log.info("Starting build...")
         if not os.path.exists(".git"): subprocess.run(["git", "init", "-q"])
-        subprocess.run(["git", "add", "-A"]) # Stage everything
+        subprocess.run(["git", "add", "-A"])
         env = os.environ.copy(); env["NIXPKGS_ALLOW_UNFREE"] = "1"
         cmd = ["sudo", "nixos-rebuild", "boot", "--flake", ".#meowrch", "--impure"]
         if self.conf["mode"] == 1: cmd = ["sudo", "nixos-install", "--flake", ".#meowrch", "--root", "/mnt", "--impure"]
-        
         process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         with open("install.log", "a") as f:
             for line in process.stdout:
