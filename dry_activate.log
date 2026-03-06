@@ -1,0 +1,3 @@
+building the system configuration...
+warning: Git tree '/home/kotlin/NixOS-Meowrch' is dirty
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."meowrch".config.system.build.toplevel' --no-link --show-trace --impure' returned non-zero exit status 1.
