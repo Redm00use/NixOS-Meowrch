@@ -105,6 +105,30 @@ NixOS-Meowrch/
 
 ## 🚀 Installation
 
+### 🎮 GPU profiles in the installer
+
+The installer now supports these profiles:
+
+- `AMD` — for AMD GPUs
+- `Intel` — for integrated Intel graphics
+- `Nvidia` — for systems with dedicated NVIDIA GPUs
+- `Nvidia PRIME` — for hybrid laptops with iGPU + NVIDIA dGPU
+
+### 🧩 NVIDIA PRIME: how to find correct Bus IDs
+
+For hybrid laptops using `Nvidia PRIME`, run:
+
+```bash
+lspci -nn | grep -E "VGA|3D|Display"
+```
+
+Example conversion:
+
+- `00:02.0` → `PCI:0:2:0`
+- `01:00.0` → `PCI:1:0:0`
+
+Then verify the values in `modules/nixos/system/graphics-nvidia-prime.nix:1` before applying.
+
 ### 1. Preparation (Important!)
 For the easiest installation, it is recommended to first install a clean **NixOS with KDE Plasma desktop** (using the official graphical installer). This ensures all basic drivers and settings are present.
 
