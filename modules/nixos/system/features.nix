@@ -46,7 +46,7 @@ in {
       (lib.mkIf cfg.thunderbird thunderbird)
       (lib.mkIf cfg.vscode vscode)
       (lib.mkIf cfg.zed zed-editor)
-      (lib.mkIf cfg.wine wine-wow64)
+      (lib.mkIf cfg.wine wine64)
     ];
   };
 }

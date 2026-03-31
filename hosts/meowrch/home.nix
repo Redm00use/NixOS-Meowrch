@@ -134,6 +134,7 @@
     accent = "blue";
 
     # Disable problematic integrations
+    firefox.enable = false;
     starship.enable = false;
     delta.enable = false; # workaround: programs.git.delta.enable renamed in HM 25.11
   };
