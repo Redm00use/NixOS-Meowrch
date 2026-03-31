@@ -62,8 +62,9 @@ if [ "$DEFAULT_GPU_INDEX" -ne 4 ] && command -v lspci >/dev/null 2>&1; then
     GPU_LSPCI_INFO="$(lspci -nn | grep -E 'VGA|3D|Display' || true)"
     if echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA' && { echo "$GPU_LSPCI_INFO" | grep -qi 'Intel' || echo "$GPU_LSPCI_INFO" | grep -qi 'AMD\|Advanced Micro Devices\|ATI'; }; then
         HYBRID_GPU_DETECTED=true
+        DEFAULT_GPU_INDEX=3
     fi
-    if echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA'; then
+    if [ "$HYBRID_GPU_DETECTED" = false ] && echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA'; then
         DEFAULT_GPU_INDEX=2
     elif echo "$GPU_LSPCI_INFO" | grep -qi 'AMD\|Advanced Micro Devices\|ATI'; then
         DEFAULT_GPU_INDEX=0
