@@ -27,6 +27,7 @@ NC='\033[0m'
 TARGET_DIR=""
 IS_ISO=false
 FLAKE_NAME="meowrch"
+DEFAULT_GPU_INDEX=0
 
 clear
 echo -e "${PURPLE}
@@ -48,6 +49,12 @@ echo -e "${BLUE}Starting pre-install checks...${NC}" && sleep 1
 
 if [ -f "/etc/NIXOS" ] && grep -q "iso" /etc/os-release 2>/dev/null; then
     IS_ISO=true
+fi
+
+if command -v systemd-detect-virt >/dev/null 2>&1; then
+    if systemd-detect-virt --quiet; then
+        DEFAULT_GPU_INDEX=4
+    fi
 fi
 
 ask() {
@@ -116,6 +123,11 @@ while true; do
 done
 
 GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia" "Nvidia PRIME (Hybrid Laptop)" "Virtual Machine")
+if [ "$DEFAULT_GPU_INDEX" -eq 4 ]; then
+    echo -e "${BLUE}[INFO] Virtual machine detected. Recommended GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
+else
+    echo -e "${BLUE}[INFO] Default GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
+fi
 ask_choice "Select GPU Driver:" "${GPU_OPTIONS[@]}"
 GPU_CHOICE=$CHOICE_RESULT
 
