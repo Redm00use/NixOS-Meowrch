@@ -113,6 +113,7 @@ The installer now supports these profiles:
 - `Intel` — for integrated Intel graphics
 - `Nvidia` — for systems with dedicated NVIDIA GPUs
 - `Nvidia PRIME` — for hybrid laptops with iGPU + NVIDIA dGPU
+- `Virtual Machine` — for QEMU/KVM, SPICE, virtio-gpu, VMware, and similar VMs
 
 ### 🧩 NVIDIA PRIME: how to find correct Bus IDs
 

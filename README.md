@@ -113,6 +113,7 @@ NixOS-Meowrch/
 - `Intel` — для встроенной Intel графики
 - `Nvidia` — для систем с дискретной NVIDIA
 - `Nvidia PRIME` — для гибридных ноутбуков с iGPU + NVIDIA dGPU
+- `Virtual Machine` — для QEMU/KVM, SPICE, virtio-gpu, VMware и похожих VM
 
 ### 🧩 NVIDIA PRIME: как узнать правильные Bus ID
 

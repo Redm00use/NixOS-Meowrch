@@ -115,7 +115,7 @@ while true; do
     fi
 done
 
-GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia" "Nvidia PRIME (Hybrid Laptop)")
+GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia" "Nvidia PRIME (Hybrid Laptop)" "Virtual Machine")
 ask_choice "Select GPU Driver:" "${GPU_OPTIONS[@]}"
 GPU_CHOICE=$CHOICE_RESULT
 
@@ -208,6 +208,9 @@ case "$GPU_CHOICE" in
         sed -i '/^[[:space:]]*config\.nvidia\.acceptLicense = true;/d' flake.nix
         sed -i '/^[[:space:]]*config\.allowUnfree = true;/a \      config.nvidia.acceptLicense = true;' flake.nix
         echo -e "${YELLOW}[WARNING] Verify bus IDs for NVIDIA PRIME with:${NC} lspci -nn | grep -E \"VGA|3D|Display\""
+        ;;
+    4)
+        sed -i 's|.*# GPU_MODULE_LINE|      ../../modules/nixos/system/graphics-vm.nix # GPU_MODULE_LINE|' "$CONF_NIX"
         ;;
 esac
 
