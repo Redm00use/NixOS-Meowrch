@@ -57,6 +57,17 @@ if command -v systemd-detect-virt >/dev/null 2>&1; then
     fi
 fi
 
+if [ "$DEFAULT_GPU_INDEX" -ne 4 ] && command -v lspci >/dev/null 2>&1; then
+    GPU_LSPCI_INFO="$(lspci -nn | grep -E 'VGA|3D|Display' || true)"
+    if echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA'; then
+        DEFAULT_GPU_INDEX=2
+    elif echo "$GPU_LSPCI_INFO" | grep -qi 'AMD\|Advanced Micro Devices\|ATI'; then
+        DEFAULT_GPU_INDEX=0
+    elif echo "$GPU_LSPCI_INFO" | grep -qi 'Intel'; then
+        DEFAULT_GPU_INDEX=1
+    fi
+fi
+
 ask() {
     local prompt="$1"
     local default="$2"
@@ -125,6 +136,8 @@ done
 GPU_OPTIONS=("AMD (Recommended)" "Intel" "Nvidia" "Nvidia PRIME (Hybrid Laptop)" "Virtual Machine")
 if [ "$DEFAULT_GPU_INDEX" -eq 4 ]; then
     echo -e "${BLUE}[INFO] Virtual machine detected. Recommended GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
+elif command -v lspci >/dev/null 2>&1; then
+    echo -e "${BLUE}[INFO] Detected GPU hint: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
 else
     echo -e "${BLUE}[INFO] Default GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
 fi
