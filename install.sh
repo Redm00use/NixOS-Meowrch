@@ -28,6 +28,7 @@ TARGET_DIR=""
 IS_ISO=false
 FLAKE_NAME="meowrch"
 DEFAULT_GPU_INDEX=0
+HYBRID_GPU_DETECTED=false
 
 clear
 echo -e "${PURPLE}
@@ -59,6 +60,9 @@ fi
 
 if [ "$DEFAULT_GPU_INDEX" -ne 4 ] && command -v lspci >/dev/null 2>&1; then
     GPU_LSPCI_INFO="$(lspci -nn | grep -E 'VGA|3D|Display' || true)"
+    if echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA' && { echo "$GPU_LSPCI_INFO" | grep -qi 'Intel' || echo "$GPU_LSPCI_INFO" | grep -qi 'AMD\|Advanced Micro Devices\|ATI'; }; then
+        HYBRID_GPU_DETECTED=true
+    fi
     if echo "$GPU_LSPCI_INFO" | grep -qi 'NVIDIA'; then
         DEFAULT_GPU_INDEX=2
     elif echo "$GPU_LSPCI_INFO" | grep -qi 'AMD\|Advanced Micro Devices\|ATI'; then
@@ -138,6 +142,9 @@ if [ "$DEFAULT_GPU_INDEX" -eq 4 ]; then
     echo -e "${BLUE}[INFO] Virtual machine detected. Recommended GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
 elif command -v lspci >/dev/null 2>&1; then
     echo -e "${BLUE}[INFO] Detected GPU hint: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
+    if [ "$HYBRID_GPU_DETECTED" = true ]; then
+        echo -e "${YELLOW}[INFO] Hybrid GPU laptop detected. Consider using: Nvidia PRIME (Hybrid Laptop)${NC}"
+    fi
 else
     echo -e "${BLUE}[INFO] Default GPU profile: ${GPU_OPTIONS[$DEFAULT_GPU_INDEX]}${NC}"
 fi
