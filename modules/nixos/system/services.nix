@@ -13,11 +13,11 @@
       "net.core.netdev_max_backlog" = 4096;
       "fs.file-max" = 2097152;
     };
-    
+
     extraModprobeConfig = ''
       # NVIDIA GPU Optimizations
       options nvidia NVreg_UsePageAttributeTable=1 NVreg_InitializeSystemMemoryAllocations=0 NVreg_RegistryDwords=RmEnableAggressiveVblank=1 NVreg_EnableS0ixPowerManagement=1
-      
+
       # AMD GPU Optimizations
       options amdgpu si_support=1 cik_support=1
       options radeon si_support=0 cik_support=0
@@ -69,8 +69,7 @@
       extraRemotes = [ "lvfs-testing" ];
     };
 
-    # Flatpak support
-    flatpak.enable = true;
+
 
     # GVFS for file manager functionality
     gvfs.enable = true;

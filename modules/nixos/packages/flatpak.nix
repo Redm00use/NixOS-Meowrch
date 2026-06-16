@@ -6,7 +6,7 @@
   # ╚════════════════════════════════════════════════════════════════════════════╝
 
   # Включить поддержку Flatpak
-  services.flatpak.enable = true;
+  services.flatpak.enable = lib.mkDefault true;
 
   # Настройка XDG Desktop Portal для Flatpak
   xdg.portal = {
