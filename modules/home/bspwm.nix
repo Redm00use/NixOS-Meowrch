@@ -3,8 +3,18 @@
 # ║                                                                            ║
 # ║  Источник (meowrch/meowrch @ 4.1.1):                                       ║
 # ║    home/.config/bspwm/bspwmrc                                              ║
-# ║    home/.config/bspwm/sxhkdrc     ← хоткеи перенесены 1:1                  ║
-# ║    home/.config/polybar/launch.sh                                          ║
+# ║    home/.config/bspwm/sxhkdrc              ← хоткеи перенесены 1:1         ║
+# ║    home/.config/bspwm/default/initial.sh                                   ║
+# ║    home/.config/bspwm/default/monitors.sh                                  ║
+# ║    home/.config/bspwm/default/appearance.sh                                ║
+# ║    home/.config/bspwm/default/windowrules.sh                               ║
+# ║    home/.config/bspwm/default/autostart.sh                                 ║
+# ║    home/.config/bspwm/default/clipboard.sh                                 ║
+# ║                                                                            ║
+# ║  Оригинал разбит на bspwmrc + 6 подключаемых .sh. Здесь всё это собрано    ║
+# ║  в один HM-модуль: xsession.windowManager.bspwm сам генерирует bspwmrc,    ║
+# ║  поэтому подключать default/*.sh нечем — их содержимое перенесено в        ║
+# ║  settings / rules / extraConfig / startupPrograms.                         ║
 # ║                                                                            ║
 # ║  Хоткеи намеренно совпадают с Hyprland-сессией (modules/home/hyprland.nix) ║
 # ║  — так же, как в оригинале.                                                ║
@@ -17,56 +27,207 @@
 }: let
   bin = "$XDG_BIN_HOME";
   term = "kitty";
+
+  # Абсолютные пути: bspwmrc выполняется на старте сессии, PATH там ещё
+  # не обязательно наполнен.
+  jq = "${pkgs.jq}/bin/jq";
+  xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";
+  xdpyinfo = "${pkgs.xorg.xdpyinfo}/bin/xdpyinfo";
+
+  picomLaunch = "${config.xdg.configHome}/bspwm/picom-launch.sh";
 in {
   xsession.windowManager.bspwm = {
     enable = true;
 
-    # 10 рабочих столов, как в Hyprland-сессии
+    # default/monitors.sh: 10 рабочих столов, как в Hyprland-сессии
     monitors.focused = ["1" "2" "3" "4" "5" "6" "7" "8" "9" "10"];
 
+    # ══ default/appearance.sh ═════════════════════════════════════════════
     settings = {
-      # Соответствует default/appearance.lua Hyprland-сессии
       border_width = 3;
-      window_gap = 8;
+      borderless_monocle = true;
+
+      # ВНИМАНИЕ: window_gap здесь 10, а не 8.
+      # В Hyprland-сессии gaps_out = 8 (default/appearance.lua), но у bspwm
+      # оригинал ставит именно `bspc config window_gap 10`. Раньше здесь
+      # стояло 8 — скопировано по ошибке из Hyprland-конфига.
+      window_gap = 10;
+
+      # Тоже расхождение, исправлено: в appearance.sh явно false.
+      gapless_monocle = false;
+
       split_ratio = 0.5;
 
       normal_border_color = "#45475a";
+      # Перетирается ниже в extraConfig, если есть палитра pawlette.
       focused_border_color = "#b4befe";
       presel_feedback_color = "#697dfd";
 
-      borderless_monocle = true;
-      gapless_monocle = true;
       focus_follows_pointer = true;
+
+      # Без pointer_action* модификатор сам по себе ничего не делает —
+      # floating-окна нельзя было ни двигать, ни ресайзить мышью.
       pointer_modifier = "mod4";
+      pointer_action1 = "move";
+      pointer_action2 = "resize_side";
+      pointer_action3 = "resize_corner";
     };
 
+    # ══ default/windowrules.sh (часть без размеров) ════════════════════════
     rules = {
-      "Vlc".state = "floating";
-      ".blueman-manager".state = "floating";
-      "Qt5ct".state = "floating";
-      "Qt6ct".state = "floating";
-      "org.kde.ark".state = "floating";
-      "Yad".state = "floating";
-      "com.saivert.pwvucontrol".state = "floating";
-      "Gnome-calculator".state = "floating";
-      "org.gnome.Loupe".state = "floating";
-      "org.gnome.FileRoller".state = "floating";
-      "com.meowrch.HotkeyHub".state = "floating";
-      "Qalculate-gtk".state = "floating";
-      "com.gabm.satty".state = "floating";
+      # Фикс отображения Java-приложений
+      "*:sun-awt-X11-XWindowPeer".manage = false;
+
+      "feh".state = "floating";
+      "Vlc" = {
+        state = "floating";
+        center = true;
+      };
+      ".blueman-manager" = {
+        state = "floating";
+        center = true;
+      };
+      "Blueman-manager" = {
+        state = "floating";
+        center = true;
+      };
+      "Qt5ct" = {
+        state = "floating";
+        center = true;
+      };
+      "Qt6ct" = {
+        state = "floating";
+        center = true;
+      };
+      "ark" = {
+        state = "floating";
+        center = true;
+      };
+      "org.kde.ark" = {
+        state = "floating";
+        center = true;
+      };
+      "Xarchiver" = {
+        state = "floating";
+        center = true;
+      };
+      "Yad" = {
+        state = "floating";
+        center = true;
+      };
     };
 
+    # ══ Остаток default/*.sh ══════════════════════════════════════════════
+    extraConfig = ''
+      # ── default/appearance.sh: цвет рамки из активной палитры pawlette ──
+      # Без этого рамка оставалась лавандовой при любой выбранной теме.
+      PALETTE="$HOME/.local/state/pawlette/active_palette.json"
+      if [ -f "$PALETTE" ]; then
+        COLOR_PRIMARY=$(${jq} -r '.color_primary' "$PALETTE" 2>/dev/null)
+        if [ -n "$COLOR_PRIMARY" ] && [ "$COLOR_PRIMARY" != "null" ]; then
+          bspc config focused_border_color "$COLOR_PRIMARY"
+        fi
+      fi
+
+      # ── default/monitors.sh: выставить лучший режим монитора ──
+      monitor=$(${xrandr} --query | grep " connected" | awk '{ print $1 }' | head -n 1)
+      resolution=$(${xrandr} --query | grep -A1 "^$monitor" | grep -Eo '[0-9]+x[0-9]+' | sort -V | tail -n 1)
+      refresh_rate=$(${xrandr} --query | grep -A1 "^$monitor" | grep -Eo '[0-9]+\.[0-9]+' | sort -V | tail -n 1)
+
+      if [ -n "$monitor" ] && [ -n "$resolution" ] && [ -n "$refresh_rate" ]; then
+        ${xrandr} --output "$monitor" --mode "$resolution" --rate "$refresh_rate"
+      fi
+
+      # ── default/windowrules.sh: правила с размерами ──
+      # Размеры в оригинале — проценты от экрана, считаются в рантайме.
+      # Через HM-опцию rules так нельзя (там только статическая строка),
+      # поэтому функция rect() перенесена сюда как есть.
+      SW=$(${xdpyinfo} | awk '/dimensions:/ {print $2}' | cut -d'x' -f1)
+      SH=$(${xdpyinfo} | awk '/dimensions:/ {print $2}' | cut -d'x' -f2)
+
+      rect() {
+        w_pct=$1
+        h_pct=$2
+
+        w=$((SW * w_pct / 100))
+        h=$((SH * h_pct / 100))
+        x=$(((SW - w) / 2))
+        y=$(((SH - h) / 2))
+
+        echo "''${w}x''${h}+''${x}+''${y}"
+      }
+
+      if [ -n "$SW" ] && [ -n "$SH" ]; then
+        bspc rule -a 'org.gnome.FileRoller' state=floating rectangle=$(rect 63 74) center=true
+        bspc rule -a 'Gnome-calculator'     state=floating rectangle=$(rect 19 47) center=true
+        bspc rule -a 'loupe'                state=floating rectangle=$(rect 63 74) center=true
+        bspc rule -a 'hotkeyhub'            state=floating rectangle=$(rect 63 74) center=true
+        bspc rule -a 'qalculate-gtk'        state=floating rectangle=$(rect 45 55) center=true
+        bspc rule -a 'satty'                state=floating rectangle=$(rect 63 74) center=true
+        bspc rule -a 'pwvucontrol'          state=floating rectangle=$(rect 48 42) center=true
+      fi
+
+      # ── default/autostart.sh: Xresources ──
+      if [ -f "$HOME/.config/X11/Xresources" ]; then
+        ${pkgs.xorg.xrdb}/bin/xrdb merge "$HOME/.config/X11/Xresources"
+      fi
+
+      # ── default/clipboard.sh ──
+      # Без этого цикла cliphist пуст, и SUPER+V (clipboard-manager.sh)
+      # показывал бы пустой список. В оригинале скрипт молча выходит,
+      # если чего-то нет — здесь все три бинарника гарантированы Nix'ом.
+      (
+        while ${pkgs.clipnotify}/bin/clipnotify; do
+          ${pkgs.xclip}/bin/xclip -o -selection c | ${pkgs.cliphist}/bin/cliphist store
+        done
+      ) &
+    '';
+
+    # ══ default/initial.sh + default/autostart.sh ═════════════════════════
+    # sxhkd не в списке: его поднимает services.sxhkd ниже.
     startupPrograms = [
+      # initial.sh: фикс отображения Java-приложений
       "wmname LG3D"
+
+      # appearance.sh
       "xsetroot -cursor_name left_ptr"
+
+      # autostart.sh
       "xsettingsd"
-      "picom"
       "dunst"
+
+      # Раньше здесь было просто "picom" — без --config, то есть со
+      # СТАНДАРТНЫМ конфигом picom: ни закруглений, ни блюра, ни анимаций.
+      # Теперь запускается скрипт из modules/home/picom.nix, который
+      # подбирает флаги backend'а под видеокарту, как в оригинале.
+      "sh ${picomLaunch}"
+
+      # Диалог аутентификации для GUI-приложений (был потерян)
+      "sh ${bin}/polkitkdeauth.sh"
+
       "udiskie --no-automount --smart-tray"
       "sh ${bin}/toggle-bar.sh --start --wm bspwm"
       "sh ${bin}/set-wallpaper.sh --current"
     ];
   };
+
+  # ══ Зависимости, которые дёргают bspwmrc и default/*.sh ═════════════════
+  home.packages = with pkgs; [
+    wmname # initial.sh
+    xsettingsd # autostart.sh
+    xorg.xsetroot # appearance.sh
+    xorg.xrandr # monitors.sh, polybar/launch.sh
+    xorg.xdpyinfo # windowrules.sh (rect)
+    xorg.xrdb # autostart.sh
+    jq # appearance.sh (палитра pawlette)
+    clipnotify # clipboard.sh
+    xclip # clipboard.sh, screenshot.sh на X11
+    cliphist # clipboard.sh
+    feh # set-wallpaper.sh на X11 (wallpapers.x11_method)
+    maim # screenshot.sh на X11
+    xkb-switch # sxhkd: alt+shift переключение раскладки
+    udiskie # autostart.sh
+  ];
 
   # ══ SXHKD: хоткеи 1:1 из home/.config/bspwm/sxhkdrc ═════════════════════
   services.sxhkd = {
@@ -195,8 +356,14 @@ in {
     };
   };
 
-  # TODO(парити): перенести home/.config/polybar/config.ini.pawlette (9.5 КБ)
-  #               и home/.config/bspwm/picom.conf в Nix.
-  #               До этого polybar поднимается скриптом toggle-bar.sh,
-  #               как в upstream (polybar/launch.sh).
+  # ══ sxhkdrc_disabled ════════════════════════════════════════════════════
+  # SUPER+ESCAPE переключает sxhkd на этот файл — режим, где работает только
+  # обратное переключение. Аналог submap passthru в Hyprland-сессии.
+  # services.sxhkd генерирует только основной sxhkdrc, поэтому второй файл
+  # кладём вручную.
+  xdg.configFile."bspwm/sxhkdrc_disabled".text = ''
+
+    super + Escape
+        pkill -x sxhkd 2>/dev/null && sxhkd -c ~/.config/bspwm/sxhkdrc &
+  '';
 }
