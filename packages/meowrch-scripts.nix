@@ -2,7 +2,7 @@
   procps, systemd, brightnessctl, pamixer, playerctl, hyprland, swww, rofi,
   wl-clipboard, cliphist, networkmanager, bluez, upower, dunst,
   util-linux, jq, imagemagick, curl, zenity, libnotify, bc, hyprpicker,
-  hyprlock, wlr-randr, makeWrapper }:
+  hyprlock, wlr-randr, feh, betterlockscreen, makeWrapper }:
 
 let
   # Python with all needed packages for system-info.py
@@ -52,8 +52,22 @@ stdenv.mkDerivation rec {
     libnotify           # notify-send
     bc                  # arithmetic in uwsm-launcher.sh
     hyprpicker          # color-picker.sh
-    hyprlock            # screen-lock.sh
+    hyprlock            # screen-lock.sh, Wayland locker
     wlr-randr           # set-wallpaper.sh refresh rate detection
+
+    # X11 / bspwm session backends. Both scripts dispatch on
+    # $XDG_SESSION_TYPE, so without these the X11 half is a no-op.
+    feh                 # set-wallpaper.sh, X11 wallpaper backend
+    betterlockscreen    # screen-lock.sh, X11 locker
+
+    # NOTE: awww is upstream's Wayland wallpaper daemon and is not packaged for
+    # NixOS yet, so swww above stands in for it. set-wallpaper.sh resolves
+    # whichever is installed at runtime and prefers awww, so adding awww here
+    # once it exists is enough to complete the switch.
+    #
+    # NOTE: pawlette is intentionally absent. set-wallpaper.sh calls it from
+    # pawlette_dynamic_theme_hook(), but it is installed through home.packages,
+    # and wrapProgram only prefixes PATH, so it still resolves.
   ] ++ lib.optional (hyprland != null) hyprland;
 
   # Don't build, just copy scripts
