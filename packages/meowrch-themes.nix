@@ -2,6 +2,33 @@
 
 let
   # Original Meowrch Wallpapers from the main Arch repo
+  #
+  # ┌─ WARNING (NixOS-Meowrch) ────────────────────────────────────────────────┐
+  # │ `rev = "main"` is a MUTABLE ref pinned to a FIXED sha256.                │
+  # │                                                                          │
+  # │ fetchFromGitHub with rev="main" downloads                                │
+  # │   https://github.com/meowrch/meowrch/archive/main.tar.gz                 │
+  # │ which always returns whatever main points at *right now*. The moment     │
+  # │ upstream pushes a commit, this fixed-output derivation stops matching    │
+  # │ its hash and the build dies with a hash mismatch.                        │
+  # │                                                                          │
+  # │ This can hide for a long time: while the old tarball is still in         │
+  # │ /nix/store, Nix never refetches, so it keeps "working" locally and then  │
+  # │ fails on a clean machine or after nix-collect-garbage.                   │
+  # │                                                                          │
+  # │ Upstream is now at 4.1.1 (dab45f99e65ba95ba9719e00768d337278861bb9),     │
+  # │ so the hash below is expected to be stale already. To repin properly:    │
+  # │                                                                          │
+  # │   nix-prefetch-url --unpack \                                            │
+  # │     https://github.com/meowrch/meowrch/archive/<commit>.tar.gz           │
+  # │                                                                          │
+  # │ then replace rev with that full commit SHA and paste in the hash.        │
+  # │ The same problem applies to `latte-theme` and to `src` below;            │
+  # │ only `mocha-theme` is correctly pinned (rev = "v1.7.4").                 │
+  # │                                                                          │
+  # │ Left as-is on purpose: changing rev without being able to build and      │
+  # │ read back the real hash would only swap one broken hash for another.     │
+  # └──────────────────────────────────────────────────────────────────────────┘
   meowrch-src = fetchFromGitHub {
     owner = "meowrch";
     repo = "meowrch";
@@ -94,6 +121,31 @@ stdenv.mkDerivation rec {
           gtk-update-icon-cache -f -t "$dir" 2>/dev/null || true
         fi
       done
+    fi
+
+    # 8. Install the meowrch UI assets (logos consumed by rofi menus and mewline)
+    #
+    #    Upstream ships these in home/.local/share/meowrch/assets/ and they are
+    #    NOT optional decoration -- they are referenced by absolute path:
+    #
+    #      rofi-menus/theme-selector.sh
+    #        random.png                    -> the "Random" entry icon
+    #        default-theme-logo.png        -> fallback icon for a theme with no logo
+    #        dynamic-theme-on-logo.png     -> Dynamic Theme toggle, enabled state
+    #        dynamic-theme-off-logo.png    -> Dynamic Theme toggle, disabled state
+    #
+    #      mewline (compact.music.default_album_logo)
+    #        default-album-logo.png        -> placeholder cover art
+    #
+    #    meowrch-src is already fetched above for the wallpaper fallback, so
+    #    taking the assets from it costs no extra fetch and needs no new hash.
+    mkdir -p $out/share/meowrch/assets
+    if [ -d "${meowrch-src}/home/.local/share/meowrch/assets" ]; then
+      cp -rf ${meowrch-src}/home/.local/share/meowrch/assets/. $out/share/meowrch/assets/
+      chmod -R u+w $out/share/meowrch/assets
+    else
+      echo "WARNING: ${meowrch-src}/home/.local/share/meowrch/assets is missing;" >&2
+      echo "         the rofi theme picker will render without icons." >&2
     fi
 
     # 7. Patch Hyprland custom-prefs: remove borders and fix deprecated syntax (visual cleanup for NixOS)
